@@ -1,0 +1,20 @@
+div#lastTransaction.popup-basic.popup-full.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                | Last 20 Transactions
+        form#lastTransactionList.admin-form
+            div.panel-body.p25
+                div#loading
+                table.table.table-striped.table-hover.hidden#transactionlistTable(cellspacing="0" width="100%")
+                    thead
+                        tr 
+                            th Invoice ID
+                            th Date
+                            th Customer Name
+                            th Sub Total
+                            th Tax Amount
+                            th Grand Total
+                    tbody
+                        

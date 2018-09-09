@@ -1,0 +1,97 @@
+
+extends ../layout
+block content
+    section#contact
+        div.animated.zoomIn.p10                               
+            .panel
+                .panel-heading
+                    span.panel-title Movie Entry
+                .panel-body
+                    form.form-horizontal(role='form')
+                        .form-group
+                            label.col-lg-3.control-label(for='inputSelect') Title
+                            .col-lg-8
+                                .bs-component
+                                    input#title.form-control(type='text' required placeholder='Enter movie name here')           
+                        .form-group
+                            label.col-lg-3.control-label(for='inputSelect') Description
+                            .col-lg-8
+                                .bs-component
+                                    input#description.form-control(type='text' placeholder='Enter movie description here')
+                                    
+                        .form-group
+                            label.col-lg-3.control-label(for='inputSelect') URL
+                            .col-lg-8
+                                .bs-component
+                                    input#URL.form-control(type='URL' placeholder='Enter movie URL Here')
+                                    
+                        .form-group
+                            label.col-lg-3.control-label(for='inputStandard') Rent Amount
+                            .col-lg-8
+                                .bs-component
+                                    input#rentAmount.form-control(type='number' value='0' min="0" placeholder='$')
+                        .pull-right
+                            button.btn.ladda-button.btn-primary.progress-button.progress-button(type='button' onclick='saveMovie()' data-style='expand-right')
+                                span.ladda-label Save
+                                span.ladda-spinner
+                                span.ladda-spinner
+                                .ladda-progress
+
+                            button.btn.ml10.ladda-button.btn-danger.progress-button.progress-button(type='button', data-style='expand-right')
+                                span.ladda-label Cancel
+                                span.ladda-spinner
+                                span.ladda-spinner
+                                .ladda-progress                                                                                                                                 
+        include ../endScript.html
+
+    script.
+        function saveMovie(){
+            var userEntry = {
+                title: $('#title').val(),
+                description: $('#description').val(),
+                artUrl: $('#url').val(),
+                rentAmount: $('#rentAmount').val(),
+                EmployeeId: result.userData.ID
+            };
+           console.log(userEntry);
+            $.ajax({
+                type: "POST",
+                url: '/api/movie',
+                data: userEntry,
+                dataType: "json",
+                success: function(result){
+                    if (result.status){
+                        showNotify('movie', 'Movie was created', 'success');
+                         
+                    }
+                },
+                error: function(err){
+                    showNotify('Rental', 'Rental Not Created', 'error');
+                    console.log(err)
+                }
+            });
+            
+        }
+
+
+
+        jQuery(document).ready(function()
+         {
+            $('#contactList').dataTable({
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+            });

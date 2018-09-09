@@ -1,0 +1,151 @@
+div#softwareFrom.popup-basic.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                | Software Information
+        form#editStoreSoftware.admin-form
+            div.panel-body.p25
+                div.row
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="software") Software
+                                em *
+                            label.field.select(for="software")
+                                select#software(name="software")
+                                   each comboList in comboBox.data
+                                        if comboList.comboBoxTypeId == 3
+                                            each row in comboList.ComboBoxDetails
+                                                if store.data.cSoftwareID == row.id
+                                                    option(value="#{row.id}" selected ) #{row.selector}
+                                                else
+                                                    option(value="#{row.id}" ) #{row.selector}
+                                                
+                                i.arrow
+                div.section.row
+                    div.col-md-12
+                        div
+                            label.field-label(for="plan") Plan
+                                em *
+                            label.field.select(for="plan")
+                                select#plan(name="plan")
+                                    each planl in productList.data
+                                        option(value="#{planl.productID}" required) #{planl.productDetail}
+                                i.arrow
+
+                div.row.right10.hidden
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="monthly") Monthly Fee
+                                em *
+                            label.field(for="monthly")
+                                input.gui-input.text-right#monthly(name="monthly"  onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" value="#{store.data.softwareFee}" required)
+
+                div.row.right30.hidden
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="promotionCode") Promotion Code
+                                em
+                            label.field.select(for="promotionCode")
+                                select#promotionCode(name="promotionCode")
+                                    option(value=0) Select One
+                                    each promotionCodel in promotionCodeList.data
+                                        option(value="#{promotionCodel.id}") #{promotionCodel.code} - #{promotionCodel.description}
+                                i.arrow
+
+                div.row
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="findUs") Where did you find us
+                                em
+                            label.field.select(for="findUs")
+                                select#findUs(name="findUs")
+                                    option(value=0) Select One
+                                    each comboList in comboBox.data
+                                        if comboList.comboBoxTypeId == 13
+                                            each row in comboList.ComboBoxDetails
+                                                option(value="#{row.id}") #{row.selector}
+                                i.arrow
+                div.row
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="businessType") Business Type
+                                em
+                            label.field.select(for="businessType")
+                                select#businessType(name="businessType")
+                                    option(value=0) Select One
+                                    each comboList in comboBox.data
+                                        if comboList.comboBoxTypeId == 12
+                                            each row in comboList.ComboBoxDetails
+                                                option(value="#{row.id}") #{row.selector}
+                                i.arrow
+
+
+            div.panel-footer.clearfix
+                button.button.btn-primary.mr10.pull-right(type="button" onclick="saveSoftwareInfo()") Save Change
+
+
+    script.
+
+        function saveSoftwareInfo(){
+            var data = {
+                cSoftwareID: $("#software").val(),
+                productID: $("#plan").val(),
+                softwareFee: $("#monthly").val(),
+                promotionCodeID: $("#promotionCode").val(),
+                businessTypeID: $("#businessType").val(),
+                findUsID: $("#findUs").val(),
+                userID: #{userData.userID},
+                userName: '#{userData.fullName}'
+            };
+            console.log("full object ",data);
+            $.showLoading({name: 'line-scale'});
+            $.ajax({
+                url: '/api/stores/#{store.data.storeID}',
+                type: 'PUT',
+                data: data,
+                success: function(result){
+                    if(result.status){
+                        location.reload();
+                        showNotify('Software', 'Updated!','system');
+
+                    }else{
+                        showNotify('Software',  'Failed to Save','error');
+                    }
+
+                },
+                error: function(err){
+                    showNotify('Software',err.responseJSON.data,'error');
+                    $.magnificPopup.close();
+                    $.hideLoading();
+                }
+            }).always(function(){
+                $.hideLoading();
+            });
+        }
+
+        function setDefaultValues(){
+            $('#monthly').val(#{store.data.softwareFee});
+            $("#software").val(#{store.data.cSoftwareID});
+            $("#plan").val(#{store.data.productID});
+            $("#promotionCode").val(#{store.data.promotionCodeID});
+            $("#findUs").val(#{store.data.findUsID});
+            $("#businessType").val(#{store.data.businessTypeID});
+        }
+
+        jQuery(document).ready(function(){
+            setDefaultValues()
+            $("#editStore").validate({
+                rules:{
+                    businessName: {
+                        required: true
+                    }
+
+                },
+                messages:{
+                    businessName: {
+                        required: "Please enter business name."
+                    }
+                }
+            });
+        });

@@ -1,0 +1,59 @@
+div.panel.panel-visible#spy3
+    div.panel-heading
+        div.panel-title.hidden-xs Delted Invoice List
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#deletedInvoiceList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th Invoice #
+                    th Invoice Date
+                    th Delete Date
+                    th Charge Date
+                    th Charge Count
+                    th Invoice Amount
+                    th Reason
+                    th
+            tbody
+                each invoice in deletedInvoices.data
+                    tr
+                        td #{invoice.invoiceID}
+                            if invoice.paidDateTime
+                                span.glyphicon.glyphicon-usd(data-toggle="tooltip" title="Locked" style="padding-left: 5px;color:green;")
+                        td #{moment(invoice.createDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                        td #{moment(invoice.deleteDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                        td #{moment(invoice.chargeDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                        td.text-center #{invoice.collectCounter}
+                        td.text-right.currency #{invoice.invoiceAmount}
+                        td #{invoice.deleteReason}
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="/invoice/#{invoice.invoiceID}" onclick="window.open(this.href, 'newwindow', 'width=800, height=950'); return false;") View
+
+
+    script.
+
+        jQuery(document).ready(function() {
+
+              $('#deletedInvoiceList').dataTable({
+                "aaSorting": [[0, 'desc']],
+                "oLanguage": {
+                  "oPaginate": {
+                    "sPrevious": "Previous",
+                    "sNext": "Next"
+                  }
+                },
+                "iDisplayLength": 15,
+                "aLengthMenu": [
+                  [15, 25, 35, 50, -1],
+                  [15, 25, 35, 50, "All"]
+                ],
+                "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                });
+
+                $('.currency').formatCurrency();
+            });

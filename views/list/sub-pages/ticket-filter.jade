@@ -1,0 +1,71 @@
+div.panel-heading#ticketHeader
+    div.col-md-12
+        span.panel-icon
+            i.imoon.imoon-settings
+        span.panel-title Filters
+
+        div.pull-right
+            a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="defaultHeader()")
+                span.fa.fa-retweet(style="padding-right:2px;")
+                | Default
+            a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="reloadTicketList()")
+                span.fa.fa-search(style="padding-right:2px;")
+                | Fetch Data
+
+div.panel-body
+    div.row.admin-form
+        div.col-md-2
+            label.field-label(for="assignedTo") Assigned To
+            select#assignedTo.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each user in allUser.data
+                    if user.userID == userData.userID
+                        option(value="#{user.userID}" selected) #{user.fullName}
+                    else
+                        option(value="#{user.userID}") #{user.fullName}
+            i.arrow
+
+
+        div.col-md-2
+            label.field-label(for="ticketType") Ticket Type
+            select#ticketType.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each comboBoxList in comboBox.data
+                    if comboBoxList.comboBoxTypeId == 4
+                        each row in comboBoxList.ComboBoxDetails
+                            option(value="#{row.id}") #{row.selector}
+            i.arrow
+
+        div.col-md-1
+            label.field-label(for="priority") Priority
+            select#priority.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each comboBoxList in comboBox.data
+                    if comboBoxList.comboBoxTypeId == 2
+                        each row in comboBoxList.ComboBoxDetails
+                            option(value="#{row.id}") #{row.selector}
+            i.arrow
+
+        div.col-md-3
+            label.field-label(for="status") Status
+            select#status.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each comboBoxList in comboBox.data
+                    if comboBoxList.comboBoxTypeId == 6
+                        each row in comboBoxList.ComboBoxDetails
+                            if row.id == 50
+                                option(value="#{row.id}" ) #{row.selector}
+                            else
+                                option(value="#{row.id}" selected) #{row.selector}
+            i.arrow
+
+        div.col-md-2
+            div.admin-form.theme-primary
+                label.field-label(for="datepicker-from") From
+                label.field.prepend-icon(for='datepicker-from')
+                    input.gui-input#datepicker-from(name='datepicker-from' placeholder='From Date')
+                    label.field-icon
+                        i.fa.fa-calendar-o
+        div.col-md-2
+            div.admin-form.theme-primary
+                label.field-label(for="datepicker-to") To
+                label.field.prepend-icon(for='datepicker-to')
+                    input.gui-input#datepicker-to(name='datepicker-to' placeholder='To Date')
+                    label.field-icon
+                        i.fa.fa-calendar-o

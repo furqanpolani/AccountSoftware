@@ -1,0 +1,85 @@
+section#content.table-layout
+    <link rel="stylesheet" type="text/css" href="/plugins/css/ladda.min.css">
+    div.tray.tray-center
+        div.row
+            div.col-md-4
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.imoon.imoon-mail
+                                span.panel-title Invoice Email
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="editInvoiceEmail()")
+                                        span.imoon.imoon-pencil(style="padding-right:2px;")
+                                        | Edit
+                    div.panel-body.pn.table-responsive
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td Invoice Email
+                                        td.text-info.pr10
+                                            span#invoiceEmail #{store.data.invoiceEmail}
+                div#creditCard
+                    include store-creditCard
+            div.col-md-8
+                div.panel.mb25
+                    div.panel-heading
+                        span.panel-title.hidden-xs Invoices Detail
+                        ul.nav.panel-tabs-border.panel-tabs
+                            li.active
+                                a(href="#tab2_1" data-toggle="tab") Invoices
+                            li
+                                a(href="#tab2_2" data-toggle="tab") Deleted Invoices
+                    div.panel-body.p25.pb5
+                        div.tab-content.pn.br-n
+                            div#tab2_1.tab-pane.active
+                                include ../../list/store-invoiceList
+                            div#tab2_2.tab-pane
+                                include ../../list/deletedInvoiceList
+
+    aside.col-md-2.tray.tray-right.tray290.pn.panel-scroller.scroller-md.scroller-pn.hidden.activityDiv
+        include ../../list/activity
+
+    
+    include ../models/invoice-modal
+    include ../models/invoice-refund-modal
+
+    script.
+
+        function editInvoiceEmail(){
+        bootbox.prompt({
+            title: "Update Invoice Email Address",
+            inputType: 'email',
+            value:$('#invoiceList').attr("data-invoiceEmail"),
+            callback:function(result){
+                NProgress.start();
+                    if(result){
+                        var data={invoiceEmail:result};
+
+                            $.ajax({
+                                url: '/api/stores/#{store.data.storeID}',
+                                type: 'PUT',
+                                data: data,
+                                success: function(storeResult){
+                                    if(storeResult.status){
+                                        showNotify('Invoice Email', 'Upated!','primary');
+                                        $('#invoiceEmail').text(result);
+                                        $('#invoiceList').attr("data-invoiceEmail",result)
+                                        reloadActivity(#{store.data.storeID},1);
+                                    }
+                                }
+
+                                });
+                    }
+                    NProgress.done();
+                }
+            });
+
+        }

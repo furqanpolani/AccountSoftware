@@ -1,0 +1,214 @@
+div.panel
+    div.panel-heading
+        div.row
+            div.col-md-9
+                span.panel-icon
+                    i.glyphicon.glyphicon-credit-card
+                span.panel-title Credit Card
+                span.hidden#stipeNumber #{store.data.stripeID}
+            div.col-md-3.right22.hidden
+                div#cardButton.pull-right
+                    if creditCards.status
+                        a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addCard(1)")
+                            span.fa.fa-plus.pr5
+                            | Card
+                    else
+                        a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addCard(0)")
+                            span.fa.fa-plus.pr5
+                            | Card
+    div.panel-body.pn.table-responsive
+        table.table.mbn.tc-icon-1.tc-med-3.tc-bold-last
+            thead
+                tr.hidden
+                    th Action
+                    th Name
+                    th Value
+                tbody#creditCardBody
+                    
+                    
+    include ../models/creditCard-modal
+    
+    script.
+        
+        var userData = !{JSON.stringify(userData)}
+        
+        $( document ).ready(function() {
+            var creditCard = !{JSON.stringify(creditCards)}
+            console.log('credit card ', creditCard)
+            randerCardTable(creditCard);
+        });
+            
+        
+        function randerCardTable(creditCard){
+            
+            $('#creditCardBody tr').remove();
+            if(creditCard.status){
+                creditCard.data.sources.data.forEach(card =>{
+                    var cardHTML = `
+                    <tr class="right9">
+                        <td>                            
+                                <div class="btn-group right23">
+                                    <button type="button" onclick="deleteCard('` + card.id + `')" class="btn btn-sm btn-danger">
+                                        <i class="imoon imoon-remove2"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        <td>`
+                    
+                        if(creditCard.data.default_source == card.id) {
+                            
+                            cardHTML = cardHTML +  `<span id="` + card.id + `">` + card.brand + ` - ` + card.last4 + ` - ` + card.funding + `</span>
+                            <span id="defaultCardHidden" class="hidden">` + card.last4 + `</span>`
+                                
+                        }else{
+                            cardHTML = cardHTML +  `<a href="#" onclick="changeCard('` + card.id + `')" data-toggle="tooltip" title="" data-original-title="Clcik to make this card default"><span id="` + card.id + `">` + card.brand + ` - ` + card.last4 + ` - ` + card.funding + `</span></a>`
+                        }
+                            
+                        cardHTML = cardHTML + `</td><td class="text-info pr10">`
+                        
+                            if(creditCard.data.default_source == card.id) { 
+                                cardHTML = cardHTML + `<span style="margin-right:10px;" class="label label-primary">Default</span>`
+                            }
+                            
+                        cardHTML = cardHTML + `<span>` + card.exp_month + `/` + card.exp_year + `</span>
+                        </td>
+                    </tr>`
+                        
+                        $('#creditCardBody').append(cardHTML);
+                });
+                
+                $('#cardButton').replaceWith(`<div id="cardButton" class="pull-right"><a onclick="addCard(1)" class="btn btn-default btn-sm light fw600 ml10"><span class="fa fa-plus pr5"></span>Card</a></div>`);
+                $('#stipeNumber').text(creditCard.data.id)
+            }
+            
+            
+        }
+        
+
+        function addCard(id){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#cardForm'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    $('#editCard').attr('stripeType',id);
+                    //setNewCard();
+                },
+                close: function(){
+                
+                    emptyCardData()
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#cardForm').draggable();
+        }
+
+        function deleteCard(cardId){
+            bootbox.confirm({
+                message: "Are you sure? you like to remove card number ending with " + $('#' + cardId ).html() + ' once it remove can\'t recover.',
+                buttons:{
+                    confirm:{
+                        label: 'Yes'
+                    },
+                    cancel:{
+                        label:'No'
+                    }
+                },
+                callback: function(result){
+
+                    if(result){
+                    NProgress.start();
+                        var cardValue = $('#' + cardId).html()
+                        var data = {
+                            stripeID: '#{store.data.stripeID}',
+                            id: cardId,
+                            storeID: #{store.data.storeID},
+                            cardNumber: cardValue,
+                            userID: #{userData.userID},
+                            fullName: '#{userData.fullName}'
+                        };
+
+                            $.ajax({
+                                url: '/api/stripe/deleteCard',
+                                type: 'POST',
+                                data: data,
+                                success: function(creditCardResult){
+                                    randerCardTable(creditCardResult.creditCards);
+                                
+                                    showNotify('Payment Information', cardValue + ' card was deleted!','system');
+                                    reloadActivity(#{store.data.storeID},1);
+                                    if(userData.accountTypeID !=7 ){
+                                        checkRights('#{userData.userID}');
+                                    }
+
+                                },
+                                error: function(err) {
+                                    console.log("error " ,err);
+                                }
+                                }).always(function(){
+                                    NProgress.done();
+                            });
+                    }
+                }
+            });
+        }
+
+        function changeCard(cardId){
+
+            var newCard = $('#' + cardId).html();
+                bootbox.confirm({
+                    message: "Are you sure? you want to switch default card.",
+                    buttons:{
+                        confirm:{
+                            label: 'Yes'
+                        },
+                        cancel:{
+                            label:'No'
+                        }
+                    },
+                    callback: function(result){
+                        if(result){
+                            NProgress.start();
+                            var data = {
+                                stripeID: '#{store.data.stripeID}',
+                                id: cardId,
+                                storeID: #{store.data.storeID},
+                                oldCard: $('#defaultCardHidden').html(),
+                                newCard: newCard,
+                                userID: #{userData.userID},
+                                fullName: '#{userData.fullName}'
+                            };
+
+                                $.ajax({
+                                    url: '/api/stripe/changeDefaultCard',
+                                    type: 'POST',
+                                    data: data,
+                                    success: function(creditCardResult){
+                                        
+                                        //$('#creditCard').html(creditCardResult)
+                                        
+                                        
+                                        randerCardTable(creditCardResult.creditCards);
+                                        
+                                        showNotify('Payment Information', 'Upated!','primary');
+                                        reloadActivity(#{store.data.storeID},1);
+                                        if(userData.accountTypeID !=7 ){
+                                            checkRights('#{userData.userID}');
+                                        }
+
+                                    },
+                                    error: function(err) {
+                                        console.log("error " ,err);
+                                    }
+                                }).always(function(){
+                                    NProgress.done();
+                                });
+                        }
+                    }
+                });
+        }

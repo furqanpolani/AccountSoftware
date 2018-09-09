@@ -1,0 +1,467 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/jquery.rateyo.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+
+div#qalog-form.popup-basic.popup-lg.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#qaTitle
+                    | QA Log
+        form#qaSystem.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-4
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-comments-o(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Contact Type
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        select.form-control#software(onchange="fillQuestion()" style="width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                            option(value="0") Select One
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 15
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}" data-releted-product-id="#{row.reletedProductID}") #{row.selector}
+                                        i.arrow
+                    div.col-md-4
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-user(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Rep who handle
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        select.form-control#repName(style="width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                            option(value="0") Select One
+                                                each user in allUser.data
+                                                    option(value="#{user.userID}") #{user.fullName}
+                                        i.arrow
+                    div.col-md-4
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-calendar(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Contact Date/Time
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#contactDate(type="text" style="width:100%;")
+
+                div.row
+                    div.col-md-4
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-link(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Relation
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    
+                                    
+                                    div.col-xs-12.form-group
+                                        label.sr-only
+                                        div.input-group
+                                            input.form-control#ticketId(type="text" placeHolder="Ticket ID" style="width:100%;" )
+                                            div.input-group-addon
+                                                i.imoon.imoon-pencil#readyforNumber
+                                                i.imoon.imoon-close.text-danger.hidden#wrongNumber
+                                                i.imoon.imoon-checkmark.text-success.hidden#rightNumber
+
+                                    div.col-xs-12.form-group
+                                        label.sr-only
+                                        div.input-group(style="margin-top: 10px;")
+                                            input.form-control#cspId(type="text" placeHolder="CSP ID" style="width:100%; text-transform:uppercase;")
+                                            div.input-group-addon
+                                                i.imoon.imoon-pencil#cspreadyforNumber
+                                                i.imoon.imoon-close.text-danger.hidden#cspwrongNumber
+                                                i.imoon.imoon-checkmark.text-success.hidden#csprightNumber
+
+                    div.col-md-8
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-info(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Caller Infomation
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#callerName(type="text" placeHolder="Caller Name" style="width:100%;")
+                                    div.col-xs-12.form-group
+                                        input.form-control#phoneNumber(type="text" placeHolder="Phone Number" style="width:100%;margin-top: 10px;margin-bottom: 10px;")    
+                                    div.col-xs-12.form-group
+                                        input.form-control#emailAddress(type="text" placeHolder="Email Address" style="width:100%;")    
+            
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-bubble(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Subject
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#subject(type="text" placeHolder="What is log about *" style="width:100%;")
+                                        
+                    
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.fa.fa-pencil-square-o(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Note
+                            div.panel-body.pn
+                                textarea#note.form-control(style="height: 100px;")
+
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.fa.fa-star-half-full(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Rating
+                                span#rateNumber.pull-right.pr10
+                            div.panel-body.pn
+                                table.table.mbn.tc-med-2.tc-bold-last#rating
+                                    thead
+                                        tr.hidden
+                                            th Name
+                                            th Value
+                                        tbody
+                                            
+                                               
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right#saveLogButton(type="button" onclick='saveLog()'  ) Save Log
+                button.btn.btn-primary.mr10.pull-right.hidden#updateLogButton(type="button" onclick='updateLog()'  ) Update Log
+    
+    script.
+        
+       // $( document ).ready(function() {
+            var ratingObj = {};
+            var haveTicket = "no";
+            var csphave = "no";
+
+            function fillQuestion(){
+                console.log('in here');
+                var selectedProduct = $('#software').find(':selected').data('reletedProductId')
+                insertRatingQuestion(selectedProduct);
+            }
+
+            $('#ticketId').blur(() =>{
+               
+                if($('#ticketId').val() === "") {
+                    $('#rightNumber').addClass('hidden');
+                    $('#wrongNumber').addClass('hidden');
+                    $('#readyforNumber').removeClass('hidden');
+                    haveTicket = 'no';
+                    return false;
+                }
+                $.ajax({
+                    url: '/api/ticket/' + $('#ticketId').val(),
+                    type: 'GET',
+                    success: function(result){
+                       if(result) {
+                           $('#rightNumber').removeClass('hidden');
+                           $('#wrongNumber').addClass('hidden');
+                           $('#readyforNumber').addClass('hidden');
+                           $('#cspId').val(result.CSPID);
+                           $('#emailAddress').val(result.email);
+                           $('#phoneNumber').val(result.phoneNumber);
+                           $('#callerName').val(result.name);
+                           $('#subject').val(result.title);
+                           $('#note').val(result.description);
+                           
+
+                           $('#cspId').blur();
+                           $("#repName").val(result.assignedToUserID);
+
+                           haveTicket = 'found';
+                           console.log(result);
+                       }else{
+                           console.log('test ', result);
+                           $('#rightNumber').addClass('hidden');
+                           $('#wrongNumber').removeClass('hidden');
+                           $('#readyforNumber').addClass('hidden');
+                           
+                           haveTicket = 'notfound';
+                       } 
+                    },
+                    error: function(result){
+                       console.log(result);
+                           $('#rightNumber').addClass('hidden');
+                           $('#wrongNumber').removeClass('hidden');
+                           $('#readyforNumber').addClass('hidden');
+                           
+                           haveTicket = 'notfound';
+                    }
+                });
+            });
+
+            $('#cspId').blur(() =>{
+               
+                if($('#cspId').val() === "") {
+                    $('#csprightNumber').addClass('hidden');
+                    $('#cspwrongNumber').addClass('hidden');
+                    $('#cspreadyforNumber').removeClass('hidden');
+                    csphave = 'no';
+                    return false;
+                }
+                $.ajax({
+                    url: '/api/store/' + $('#cspId').val(),
+                    type: 'GET',
+                    success: function(result){
+                       if(result.data) {
+                           $('#csprightNumber').removeClass('hidden');
+                           $('#cspwrongNumber').addClass('hidden');
+                           $('#cspreadyforNumber').addClass('hidden');
+                           csphave = 'found';
+                           storeID = result.data.storeID;
+                           console.log(result);
+                       }else{
+                           console.log('test ', result);
+                           $('#csprightNumber').addClass('hidden');
+                           $('#cspwrongNumber').removeClass('hidden');
+                           $('#cspreadyforNumber').addClass('hidden');
+                           
+                           csphave = 'notfound';
+                       } 
+                    },
+                    error: function(result){
+                       console.log(result);
+                           $('#csprightNumber').addClass('hidden');
+                           $('#cspwrongNumber').removeClass('hidden');
+                           $('#cspreadyforNumber').addClass('hidden');
+                           
+                           csphave = 'notfound';
+                    }
+                });
+            });
+
+            function insertRatingQuestion(selectedId){
+                var comboData = !{JSON.stringify(comboBox.data)};
+                
+                $("#rating tr").remove();
+                comboData.forEach(row =>{
+                    if(row.comboBoxTypeId == 16 || row.comboBoxTypeId == selectedId){
+                        row.ComboBoxDetails.forEach(list =>{
+                            ratingObj[list.id + ' - ' + list.selector] = 0;
+                            if(list.identifier == "Rate"){
+                            var html = `<tr><td width="70%">`+ list.selector +`</td><td width="30%" class="text-info pr10"><div id="R`+ list.id +`" class="pull-right"></div><div class="counter"></div></td></tr>`
+                            $('#rating').append(html);
+                            
+                            
+                            var rateID = "#R" + list.id
+                            $(rateID).rateYo({
+                                starWidth: "20px",
+                                rating: 0,
+                                fullStar: true,
+                                onChange: function (rating, rateYoInstance) {
+                                    $(this).next().text(rating);
+                                },
+                                onSet: function (rating, rateYoInstance) {
+                                    //alert("Rating is set to: " + rateID + " " + rating);
+                                    ratingObj[list.id + ' - ' + list.selector] = rating
+                                    //console.log(ratingObj);
+                                    $('#rateNumber').text(countRating());
+                                }
+                            });
+                            }else {
+                                var html = `<tr><td width="70%">`+ list.selector +`</td><td style="padding:0px;"><span class="switch block mt5 switch-alert"><input id="R`+ list.id +`" type="checkbox" name="R`+ list.id +`" onclick="selecteRate('`+ list.id +`','`+ list.selector +`')"><label for="R`+ list.id +`" data-on="YES" data-off="NO"></label></span></td></tr>`
+                                $('#rating').append(html);
+                            }
+                        });
+                    }
+                });
+            }
+       // });
+
+        function countRating(){
+            var totalRating = 0;
+            var rowCount = 0;
+            var avarge = 0;
+            var storeID = 0;
+
+            for (var prop in ratingObj) {
+            //console.log(`${prop} = ${ratingObj[prop]}`);
+            totalRating += ratingObj[prop];
+            rowCount++;
+            }
+            //- console.log(`total rating is ${totalRating}.`)
+            //- console.log(`total row Count is ${rowCount}.`)
+            avarge = totalRating / rowCount
+            //- console.log(`avg count ${avarge}.`)
+
+            return avarge.toFixed(2);
+        }
+      
+        function selecteRate(id , question){
+            console.log('here ', id, 'question ', question);
+            if($('#R' + id ).is(":checked")){
+                ratingObj[id + ' - ' + question] = 5
+            }else {
+                ratingObj[id + ' - ' + question] = 0
+            }
+            $('#rateNumber').text(countRating());
+        }
+
+        $('#contactDate').datetimepicker({
+                defaultDate: new Date
+        });
+
+        function saveLog(){
+            
+            if($('#software').val() === "0"){
+                showNotify('Contact Type',  'Select software type before saving','error');
+                return false;
+            }
+            
+            if($('#repName').val() === "0"){
+                showNotify('Rep',  'Select rep who handle the query.','error');
+                return false;
+            }
+
+            if($('#subject').val() === ""){
+                showNotify('Subject', 'Subject have to enterd before saving the log.','error');
+                return false;
+            }
+
+            if(haveTicket === 'notfound'){
+                showNotify('Ticket', 'Please enter valid ticket number','error');
+                return false;
+            }
+
+            if(csphave === 'notfound'){
+                showNotify('CSP ID', 'Please enter valid CSP ID.','error');
+                return false;
+            }
+            //console.log(ratingObj);
+            var avarge = countRating();
+
+            var qaLogData = {
+                reporterUserID: #{userData.userID},
+                assignedToUserID: $('#repName').val(),
+                phoneNumber: $('#phoneNumber').val(),
+                emailAddress: $('#emailAddress').val(),
+                reportDateTime: $('#contactDate').val(),
+                callerName: $('#callerName').val(),
+                subject: $('#subject').val(),
+                notes: $('#note').val(),
+                ticketID: $('#ticketId').val(),
+                rateLog: JSON.stringify(ratingObj),
+                rate: avarge,
+                storeID: storeID,
+                contactTypeID: $('#software').val(),
+                CSPID: $('#cspId').val()
+            }
+
+            console.log('im here jade ', qaLogData);
+
+            $.ajax({
+                url: '/api/qaLog/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(qaLogData),
+                dataType: 'json',
+                success: function(result){
+                    console.log(result);
+                    showNotify('Question', 'Log is Saved' ,'system');
+                    location.reload();
+
+                },
+                error: function(result){
+                    console.log(result);
+                    $.magnificPopup.close();
+                    showNotify('Question', result.responseJSON.data ,'error');
+                }
+            });
+
+        }
+
+        function updateLog(){
+            
+
+            if($('#software').val() === "0"){
+                showNotify('Contact Type',  'Select software type before saving','error');
+                return false;
+            }
+            
+            if($('#repName').val() === "0"){
+                showNotify('Rep',  'Select rep who handle the query.','error');
+                return false;
+            }
+
+            if($('#subject').val() === ""){
+                showNotify('Subject', 'Subject have to enterd before saving the log.','error');
+                return false;
+            }
+
+            if(haveTicket === 'notfound'){
+                showNotify('Ticket', 'Please enter valid ticket number','error');
+                return false;
+            }
+
+            if(csphave === 'notfound'){
+                showNotify('CSP ID', 'Please enter valid CSP ID.','error');
+                return false;
+            }
+            //console.log(ratingObj);
+            var avarge = countRating();
+
+            var qaLogData = {
+                reporterUserID: #{userData.userID},
+                assignedToUserID: $('#repName').val(),
+                phoneNumber: $('#phoneNumber').val(),
+                emailAddress: $('#emailAddress').val(),
+                reportDateTime: $('#contactDate').val(),
+                callerName: $('#callerName').val(),
+                subject: $('#subject').val(),
+                notes: $('#note').val(),
+                ticketID: $('#ticketId').val(),
+                rateLog: JSON.stringify(ratingObj),
+                rate: avarge,
+                storeID: storeID,
+                contactTypeID: $('#software').val(),
+                CSPID: $('#cspId').val()
+            }
+
+            console.log('im here jade ', qaLogData);
+
+            $.ajax({
+                url: '/api/qaLog/update/' + $('#qaTitle').data().id,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(qaLogData),
+                dataType: 'json',
+                success: function(result){
+                    console.log(result);
+                    showNotify('Question', 'Log is Updated' ,'system');
+                    location.reload();
+
+                },
+                error: function(result){
+                    console.log(result);
+                    $.magnificPopup.close();
+                    showNotify('Question', result.responseJSON.data ,'error');
+                }
+            });
+
+        }
+    
+        

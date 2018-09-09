@@ -1,0 +1,282 @@
+<link href="/plugins/css/card.css" rel="stylesheet" type="text/css">
+div#cardForm.popup-basic.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.glyphicon.glyphicon-credit-card
+                | Add Card
+        div.admin-form
+            div.panel-body.p25
+                div.card-wrapper.section
+                form#editCard
+                    div.row
+                        div.col-md-12
+                            div.section
+                                input.gui-input#cardNumber(placeholder="Card Number" name="cardNumber" type="tel" required)
+                    div.row
+                        div.col-md-12
+                            div.section
+                                input.gui-input#nameOnCard(placeholder="Name On Card" name="nameOnCard" type="text" required)
+                    div.row
+                        div.col-md-6
+                            div.section
+                                input.gui-input#cardExpiry(placeholder="MM/YY" name="cardExpiry" type="tel"  required)
+
+                        div.col-md-6
+                            div.section
+                                input.gui-input#cvvCode(placeholder="CVV Code" name="cvvCode" type="tel" required)
+
+
+            div.panel-footer.clearfix
+                button.button.btn-primary.mr10.pull-right#cardSaveButton(type="button" onclick='cardSave()') Save Card
+
+    <script src="/plugins/js/ladda.min.js"></script>
+    <script src="/plugins/js/card.js"></script>
+
+    script.
+
+        var card = new Card({
+
+            form: 'form#editCard', // *required*
+
+            container: '.card-wrapper', // *required*
+
+            formSelectors: {
+                numberInput: 'input#cardNumber',
+                expiryInput: 'input#cardExpiry',
+                cvcInput: 'input#cvvCode',
+                nameInput: 'input#nameOnCard'
+            },
+
+            width: 350,
+            formatting: true,
+
+            // Strings for translation - optional
+            messages: {
+                validDate: 'valid\ndate', // optional - default 'valid\nthru'
+                monthYear: 'mm/yy',
+            },
+            placeholders: {
+                number: '•••• •••• •••• ••••',
+                name: 'Full Name',
+                expiry: '••/••',
+                cvc: '•••'
+            },
+
+            // if true, will log helpful messages for setting up Card
+            debug: false // optional - default false
+        });
+
+        function cardSave(){
+            var data = {
+                nameOnCard: $("#nameOnCard").val(),
+                cardNumber: $("#cardNumber").val().split(" ").join(""),
+                expiry:$("#cardExpiry").val().split('/'),
+                cvvCode: $("#cvvCode").val(),
+                stripeID: $('#stipeNumber').text(),
+                userID: #{userData.userID},
+                userName: '#{userData.fullName}',
+                storeID: #{store.data.storeID},
+                businessName: `#{store.data.businessName}`,
+                CSPID: '#{store.data.CSPID}'
+            }
+
+            if($("#cardExpiry").val() ==  ""){
+                bootbox.alert('Plase enter card expiry date mm/yy.');
+                return false;
+            }else{
+                data['month'] = data.expiry[0].split(" ").join("")
+                data['year'] = data.expiry[1].split(" ").join("")
+            }
+
+            console.log(data)
+            var stripeType = $('#editCard').attr('stripeType');
+                if(stripeType == "0"){
+                    var url = '/api/stripe/createCustomer'
+                }else{
+                    var url = '/api/stripe'
+                }
+            console.log('url ', url);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(result){
+                    console.log('result ', result);
+                    
+
+                    if(result.status){
+                     showNotify('Payment Information', 'Saved!','system');;
+                        $.magnificPopup.close();
+                        
+                            emptyCardData()
+                            randerCardTable(result);
+                            var userData = !{JSON.stringify(userData)}
+                            if(userData.accountTypeID !=7 ){
+                                checkRights('#{userData.userID}');
+                            }
+                        //- $.ajax({
+                        //-     url:"/stripe?storeID=#{store.data.storeID}&stripeID=#{store.data.stripeID}",
+                        //-     success: function(creditCardResult){
+                        //-     $('#creditCard').html(creditCardResult);
+                        //-     reloadActivity(#{store.data.storeID},1);
+                        //-     
+                        //-      checkRights('#{userData.userID}');
+                        //-      if(stripeType == "0"){
+                        //-           location.reload();
+                        //-      }
+                        //-     }
+                        //- }).always(function(){
+                        //-     NProgress.done();
+                        //- });
+
+                    }else{
+                    showNotify('Problem', result.data,'error');
+                    }
+                },
+                error: function(err) {
+                    console.log("error " ,err);
+                    showNotify('Problem', err.responseJSON.data,'error');
+                    //emptyCardData()
+                }
+            }).always(function() {
+                NProgress.done();
+                });
+        }
+
+        function emptyCardData(){
+            $("#nameOnCard").val("");
+            $("#cardNumber").val("");
+            $("#cardExpiry").val("");
+            $("#cvvCode").val("");
+        }
+
+        $('#cardSaveButtonddd').click(function(e){
+            $("#editCard").validate({
+                rules:{
+                    cardNumber: {
+                        required: true,
+                        tel: true
+                    },
+                    cvvCode: {
+                        required: true,
+                        number: true
+                    },
+                    nameOnCard: {
+                        required: true
+                    }
+
+                },
+                messages:{
+                    cardNumber: {
+                        required: "Please enter card number.",
+                        number: "Please enter valid card number."
+                    },
+                    cvvCode: {
+                        required: "Please enter cvv code.",
+                        number: "Please enter valid cvv code."
+                    },
+                    nameOnCard: {
+                        required: "Please enter the name on the card."
+                    }
+                },
+                submitHandler: function(){
+
+                    e.preventDefault();
+                    var l = Ladda.create($('#cardSaveButton')[0]);
+                    l.start();
+
+                    var data = {
+                        nameOnCard: $("#nameOnCard").val(),
+                        cardNumber: $("#cardNumber").val(),
+                        month: $("#month").val(),
+                        year: $("#year").val(),
+                        cvvCode: $("#cvvCode").val(),
+                        stripeID: '#{store.data.stripeID}',
+                        userID: #{userData.userID},
+                        userName: '#{userData.fullName}',
+                        storeID: #{store.data.storeID},
+                        businessName: `#{store.data.businessName}`,
+                        CSPID: '#{store.data.CSPID}'
+                    }
+                    console.log(data)
+                    var stripeType = $('#editCard').attr('stripeType');
+                        if(stripeType == "0"){
+                            var url = '/api/stripe/createCustomer'
+                        }else{
+                            var url = '/api/stripe'
+                        }
+                    console.log('url ', url);
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: data,
+                        success: function(result){
+                            console.log('result saqib', result);
+
+                            if(result.status){
+                             showNotify('Payment Information', 'Saved!','system');;
+                                $.magnificPopup.close();
+                                
+                                    $("#nameOnCard").val("");
+                                    $("#cardNumber").val("");
+                                    $("#month").val("");
+                                    $("#year").val("");
+                                    $("#cvvCode").val("");
+                                    
+                                randerCardTable(result.data);
+                                //- $.ajax({
+                                //-     url:"api/stripe/#{store.data.storeID}",
+                                //-     success: function(newCard){
+                                //-         console.log('newCard ', newCard)
+                                //-         
+                                //-     reloadActivity(#{store.data.storeID},1);
+                                //-     randerCardTable(newCard.creditCards);
+                                //-      if(stripeType == "0"){
+                                //-           location.reload();
+                                //-      }
+                                //-     }
+                                //- }).always(function(){
+                                //-     NProgress.done();
+                                //- });
+
+
+
+                            }else{
+                            showNotify('Problem', result.data,'error');
+                            }
+                        },
+                        error: function(err) {
+
+                            console.log("error " ,err);
+
+                        }
+                    }).always(function() {
+                        //reloadComment(#{store.data.storeID},1);
+                        l.stop();
+                        NProgress.done();
+                        });
+                }
+            }).form()
+
+        });
+
+
+        jQuery(document).ready(function(){
+            $("#editStore").validate({
+                rules:{
+                    businessName: {
+                        required: true
+                    }
+
+                },
+                messages:{
+                    businessName: {
+                        required: "Please enter business name."
+                    }
+                }
+            });
+        });
+
+        $('#month').mask('99');
+        $('#year').mask('9999');

@@ -1,0 +1,121 @@
+extends ../layout
+block content
+    include ./profitLossHeader.jade
+                div.tray.tray-center(style='height: 311px;')     
+                    div.panel
+                        header#topbar.ph10
+                            div.topbar-right.hidden-xs.hidden-sm
+                                a.btn.btn-default.btn-sm.light.fw600.ml10#addingRentals
+                                    span.fa.fa-user.pr5
+                                    |  Add Rental
+                                a.btn.btn-default.btn-sm.light.fw600.ml10#test()
+                                    span.fa.fa-user.pr5
+                                    |  test
+                                a.btn.btn-default.btn-sm.light.fw600.ml10#filterTesting()
+                                    span.fa.fa-user.pr5
+                                    |  filterTesting
+                                div.col-md-4  
+                                    
+                    div.panel-body.pn#panelBody
+                        header#topbar.ph10
+                            .col-xs-3
+                                div.pull-left
+                                    input#dateRange.form-control.pull-right(type='text' name="daterange" value="01/01/2018 - 01/15/2018")
+                                div.pull-left
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10#filterTesting(onClick = 'reset()')
+                                        span.fa.fa-user.pr5
+                                        | RESET
+                        div.table-responsive  
+                            include ./profitLossTable.jade       
+                                                                
+        include ../endScript.html
+    script.
+        //- var ctx = $("#myChart");
+        //- var ctx = document.getElementById("myChart");
+        //- var myChart = new Chart(ctx, {
+        //- type: 'bar',
+        //- data: {
+        //- labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        //- datasets: [{
+        //- label: '# of Votes',
+        //- data: [12, 19, 3, 5, 2, 3],
+        //- backgroundColor: [
+        //- 'rgba(255, 99, 132, 0.2)',
+        //- 'rgba(54, 162, 235, 0.2)',
+        //- 'rgba(255, 206, 86, 0.2)',
+        //- 'rgba(75, 192, 192, 0.2)',
+        //- 'rgba(153, 102, 255, 0.2)',
+        //- 'rgba(255, 159, 64, 0.2)'
+        //- ],
+        //- borderColor: [
+        //- 'rgba(255,99,132,1)',
+        //- 'rgba(54, 162, 235, 1)',
+        //- 'rgba(255, 206, 86, 1)',
+        //- 'rgba(75, 192, 192, 1)',
+        //- 'rgba(153, 102, 255, 1)',
+        //- 'rgba(255, 159, 64, 1)'
+        //- ],
+        //- borderWidth: 1
+        //- }]
+        //- },
+        //- options: {
+        //- scales: {
+        //- yAxes: [{
+        //- ticks: {
+        //- beginAtZero:true
+        //- }
+        //- }]
+        //- }
+        //- }
+        //- });
+
+        var startingDate
+        var endDate
+        $(function() {
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left'
+            },function(start, end, label) {
+                startingDate = start.format('YYYY-MM-DD')
+                endDate = end.format('YYYY-MM-DD')
+                console.log("A new date selection was made: " + startingDate + ' to ' + endDate);
+                $.ajax({
+                    type: "POST",
+                    url: '/api/profitLoss/profitLossDateFilter',
+                    data: {startDateRange:startingDate,endDateRange:endDate},
+                    success: function(result){ 
+                        console.log('yes it returned jade template',result);
+                        $('#contactList').replaceWith(result)
+                    }
+                }) 
+            });
+        });
+        function reset(){
+            $.ajax({
+                    type: "GET",
+                    url: '/api/profitLoss',
+                    success: function(result){ 
+                        console.log('yes it returned jade template',result);
+                        $('#contactList').replaceWith(result)
+                    }
+                }) 
+        }
+        jQuery(document).ready(function() {
+            var table = $('#contactList').dataTable({
+                "aoColumnDefs": [{
+                    'bSortable': true
+                }],
+                "oLanguage": {
+                    "oPaginate": {
+                    "sPrevious": "",
+                    "sNext": ""
+                    }
+                },
+                "iDisplayLength": 15,
+                "aLengthMenu": [
+                    [15, 25, 35, 50, -1],
+                    [15, 25, 35, 50, "All"]
+                ],
+                "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+        });

@@ -1,0 +1,160 @@
+style.
+    .custom-button{
+        width:100%;
+        height:39px;
+    }
+    .admin-form .switch>label{
+        height:31px;
+    }
+
+div#image-From.popup-basic.popup-lg.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                | Ads Image
+        form#editUser
+        
+            div.panel-body.p25
+                div.panel-heading
+                    div
+                        span.panel-title
+                        | Image Information
+                        div.pull-right
+                            span(style='vertical-align:top;padding-right:10px') Acitve
+                            div.switch.switch-danger.round.switch-inline(style="padding-top:6px; ")
+                                input#isActive(type="checkbox" name="isActive")
+                                label(for="isActive",data-on="YES",data-off="NO")
+
+                div.panel-body
+                    
+                        div.col-md-12.admin-form
+                            div.row.form-inline
+                                div.col-xs-12.form-group(style="margin-top: 5px;")
+                                    input.form-control#name(type="text" style="width:100%; margin-bottom:5px;" placeholder="Name")
+                                div.col-xs-12.form-group(style="margin-top: 5px;")
+                                    input.form-control#urlLink(type="email" autocomplete="off" style="width:100%;margin-bottom:5px;" placeholder="Click Url Link (http://www.domain.com)")
+                                div.col-xs-12.form-group(style="margin-top: 5px;")
+                                    input.form-control#companyName(type="text" style="width:100%; margin-bottom:5px;" placeholder="Business Name")
+                                div.col-xs-12.form-group(style="margin-top: 5px;")
+                                    input.form-control#contactEmail(type="text" style="width:100%; margin-bottom:5px;" placeholder="Contact Email Address")
+                                div.col-xs-6.form-group(style="margin-top: 5px;")
+                                    select#version(multiple="multiple")
+                                        option(value="2.0") 2.0
+                                        option(value="3.0") 3.0
+                                    i.arrow
+                                div.col-xs-6(style="margin-top: 5px;")
+                                    div.pull-right
+                                        span(style='vertical-align:top;padding-right:15px;') Is Commerical
+                                        div.switch.switch-danger.round.switch-inline(style="padding-top:6px;")
+                                            input#isCommercial(type="checkbox" name="isCommercial")
+                                            label(for="isCommercial",data-on="YES",data-off="NO")
+                                            
+                    
+                div.panel-body.p25
+                    div.panel-heading
+                        div
+                            span.panel-title
+                            | Image
+
+                    div.panel-body
+                        div.fileupload.fileupload-new(data-provides="fileupload")
+                            div.fileupload-preview.thumbnail.cursor.mb15
+                                img#adImage(title="Click here to add Image")
+                            span#imageChangeButton.btn.btn-primary.btn-file.btn-block
+                                span.fileupload-new Change
+                                span.fileupload-exists Change
+                                input(type="file")
+                                        
+
+            div.panel-footer.clearfix.admin-form
+                button.button.btn-primary.mr10.pull-right(type="button" onclick="saveImage()") Save Change
+
+    <script src="/plugins/js/fileupload.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+    
+    script.
+    
+        $('.fileupload-preview').on('click', function() {
+            $('.btn-file > input').click();
+        });
+
+        $('#version').multiselect({
+            includeSelectAllOption: true
+        });
+        
+        function saveImage(){
+            
+            var id = $('#image-From').attr('data-id');
+            var data = {
+                saveId: id,
+                url: $('#adImage').attr('src'),
+                description: $('#name').val(),
+                companyName: $('#companyName').val(),
+                clickUrl: $('#urlLink').val(),
+                isActive: $('#isActive').is(":checked"),
+                isCommercial: $('#isCommercial').is(":checked"),
+                version: $('#version').val().toString(),
+                contactEmail: $('#contactEmail').val(),
+                language: 'EN'
+            }
+            
+            console.log(data);
+
+            var errorHave = false;
+            if(data.clickUrl == ''){
+                showNotify('Click Url',  'Please Enter Click Url.','error');
+                errorHave = true;
+            }
+            
+            if(data.description == ''){
+                showNotify('Ad Name',  'Please Enter Ad Name.','error');
+                errorHave = true;
+            }
+            
+            if(data.url == ''){
+                showNotify('Ad Image',  'Please Upload Ad Image.','error');
+                errorHave = true;
+            }
+            
+            if(data.version === '0'){
+                showNotify('Version',  'Please Select Version.','error');
+                errorHave = true;
+            }
+            
+            if(errorHave == true){
+                return;
+            }
+            
+            
+            if(id !== '0'){
+                var url = '/api/clickImages/' + id;
+                var postType = "PUT"
+            }else {
+                var url = '/api/clickImages';
+                var postType = "POST"
+            }
+            
+            $.ajax({
+                url: url,
+                type: postType,
+                data: data,
+                dataType: 'json',
+                success: function(result){
+                    
+                    if(result.status){
+                        $.magnificPopup.close();
+                        showNotify('Ad Image',  'Successfully Saved','success');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500);
+                        
+                    }
+                },
+                error: function(result){
+                    console.log(result);
+                    }
+
+                });
+        }
+        

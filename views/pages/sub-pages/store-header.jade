@@ -1,0 +1,140 @@
+<link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/select2.full.min.js"></script>
+
+block content
+    section#contact
+        div.alert.alert-dismissable.mb30#alertBanner.hidden.animated.fadeInDown(style="background:#B20C24;margin-bottom:0px;")
+            h3.mt5 Note
+            p #{store.data.Notes}
+        div.alert.alert-dismissable.mb30#orgAlertBanner.hidden.animated.fadeInDown(style="background:#F0B045;margin-bottom:0px;")
+            h3.mt5 Organization Note
+            p #{organization.data.notes}
+
+        div.animated.bounceInDown
+            div.page-heading
+                div.row
+                    div.media-body.va-m.col-md-8
+                        h1 #{store.data.CSPID} - #{store.data.businessName}
+                            h4
+                                if state.data
+                                    a(href="https://www.google.com/maps/place/#{store.data.address} #{store.data.city},#{state.data.stateSymbol} #{store.data.zipCode} ", target="_blank" data-toggle="tooltip" title="Click to open google map") #{store.data.address}
+                                else
+                                    a(href="https://www.google.com/maps/place/#{store.data.address} #{store.data.city} #{store.data.zipCode} ", target="_blank" data-toggle="tooltip" title="Click to open google map") #{store.data.address}
+                            h4
+                                if state.data
+                                    a(href="https://www.google.com/maps/place/#{store.address} #{store.data.city},#{state.data.stateSymbol} #{store.data.zipCode}", target="_blank" data-toggle="tooltip" title="Click to open google map") #{store.data.city},#{state.data.stateSymbol} #{store.data.zipCode}
+                                else
+                                    a(href="https://www.google.com/maps/place/#{store.address} #{store.data.city} #{store.data.zipCode}", target="_blank" data-toggle="tooltip" title="Click to open google map") #{store.data.city} #{store.data.zipCode}
+
+                            h4#phoneNumberDisplay #{store.data.businessPhone} 
+                                if store.data.cellPhone
+                                    span#cellPhoneNumberDisplay - Cell Phone: #{store.data.cellPhone}
+                            h4
+                                a(href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=#{store.data.businessEmail}", target="_blank" data-toggle="tooltip" title="Send email") #{store.data.businessEmail}
+                                
+                            div.row
+                                div.col-md-4
+
+                                    select#assignedTo.basic-single.form-control.w200(onchange="updateStoreAssigned()")
+                                        option(value="") Assigne User To Store
+                                        
+                                        each user in allUser.data
+                                            if user.userID == store.data.assignedUserID
+                                                option(value="#{user.userID}" data-email="#{user.loginEmail}" selected="selected") #{user.fullName}
+                                            else
+                                                option(value="#{user.userID}" data-email="#{user.loginEmail}") #{user.fullName}
+                                    i.arrow
+                            
+                    div.col-md-4.text-right
+                        div.admin-form
+                            div.row
+                                div.col-sm-4
+                                div.col-sm-8
+                                    div.section
+                                        div.smart-widget.sm-right.smr-50
+                                            label.field
+                                                input#CSPID.gui-input(type="text" name="CSPID" value=store.data.CSPID)
+                                            button#getNewCSPID.button.btn-primary(type="button" onclick='newCSP()')
+                                                    i.fa.fa-search
+                                div.col-sm-4
+                                div.col-sm-8
+                                    table.pull-right.table.mbn.tc-med-1.tc-bold-last
+                                        thead
+                                            tr.hidden
+                                                th Action
+                                                th CSP ID
+                                        tbody
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Started At
+                                                td(style="padding: 4px 9px 4px 9px;" data-toggle="tooltip" title="Customer Since: #{moment(store.data.createDateTIme).tz('America/New_York').format('MM/DD/YYYY')}") #{moment(store.data.createDateTIme).tz('America/New_York').fromNow()}
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Due Date
+                                                td(style="padding: 4px 9px 4px 9px;") #{moment(store.data.dueDate).tz('America/New_York').format('MM/DD/YYYY')} | #{moment(store.data.dueDate).diff(moment(), "days")} days
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Stripe
+                                                td(style="padding: 4px 9px 4px 9px;")
+                                                    if creditCards.status
+                                                        a#stripeID(href="https://dashboard.stripe.com/customers/#{store.data.stripeID}", target="_blank"  data-toggle="tooltip" title="Open this customer on stripe") #{store.data.stripeID}
+                                                        span | #{creditCards.data.sources.count}
+                                                    else
+                                                        a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addCard(0)")
+                                                            span.fa.fa-plus.pr5
+                                                            | Create Stripe
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Test Location
+                                                td(style="padding:0px;")
+                                                    span.switch.block.mt5.switch-danger
+                                                        input#testStore(type="checkbox" name="testStore" onclick="testStore()" checked=store.data.testStore)
+                                                        label(for="testStore",data-on="YES",data-off="NO")
+                                                            
+    script.
+    
+        $("#assignedTo").select2();
+    
+        
+        function updateStoreAssigned(){
+
+                var storeData = {
+                    assignedUserID: $('#assignedTo option:selected').val(),
+                    assignedUserName: $('#assignedTo option:selected').text()
+                };
+
+                NProgress.start();
+
+                sendNotification({
+                    heading: 'Store',
+                    body: '#{store.data.CSPID} - #{store.data.businessName} was assigned to you by ',
+                    forUserID:$('#assignedTo option:selected').val(),
+                    forUserName: $('#assignedTo option:selected').text(),
+                    link: 'stores/store/#{store.data.storeID}',
+                    fromID: '#{store.data.storeID}',
+                    typeID: 1,
+                    from: 'assigned',
+                    label: 'Store',
+                    emailAddress: $('#assignedTo option:selected').data('email'),
+                    fromUserID: #{userData.userID},
+                    fromUserName: '#{userData.fullName}',
+                    user: !{JSON.stringify(userData)}
+                });
+                
+
+                $.ajax({
+                    url: '/api/stores/#{store.data.storeID}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(storeData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Store',  'Assigne was updated','system');
+                            reloadActivity(#{store.data.storeID},1);
+                        }else{
+                            showNotify('Store',  'Unable to update Assinge.','error');
+                        }
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }

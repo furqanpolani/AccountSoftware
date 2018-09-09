@@ -1,0 +1,104 @@
+div#invoice-collect.popup-basic.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span Pay Invoice #
+                span#invoiceID 0
+        div#editStoreSoftware
+            div.panel-body
+                div.panel-heading
+                    span.panel-title.hidden-xs
+                    ul.nav.panel-tabs-border.panel-tabs
+                        li#stripeTab.right16.hidden.active
+                            a(href="#stripeCollect" data-toggle="tab") Stripe
+                        li.right15.hidden
+                            a(href="#manualCollect" data-toggle="tab") Manual
+                div.panel-body
+                    div.tab-content.pn.br-n
+                        div#stripeCollect.tab-pane.active
+                            form#stripe-collection.admin-form
+                                div.col-md-6.form-group
+                                    label.field-label(for="stripe-payment") Select card
+                                        em *
+                                    select.form-control#stripe-payment
+                                    i.arrow
+                                div.col-md-6
+                                    label.field-label(for="stripe-paymentAmount") Amount
+                                        em *
+                                    input.form-control.pull-right.text-right.paymentAmount#stripe-paymentAmount(type="text" name="paymentAmount" readonly)
+                                div.row
+                                    div.clearfix.col-md-12
+                                        button.button.btn-primary.mr10.pull-right#saveStripePayment(type="button" style="margin-top:20px;" disabled onclick="savePayment()") Save Payment
+
+                        div#manualCollect.tab-pane
+                            form#manual-collection.admin-form
+                                div.col-md-6
+                                    label.field-label(for="paidDate") Paid Date
+                                        em *
+                                    input.form-control.pull-right#paidDate(type="text" name="invoiceDate")
+                                div.col-md-6.form-group
+                                    label.field-label(for="payment") Payment Method
+                                        em *
+                                    select.form-control#payment
+                                    i.arrow
+                                div.col-md-6
+                                    label.field-label(for="paymentID") Transaction #
+                                        em *
+                                    input.form-control#paymentID(type="text" name="paymentID")
+                                div.col-md-6.pull-right
+                                    label.field-label(for="paymentAmount") Amount
+                                        em *
+                                    input.form-control.pull-right.text-right.paymentAmount#paymentAmount(type="text" name="paymentAmount" readonly)
+                                div.row
+                                    div.clearfix.col-md-12
+                                        button.button.btn-primary.mr10.pull-right#saveManualID(type="button" disabled style="margin-top:20px;" onclick="saveManualPayment()") Save Payment
+
+
+            div.panel-footer.clearfix
+
+
+    script.
+
+        $('#paymentID').bind('keyup',function(){
+            if($('#paymentID').val().length > 2){
+                $("#saveManualID").prop("disabled",false);
+            }else{
+                $("#saveManualID").prop("disabled",true);
+            }
+        })
+
+        jQuery(document).ready(function(){
+            $('#stripeTab').addClass('active');
+            $.ajax({
+                url:"/api/comboBoxByID/10",
+                success: function(result){
+                console.log(result);
+                    if(result.status){
+                        result.data.forEach(row =>{
+
+                            var selector = '<option value=' + row.id + '>' + row.selector + '</option>';
+
+                            $('#payment').append(selector);
+
+
+                        });
+
+                        //$("#saveManualID").prop("disabled",false);
+                    }
+                }
+            });
+
+            $("#editStore").validate({
+                rules:{
+                    businessName: {
+                        required: true
+                    }
+                },
+                messages:{
+                    businessName: {
+                        required: "Please enter business name."
+                    }
+                }
+            });
+        });

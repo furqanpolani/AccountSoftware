@@ -1,0 +1,72 @@
+div.panel.panel-visible#spy3
+    include ../pages/models/task-modal
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-title Task
+            div.col-md-2
+                div.pull-right
+                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="createTask()")
+                        span.fa.fa-plus.pr5
+                        | Task
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#taskList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th ID #
+                    th Date
+                    th Title
+                    th Priority
+                    th Assigned to
+                    th
+            tbody
+                each taskResult in task.data
+                    tr
+                        td.text-center.pointer(onclick='openTask(#{taskResult.id})') #{taskResult.id}
+                        td.pointer(onclick='openTask(#{taskResult.id})') #{moment(taskResult.createdAt).tz('America/New_York').format('MM/DD/YYYY h:mm A')}
+                        td.pointer(onclick='openTask(#{taskResult.id})') #{taskResult.title}
+                        td.pointer(onclick='openTask(#{taskResult.id})') #{taskResult.taskPriorityDetail.selector}
+                        if taskResult.assignedToUser
+                            td.pointer(onclick='openTask(#{taskResult.id})') #{taskResult.assignedToUser.fullName}
+                        else
+                            td.pointer(onclick='openTask(#{taskResult.id})')
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="/tasks/taskPage/#{taskResult.id}") Edit
+                                    li
+                                        a(href='#') Delete
+
+
+    script.
+
+        function openTask(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/tasks/taskPage/" + id
+        }
+
+
+
+        jQuery(document).ready(function() {
+
+
+            $('#taskList').dataTable({
+              "aaSorting": [[1, 'desc']],
+              "oLanguage": {
+              "oPaginate": {
+                "sPrevious": "Previous",
+                "sNext": "Next"
+              }
+            },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+              });
+        });

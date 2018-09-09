@@ -1,0 +1,121 @@
+div
+    include ../pages/models/prepaid-balance-collect
+    div.panel.panel-visible#spy3
+        div.panel-heading
+            div.row
+                div.col-md-10
+                    span.panel-title Purchase Credit
+                div.col-md-2.right47.hidden
+                    div.pull-right
+                        a.btn.btn-default.btn-sm.light.fw600.ml10(onclick='addBalance()')
+                            span.fa.fa-plus.pr5
+                            | Balance
+        div.panel-body.pn.table-responsive
+            table.table.table-striped.table-hover#purchaseCredit(cellspacing="0" width="100%" )
+                thead
+                    tr
+                        th ID #
+                        th Date
+                        th User Name
+                        th Ref #
+                        th Amount
+                tbody
+                    each credit in purchaseCredit.data
+                        tr
+                            td #{credit.creditID}
+                            td #{moment(credit.createDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                            td #{credit.userName}
+                            td #{credit.refID}
+                            td.currency #{credit.amount}
+
+    script.
+
+        //- function addBalance(){
+        //-     bootbox.prompt({
+        //-         title: "Add Balance",
+        //-         inputType: 'number',
+        //-         buttons:{
+        //-             confirm:{
+        //-                 label:'Add Balance'
+        //-             },
+        //-             cancel:{
+        //-                 label: 'Cancel'
+        //-             }
+        //-         },
+        //-         callback: function(result){
+
+        //-             if(result){
+        //-                 if(!result.length){
+        //-                     showNotify('Balance',  'Failed to add balance','error');
+        //-                 }else{
+        //-                     var data = {
+        //-                         storeID: #{store.data.storeID},
+        //-                         amount: result
+        //-                     };
+
+        //-                     $.ajax({
+        //-                         url: '/api/purchaseCredit/#{store.data.storeID}',
+        //-                         type: 'POST',
+        //-                         data: data,
+        //-                         success: function(result){
+        //-                         console.log(result);
+        //-                             showNotify('Prepaid', result.data,'primary');
+        //-                             location.reload();
+        //-                         },
+        //-                         error: error =>{
+        //-                             console.log('error adding funds ', error)
+        //-                         }
+        //-                     });
+
+        //-                 }
+        //-             }
+        //-         }
+
+        //-     });
+        //- }
+
+        function addBalance(){
+            $.magnificPopup.open({
+            removalDelay: 500,
+            items: {
+            src: '#prepaid-collect'
+            },
+            callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    //- $('.paymentAmount').val(invoiceAmount);
+                    //- $('#invoiceID').text(invoiceID);
+                    //- $('#stripe-payment').empty();
+                    //- $('#paidDate').datetimepicker({
+                    //-     defaultDate: new Date()
+                    //- });
+                    },
+                close: function(){
+                    //$('#paymentID').val('')
+                }
+            },
+            midClick: true,
+            closeOnBgClick: false
+            });
+            $('#prepaid-collect').draggable();
+        }
+
+        jQuery(document).ready(function() {
+
+              $('#purchaseCredit').dataTable({
+                "aaSorting": [[0, 'desc']],
+                "oLanguage": {
+                  "oPaginate": {
+                    "sPrevious": "Previous",
+                    "sNext": "Next"
+                  }
+                },
+                "iDisplayLength": 15,
+                "aLengthMenu": [
+                  [15, 25, 35, 50, -1],
+                  [15, 25, 35, 50, "All"]
+                ],
+                "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                });
+            });

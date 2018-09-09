@@ -1,0 +1,142 @@
+doctype html
+html
+  head
+    title CSP Billing
+    <meta charset="utf-8">
+    <meta name="keywords" content="HTML5 Bootstrap 3 Admin Template UI Theme" />
+    <meta name="description" content="AdminDesigns - A Responsive HTML5 Admin UI Framework">
+    <meta name="author" content="AdminDesigns">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700'>
+    
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/cellSmartIcon.ico">
+
+    <link rel="stylesheet" type="text/css" href="/stylesheets/feedback.css">
+    <link rel="stylesheet" type="text/css" href="/plugins/css/animate.min.css">
+    <link rel="stylesheet" href="/plugins/css/jquery.rateyo.css">
+    
+    <script src="/jquery/jquery-1.11.1.min.js"></script>
+    
+
+    style(rel="stylesheet" type="text/css").
+        body,html{ height:100% }
+        .page-heading{ background:#ff7e2a; font-size:36px; }
+        .page-heading h1{ font-size:20px; font-weight:100; line-height:28px; padding-top:18px;}
+
+        .page-heading2{background:#fafafa; font-size:18px; color:#5a5555; padding:20px 0; font-weight:100;}
+        .page-heading2 strong{ font-weight:bold;}
+        .thebox1{font-size:18px; color:#5a5555; padding:30px 0 20px 0; font-weight:300;}
+
+        .feedbackrow{ background:#f4f4f4; border:1px solid #dbdbdb; padding:16px; margin-bottom:15px;}
+        .text1{font-size:14px; color:#262626; padding:0px 20px 5px 20px; font-weight:300;}
+        .text2{font-size:18px; color:#262626; padding:0px 20px 0px 20px; font-weight:300;}
+        .smiley1{ opacity:0.8; border:3px solid #f4f4f4; border-radius:100%; cursor:pointer;}
+        .smiley1:hover{ opacity:1; border:3px solid #009e1a; border-radius:100%;cursor:pointer;}
+        td {padding-bottom:15px;}
+        .feedbackRow {border:solid 1px; padding:16px;display:inline-block; width:100%; margin-bottom:15px;border: 1px solid #dbdbdb;background:#f4f4f4;}
+        footer {position:fixed;bottom:0;width:100%;z-index:999}
+        section {margin-bottom:100px;}
+        #footerText {text-align:center;}
+
+
+
+    body
+        header.animated.bounceInDown
+            div.header
+                div.wrapper
+                    div.site-logo.animated.zoomIn
+                        a(href="www.cellsmartpos.com")
+                            img(src="https://www.cellsmartpos.com/assets/img/v1/logo.png" width="237" height="48" alt="CellSmartPOS Logo")
+                    div.clear
+            div.page-heading Feedback Survey
+                h1 Thank you for your feedback! We are constantly striving to create the best possible program for your future Needs!
+                br
+                | Thanks again - CSP Team
+        section
+            div.page-heading2.animated.zoomIn
+                div.wrapper
+                    strong #{data.businessName}
+                    if data.State
+                        br
+                        | #{data.address} #{data.city},#{data.State.stateSymbol} #{data.zipcode}
+                    br
+                    | #{data.businessPhone}
+            div.wrapper.animated.bounceInUp
+                div.thebox1 Please provide feedback base on support rep help
+                table(width="100%" border="0" cellspacing="0" cellpadding="0")
+                    tbody
+                        each row in data.Tickets
+                            tr.feedbackRow.removeBtn(id="#{row.id}")
+                                td(width="60%")
+                                    div.text1 #{moment(row.createdAt).format('ddd, DD MMM YYYY')} | #{moment(row.createdAt).fromNow()}
+                                    div.text2 #{row.id} - #{row.title}
+                                td(width="10%")
+                                    //- img(width="70" src="#")
+                                td(width="20%")
+                                    div.text1 Helping Rep
+                                        if row.assignedToUser
+                                            div.text2 #{row.assignedToUser.fullName}
+                                td(width="10%")
+                                    div.rateYo
+
+        footer
+            div.page-heading2
+                div.wrapper
+                    p#footerText Feel free to provide us with feedback about our software by visiting our 
+                        a(href="https://www.cellsmartpos.com/help") help and tutorial website.
+
+
+
+
+
+
+
+    
+    <script src="/javascripts/utility.js"></script>
+    <script src="/plugins/js/jquery.rateyo.min.js"></script>
+    script.
+
+        $(function () {
+            $(".rateYo").rateYo({
+                fullStar: true,
+                ratedFill: "#ff7e2a",
+                onSet: function (rating, rateYoInstance) {
+
+                    $("tbody").on("click",".removeBtn",function(e){
+                    var ticketID = "#" + $(this).closest("tr").attr('id')
+
+                    var data = {
+                        rating : rating
+                    }
+                        $.ajax({
+                            url: '/noToken/tickets/' + $(this).closest('tr').attr('id'),
+                            type: 'PUT',
+                            data: data,
+                            success: function(rateResult){
+                                console.log(rateResult);
+                                console.log(ticketID);
+                                $(ticketID).addClass('animated fadeOutLeft');
+                                $(ticketID).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                                    $(this).closest("tr").remove();
+                                });
+                            }
+                        });
+
+                    });
+
+
+               }
+            });
+        });

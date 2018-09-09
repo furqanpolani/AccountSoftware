@@ -1,0 +1,61 @@
+<link href="/plugins/css/jquery.rateyo.css" rel="stylesheet" type="text/css">
+section#content.table-layout.animated.bounceInUp
+    //include ../../models/billingModels/ticket-edit-modal
+    div.tray.tray-center
+        div.row
+            div.col-md-4
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.fa.fa-edit
+                                span.panel-title Description
+
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="updateDescription()")
+                                        span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                        | Save
+                    div.panel-body.pn
+                        textarea#description.form-control(rows="11") #{task.data.description}
+
+            div.col-md-8#commentDiv
+                include ../../../list/commentList
+    aside.tray.tray-right.tray290.pn.activityDiv
+        include ../../../list/activity
+
+    script.
+
+        $( document ).ready(function() {
+            reloadComment(#{task.data.id},6);
+            reloadActivity(#{task.data.id},6);
+        });
+
+
+
+        function updateDescription(){
+            NProgress.start();
+                var data = {
+                    description: $('#description').val()
+                }
+                //console.log("notes ",data);
+
+                $.ajax({
+                    url: '/api/task/#{task.data.id}',
+                    type: 'PUT',
+                    data: data,
+                    success: function(result){
+                        if (result.status){
+                            reloadActivity(#{task.data.id},6);
+
+                            showNotify('Task', 'Description was updated','system');
+                        }else{
+                            showNotify('Task', 'Unable to update description','error');
+                        }
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }

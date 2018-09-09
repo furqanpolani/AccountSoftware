@@ -1,0 +1,445 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+
+div#lead-form.popup-basic.popup-xl.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#ticketTitle
+                    | New Lead
+        form#leadSystem.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-4
+                        div.panel(style="margin-bottom: 0px;")
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-office(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Lead Founder
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        select#founderUserID.pull-right.form-control(style=" width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                            option(value="0") Select One
+                                                each user in allUser.data
+                                                    option(value="#{user.userID}" data-email="#{user.loginEmail}") #{user.fullName}
+                                        i.arrow
+                                        
+                    div.col-md-4
+                        div.panel(style="margin-bottom: 0px;")
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-office(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Lead for software
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        select.form-control#software(style=" width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                            option(value="0") Select One
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 3
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                        i.arrow
+                    div.col-md-4(style="margin-bottom: 0px;")
+                        div.panel(style="margin-bottom: 0px;")
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-calendar(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Next follow up date
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#nextFollowUp(type="text" style="width:100%;")
+            div.panel-heading
+                div.row
+                    div.col-md-7
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-office(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Lead Detail
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-6.form-group
+                                        input.gui-input#firstName(type="text" placeHolder="First Name *" style="width:100%;")
+                                    div.col-xs-6.form-group
+                                        input.gui-input#lastName(type="text" placeHolder="Last Name"  style="width:100%;")
+                                    div.col-xs-12.form-group(style="padding-top:10px;")
+                                        input.gui-input#businessName(type="text" placeHolder="Business Name"  style="width:100%;")
+                                    div.col-md-6(style="padding-top:10px;")
+                                        label.field.append-icon
+                                            input(type='text' name='phoneNumber' onblur='phoneLeadCheck()' placeholder='Phone Number')#phoneNumber.gui-input
+                                            label.field-icon(for='phoneNumber')
+                                                i.imoon.imoon-close.hidden#numberFound
+                                                i.imoon.imoon-checkmark.hidden#numberNotFound
+                                    div.col-md-6(style="padding-top:10px;")
+                                        label.field.append-icon
+                                            input(type='text' name='email' onblur='emailLeadCheck()' placeholder='Email Address')#email.gui-input
+                                            label.field-icon#checkEmail(for='email' data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?")
+                                                i.imoon.imoon-close.hidden#emailNotFound
+                                                i.imoon.imoon-checkmark.hidden#emailFound
+                                                                
+                                    
+                                    //- div.col-xs-6.form-group(style="padding-top:10px;")
+                                    //-     input.form-control#phoneNumber(type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' placeHolder="Phone Number"  style="width:100%;")
+                                    //- div.col-xs-6.form-group(style="padding-top:10px;")
+                                    //-     input.form-control#email(type="text" placeHolder="Email Address"  style="width:100%;")
+                                    
+                                    div.col-xs-6.form-group(style="padding-top:10px;")
+                                        input.gui-input#locationCount(type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' placeHolder="Location count"  style="width:100%;")
+                                    div.col-xs-6.form-group(style="padding-top:10px;")
+                                        input.gui-input#refer(type="text" placeHolder="Refer from" style="width:100%;")
+                                    div.col-xs-12#foundLeadDiv(style="padding:10px; padding-bottom:0;")
+                                        a.pointer#leadFound
+                                        //- button.btn.btn-lg.btn-danger.pull-right(type='button' data-toggle='popover' data-title='test' data-content='test content' style="padding-top:10px;") Test Button Label
+
+                    div.col-md-5
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-list-alt(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Source
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="status1" style="margin-bottom: 5px;") Status
+                                            select.pull-right.form-control#status1(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 7
+                                                        each row in comboList.ComboBoxDetails
+                                                            if comboList.defaultID == row.id
+                                                                option(value="#{row.id}"  selected) #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                                            
+                                            i.arrow
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="source" style="margin-bottom: 5px;") Source
+                                            select.pull-right.form-control#source(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 5
+                                                            each row in comboList.ComboBoxDetails
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="foundUs1" style="margin-bottom: 5px; ") Found Us
+                                            select.pull-right.form-control#foundUs1( required style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 8
+                                                            each row in comboList.ComboBoxDetails
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="assignedTo1" style="margin-bottom: 5px;") Assigned To
+                                            select#assignedTo1.pull-right.form-control(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each user in allUser.data
+                                                    if user.userID == userData.userID
+                                                        option(value="#{user.userID}" data-email="#{user.loginEmail}"  selected="selected") #{user.fullName}
+                                                    else
+                                                        option(value="#{user.userID}" data-email="#{user.loginEmail}") #{user.fullName}
+                                            i.arrow
+
+                div.row
+                    div.col-md-7
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.fa.fa-pencil-square-o(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Note
+                            div.panel-body.pn
+                                textarea#note.form-control(style="height: 158px;")
+
+                    div.col-md-5
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Address
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-md-12.form-group
+                                        input.gui-input#address(type="text" placeHolder="Street Address" style="width:100%;")
+                                    div.col-md-8.form-group(style="padding-top:10px;")
+                                        input.gui-input#city(type="text" placeHolder="City" style="width:100%;")
+                                    div.col-md-4.form-group(style="padding-top:10px;")
+                                        input.gui-input#state(type="text" placeHolder="State" style="width:100%;")
+                                    div.col-md-5.form-group(style="padding-top:10px;")
+                                        input.gui-input#zipcode(type="text" placeHolder="Zipcode" style="width:100%;")
+
+
+                div.panel.right28.hidden
+                    div.panel-heading.pn
+                        span.panel-icon
+                            i.fa.fa-tags(style="padding-left:5px;")
+                        span.panel-title(style="padding-left:5px;font-size:14px;")
+                        | Tags
+                    div.panel-body(style="padding:10px;")
+                        div.row.form-inline
+                            div.col-md-12.form-group
+                                input.form-control#leadTagManager.hidden(type="text" )
+                                input.form-control#leadTagManager1(type="text" style="width:100%;" placeHolder="Tags the leads")
+                                div.tag-container.leadTag
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#invoiceSaveButton(type="button" data-style="zoom-in" data-size="l" onclick='saveLead()'  ) Create Lead
+    script.
+        
+        $('#nextFollowUp').datetimepicker({
+            defaultDate: new Date()
+            //- moment(new Date().toISOString()).tz('America/New_York')
+        });
+
+        var foundPhone = false;
+        var foundEmail = false
+
+        function emailLeadCheck(){
+            var emailAddress = $('#email').val();
+            if (!emailAddress){
+                
+                return false;
+            }
+
+            $.ajax({
+                url: '/api/leads?email=' + emailAddress,
+                type: 'GET',
+                contentType: 'application/json',
+                success: function(result){
+                    
+                    $('#foundLeadDiv').removeClass('hidden');
+                    //$('#leadFound').text(`Lead found, lead id is ${result.data.id}, ${result.data.firstName} ${result.data.lastName}`)
+                    foundEmail = true;
+                    $('#emailFound').addClass('hidden');
+                    $('#emailNotFound').removeClass('hidden');
+                     var html = `<a id="leadFound" href='/leads/leadPage/` + result.data.id + `' class="pointer">Lead found, lead id is ` + result.data.id + `, `+ result.data.firstName + ` ` + result.data.lastName + `</a>`
+                    $('#leadFound').replaceWith(html);
+                    console.log(result);
+                    $('#leadFound').replaceWith(html);
+                },
+                error: function(err){
+                    console.log(err);
+                    foundEmail = false;
+                    $('#emailFound').removeClass('hidden');
+                    $('#emailNotFound').addClass('hidden');
+                    $('#foundLeadDiv').addClass('hidden');
+                }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function phoneLeadCheck(){
+            var phoneNumber = removePhoneMask($('#phoneNumber').val());
+            
+            if (phoneNumber === "__________"){
+                return false;
+            }
+
+            $.ajax({
+                url: '/api/leads?phoneNumber=' + phoneNumber,
+                type: 'GET',
+                contentType: 'application/json',
+                success: function(result){
+                    
+                    $('#foundLeadDiv').removeClass('hidden');
+                    //$('#leadFound').text(`Lead found, lead id is ${result.data.id}, ${result.data.firstName} ${result.data.lastName}`)
+                    foundPhone = true;
+                    console.log(result);
+                    $('#numberFound').removeClass('hidden');
+                    $('#numberNotFound').addClass('hidden');
+                    var html = `<a id="leadFound" href='/leads/leadPage/` + result.data.id + `' class="pointer">Lead found, lead id is ` + result.data.id + `, `+ result.data.firstName + ` ` + result.data.lastName + `</a>`
+                    $('#leadFound').replaceWith(html);
+                },
+                error: function(err){
+                    $('#numberFound').addClass('hidden');
+                    $('#numberNotFound').removeClass('hidden');
+                    $('#foundLeadDiv').addClass('hidden');
+                    console.log(err);
+                    foundPhone = false;
+                }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        $('#leadTagManager1').autocomplete({
+            lookup: !{JSON.stringify(allTags)},
+            onSelect: function(selected){
+                $("#leadTagManager1").tagsManager("pushTag",selected.value);
+                $('#leadTagManager1').val('');
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: false
+        });
+
+
+        $('#leadTagManager1').keypress(function (e) {
+         var key = e.which;
+         if(key == 13)
+          {
+              $("#leadTagManager").tagsManager("pushTag",$('#leadTagManager1').val());
+              $('#leadTagManager1').val('');
+          }
+        });
+
+        $("#leadTagManager").tagsManager({
+            tagsContainer: '.leadTag',
+            tagClass: 'tm-tag-default'
+        });
+
+        function saveLeadTags(data){
+
+            var gotTags = $("#leadTagManager").tagsManager('tags');
+            if(gotTags.length != 0){
+                NProgress.start();
+
+                var tagData = {
+                    tags: gotTags,
+                    id: data,
+                    type: 4,
+                    userID: #{userData.userID}
+                }
+
+                $.ajax({
+                    url: '/api/tags',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(tagData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Tags',  'Tag was updated!','system');
+                        }else{
+                            showNotify('Tags',  'Faile to update tags. error:' + result.data,'error');
+                        }
+                        //console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+            }
+
+        }
+
+        moment($('#nextFollowUp').val()).tz
+        
+        function saveLead(){
+            //- saqib
+                //console.log('leadFound ', leadFound);
+                if(foundEmail){
+                    showNotify('Lead',  'Lead with same email address already exist','error');
+                    return false;
+                }
+
+                if(foundPhone){
+                    showNotify('Lead',  'Lead with same phone number already exist','error');
+                    return false;
+                }
+
+                var leadData = {
+                    firstName: $('#firstName').val(),
+                    lastName: $('#lastName').val(),
+                    phoneNumber: removePhoneMask($('#phoneNumber').val()),
+                    email:$('#email').val(),
+                    businessName: $('#businessName').val(),
+                    notes:$('#note').val(),
+                    dueDate: new Date($('#nextFollowUp').val()).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    statusID:$("#status1 option:selected").val(),
+                    address:$('#address').val(),
+                    city:$('#city').val(),
+                    state:$('#state').val(),
+                    zipcode:$('#zipcode').val(),
+                    reporterUserID: #{userData.userID},
+                    assignedToUserID: $("#assignedTo1 option:selected").val(),
+                    assignedToUserName: $("#assignedTo1 option:selected").text(),
+                    emailAddress: $('#assignedTo option:selected').data('email'),
+                    sourceID:$("#source option:selected").val(),
+                    locationCount: $('#locationCount').val(),
+                    foundUsID: $("#foundUs1 option:selected").val(),
+                    refer: $('#refer').val(),
+                    softwareID:$("#software option:selected").val(),
+                    foundUserId: $("#founderUserID option:selected").val()
+                };
+                
+                var error = false;
+
+                if(leadData.softwareID == '0'){
+                    showNotify('Software','Please select software.','error');
+                    error = true;
+                }
+                
+                if(leadData.foundUserId == '0'){
+                    showNotify('Found User','Please select Founder User Name.','error');
+                    error = true;
+                }
+
+                if(leadData.sourceID == '0'){
+                    showNotify('Source','Please select source.','error');
+                    error = true;
+                    
+                }
+
+                if(leadData.foundUsID == '0'){
+                    showNotify('Found Us','Please select found us.','error');
+                    error = true;
+                
+                }
+
+                if(leadData.firstName.length == 0){
+                    showNotify('First Name','Please enter first name.','error');
+                    error = true;
+                }
+                
+                if(leadData.phoneNumber.length === 0 && leadData.email.length === 0){
+                    showNotify('Phone or Email','Please enter one email or phone number.','error');
+                    error = true;
+                }
+
+                
+                if (error){
+                    return false;
+                }
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/leads',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(leadData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            saveLeadTags(result.data.id); //saving tags
+                            showNotify('Lead',  'Lead was created','system');
+                            location.reload();
+                        }else{
+                            showNotify('Lead',  'Unable to create lead.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(err){
+                        console.log('error ', err);
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+        
+        $('#phoneNumber').mask('(999) 999-9999');

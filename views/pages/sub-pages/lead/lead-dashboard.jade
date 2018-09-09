@@ -1,0 +1,444 @@
+section#content.table-layout.animated.bounceInUp
+    div.tray.tray-center
+        div.row
+            div.col-md-4
+        
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Lead Detail
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="editLead()")
+                                        span.imoon.imoon-pencil(style="padding-right:2px;")
+                                        | Edit
+                    div.panel-body.pn
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td Phone
+                                        td.text-info.pr10
+                                            span#phoneNumberDisplay #{leads.data.phoneNumber}
+                                    tr
+                                        td Email
+                                        td.text-info.pr10
+                                            a(href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=#{leads.data.email}", target="_blank"  data-toggle="tooltip" title="Send email") #{leads.data.email}
+                                    tr
+                                        td Locations
+                                        td.text-info.pr10 #{leads.data.locationCount}
+                                    tr
+                                        td Refer
+                                        td.text-info.pr10 #{leads.data.refer}
+                                    tr
+                                        td Software
+                                        td.text-info.pr10 #{leads.data.softwareDetail.selector}
+                                    tr
+                                        td Source
+                                        td.text-info.pr10
+                                            if leads.data.sourceDetail
+                                                span #{leads.data.sourceDetail.selector}
+                                            else
+                                                span N/A
+                                    tr
+                                        td Found Us
+                                        td.text-info.pr10
+                                            if leads.data.foundUsDetail
+                                                span #{leads.data.foundUsDetail.selector}
+                                            else
+                                                span N/A
+                                    tr
+                                        td Created By
+                                        td.text-info.pr10 #{leads.data.reporterUser.fullName}
+                                    tr
+                                        td Street
+                                        td.text-info.pr10
+                                            a(href="https://www.google.com/maps/place/#{leads.data.address} #{leads.data.city},#{leads.data.state} #{leads.data.zipcode}", target="_blank" data-toggle="tooltip" title="Click to open google map") #{leads.data.address}
+                                    tr
+                                        td City
+                                        td.text-info.pr10 #{leads.data.city}
+                                    tr
+                                        td State
+                                        td.text-info.pr10 #{leads.data.state}
+                                    tr
+                                        td Zipcode
+                                        td.text-info.pr10 #{leads.data.zipcode}
+
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Contact
+                            div.col-md-2.right29.hidden
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addContact('Add Contact',#{leads.data.id},4)")
+                                        span.imoon.imoon-plus(style="padding-right:2px;")
+                                        | Add
+                    div#contactDiv
+                        include ../../../list/contactPanel
+
+            div.col-md-8.hidden#convertedDiv
+                div.panel
+                    div.panel-heading
+                        span.panel-icon
+                            i.imoon.imoon-notebook
+                        span.panel-title Converted Stores
+                    div.panel-body.pn10.admin-form
+                        div.row
+                            div.col-md-10
+                                label.field-label(for="cspID") Search Business
+                                label.field(for="cspID")
+                                    input.form-control#cspIDInput(type="text" placeholder="Search for...")
+                            div.col-md-2
+                                button.btn.btn-lg.btn-primary.btn-block.disabled#addStore(type="button" style="line-height:3;") ADD
+
+                        div.panel(style="margin-top:15px;")
+                            div.panel-body.pn(style="width:100%; display: inline-block;overflow-y: scroll; height:200px;")
+                                table.table.table-striped.table-hover#productList(cellspacing="0" width="100%")
+                                    thead
+                                        tr
+                                            th CSPID
+                                            th Business Name
+                                            th Business Phone
+                                    tbody#convertRow
+
+
+
+            div.col-md-8
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.imoon.imoon-notebook
+                                span.panel-title Note
+
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="updateNote()")
+                                        span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                        | Save
+                    div.panel-body.pn
+                        textarea#notes.form-control(rows="11") #{leads.data.notes}
+
+            div.col-md-8
+                div.panel
+                    div.panel-heading
+                        div.col-md-10
+                            span.panel-icon
+                                i.fa.fa-tags
+                            span.panel-title Tags
+                        div.col-md-2.right28.hidden
+                            div.pull-right
+                                a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="saveLeadTagsInDashboard()")
+                                    span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                    | Save
+                    div.panel-body
+                        input.form-control#editLeadTagManager.hidden(type="text")
+                        input.form-control#editLeadTagManager1(type="text" placeHolder="Tag your lead")
+                        div.tag-container.tags
+
+            div.col-md-8#commentDiv
+                include ../../../list/commentList
+    aside.tray.tray-right.tray290.pn.activityDiv.hidden
+        include ../../../list/activity
+
+    script.
+
+        var storeSelectedList = [];
+        var rowValues = {};
+        var selectedValue = "";
+
+        var storeList = !{JSON.stringify(storeList.data)}
+        $('#cspIDInput').autocomplete({
+            lookup: storeList,
+            onSelect: function(selected){
+                $('#addStore').removeClass('disabled');
+                $('#addStore').focus();
+                selectedValue = selected;
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: true
+        });
+
+
+        $(document).ready(function(){
+            
+            $('#phoneNumberDisplay').replaceWith(`<span id="phoneNumberDisplay">` + maskPhoneNumber($('#phoneNumberDisplay').text()) + `</span>`);
+            //- $('#cellPhoneNumberDisplay').replaceWith(`<span id="cellPhoneNumberDisplay">` + maskPhoneNumber($('#cellPhoneNumberDisplay').text()) + `</span>`);
+            
+            storeSelectedList = !{JSON.stringify(convertedStore.data)}
+
+            storeSelectedList.forEach(row =>{
+                addStoreRow(row);
+            });
+
+            convertStatus(#{leads.data.statusID})
+
+        });
+
+
+        $("#addStore").click(function(e){
+
+
+            rowValues = {
+                storeID: selectedValue.data.storeID,
+                CSPID:selectedValue.data.CSPID,
+                businessName:selectedValue.data.businessName,
+                businessPhone: selectedValue.data.businessPhone
+            };
+            var _index = storeSelectedList.map(function(item){
+                return item.storeID;
+            }).indexOf(rowValues.storeID);
+
+            if(_index < 0){
+                storeSelectedList.push(rowValues);
+                var convertData = {
+                    leadID: #{leads.data.id}
+                }
+
+                $.ajax({
+                    url: '/api/convertLead/' + rowValues.storeID,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(convertData),
+                    dataType: 'json',
+                    success: function(result){
+                        if (result.status){
+                            addStoreRow(rowValues);
+                        }else{
+                            showNotify('Lead',  'Unable to updated lead.','error');
+                        }
+                    },
+                    error: function(err){
+                        showNotify('Lead',  'Unable to updated lead.','error');
+                    }
+                });
+
+            }else{
+                showNotify('Store',  'You already have is store selected.','error');
+            }
+
+        });
+
+
+
+        function addStoreRow(rowValues){
+
+            var htmlTableRow = "<tr class='animated fadeInDown'>"
+            htmlTableRow = htmlTableRow + "<td>"
+            htmlTableRow = htmlTableRow + "<div class='row form-inline'>"
+            htmlTableRow = htmlTableRow + "<div class='col-xs-12'>"
+            htmlTableRow = htmlTableRow + "<div class='col-md-2' style='padding: 0px;'>"
+
+
+                htmlTableRow = htmlTableRow + "<button type='button' id='" + rowValues.storeID + "'' class='btn btn-xs btn-danger removeBtn' ><i class='imoon imoon-remove2'></i></button></div>"
+
+
+
+            htmlTableRow = htmlTableRow + "<div class='col-md-10' style='padding-top:2px;'><span class='itemName'>" + rowValues.CSPID + "</span>"
+
+
+
+            htmlTableRow = htmlTableRow + "</div></div></td>"
+            htmlTableRow = htmlTableRow + "<td>" + rowValues.businessName + "</td>"
+            htmlTableRow = htmlTableRow + "<td>" + rowValues.businessPhone + "</td></tr>"
+
+            $('#convertRow').append(htmlTableRow);
+            $('#addStore').addClass('disabled');
+            $('#cspIDInput').val('');
+
+
+        }
+
+        $("tbody").on("click",".removeBtn",function(e){
+
+            var _index = storeSelectedList.map(function(item){
+                return item.storeID;
+            }).indexOf(Number(e.currentTarget.id));
+
+            if(_index > -1){
+
+                var convertData = {
+                    leadID: null
+                }
+
+                $.ajax({
+                    url: '/api/unConvertLead/' + Number(e.currentTarget.id),
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(convertData),
+                    dataType: 'json',
+                    success: function(result){
+                        if (result.status){
+                            storeSelectedList.splice(_index,1);
+                            $(this).closest("tr").remove();
+                        }else{
+                            showNotify('Lead',  'Unable to updated lead.','error');
+                        }
+                    },
+                    error: function(err){
+                        showNotify('Lead',  'Unable to updated lead.','error');
+                    }
+                });
+            }
+
+        });
+
+        $('#editLeadTagManager1').autocomplete({
+            lookup: !{JSON.stringify(allTags)},
+            onSelect: function(selected){
+                 $("#editLeadTagManager").tagsManager("pushTag",selected.value);
+                 $('#editLeadTagManager1').val('');
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: false
+        });
+
+        $('#editLeadTagManager1').keypress(function (e) {
+         var key = e.which;
+         if(key == 13)  // the enter key code
+          {
+              $("#editLeadTagManager").tagsManager("pushTag",$('#editLeadTagManager1').val());
+              $('#editLeadTagManager1').val('');
+          }
+        });
+
+        $("#editLeadTagManager").tagsManager({
+            tagsContainer: '.tags',
+            tagClass: 'tm-tag-system',
+            prefilled: '#{tagLink}'
+        });
+
+        function addComment(){
+            bootbox.prompt({
+                title: "Comment",
+                message: "Please enter comment",
+                buttons:{
+                    confirm:{
+                        label:'Save'
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback: function(result){
+                //alert(result.length)
+
+                        if(result){
+
+                            var data = {
+                                comment: result,
+                                assignedToUserID: $( "#assignedTo option:selected" ).val(),
+                                referenceID: #{leads.data.id},
+                                storeID: #{leads.data.id},
+                                userID: #{userData.userID},
+                                userName: '#{userData.fullName}',
+                                typeID: 4,
+                                label: 'lead'
+                            };
+
+
+
+                                $.ajax({
+                                    url: '/comment',
+                                    type: 'POST',
+                                    data: data,
+                                    success: function(commentResult){
+
+                                        sendNotification({
+                                            heading: 'New Comment',
+                                            body: 'Comment was left on your lead # #{leads.data.id} by ',
+                                            comment: data.comment,
+                                            forUserID:$('#assignedTo option:selected').val(),
+                                            forUserName: $('#assignedTo option:selected').text(),
+                                            link: 'leads/leadPage/#{leads.data.id}',
+                                            fromID: #{leads.data.id},
+                                            typeID: 4,
+                                            from: 'comment',
+                                            label: 'lead',
+                                            emailAddress: $('#assignedTo option:selected').data('email'),
+                                            fromUserID: #{userData.userID},
+                                            fromUserName: '#{userData.fullName}',
+                                            user: !{JSON.stringify(userData)}
+                                        });
+
+
+                                        showNotify('Comment', 'Saved!','primary');
+                                        reloadActivity(#{leads.data.id},4);
+                                            reloadComment(#{leads.data.id},4);
+                                    }
+                                });
+                        }
+
+                }
+
+            });
+        }
+
+        function saveLeadTagsInDashboard(){
+
+            var gotTags = $("#editLeadTagManager").tagsManager('tags')
+            if(gotTags){
+                NProgress.start();
+
+                var tagData = {
+                    tags: gotTags,
+                    id: #{leads.data.id},
+                    type: 4,
+                    userID: #{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                $.ajax({
+                    url: '/api/tags',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(tagData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Tags',  'Tag was updated!','system');
+                            reloadActivity(#{leads.data.id},4);
+                        }else{
+                            showNotify('Tags',  'Faile to update tags. error:' + result.data,'error');
+                        }
+                        //console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+            }
+
+        }
+
+        function editLead(){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#editLead-form'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    $("#source").val("#{leads.data.sourceID}");
+                    $("#foundUsID").val("#{leads.data.foundUsID}");
+                    $("#software").val("#{leads.data.softwareID}");
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#editLead-form').draggable();
+        }
+        
+        

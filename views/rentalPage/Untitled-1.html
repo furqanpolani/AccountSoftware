@@ -1,0 +1,48 @@
+function createNewMovieTable(data){
+    
+    let table = `
+<table id="contactList" class="table admin-form theme-warning tc-checkbox-1 fs13 dataTable no-footer" role="grid" aria-describedby="contactList_info">
+    <thead>
+       <tr class="bg-light" role="row">
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Customer Name: activate to sort column ascending" style="width: 120px;">Customer Name</th>
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Title: activate to sort column ascending" style="width: 79px;">Title</th>
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Rented By: activate to sort column ascending" style="width: 76px;">Rented By</th>
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Amount: activate to sort column ascending" style="width: 62px;">Amount</th>
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Movie Status : activate to sort column ascending" style="width: 96px;">Movie Status </th>
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Payment Status: activate to sort column ascending" style="width: 116px;">Payment Status</th>
+          <th class="sorting_asc" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Due Date: activate to sort column descending" style="width: 418px;" aria-sort="ascending">Due Date</th>
+          <th class="sorting" tabindex="0" aria-controls="contactList" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 50px;">Action</th>
+       </tr>
+    </thead>
+    <tbody>
+    `
+        var tableData 
+        data.forEach(row =>{
+
+        <tr role="row" class="even">
+            <td class="">Abdullah</td>
+            <td>Black Panther</td>
+            <td>testing</td>
+            <td>950</td>
+            <td>notReturned</td>
+            <td>unpaid</td>
+            <td class="sorting_1">Invalid Date</td>
+            <td id="menu" class="text-right">
+                <div class="btn-group text-right">
+                    <button type="button" data-toggle="dropdown" aria-expanded="false" onclick="menu('5')" class="btn btn-success br2 btn-xs fs12 dropdown-toggle">menu<span class="caret ml5"></span></button>
+                    <ul role="menu" class="dropdown-menu">
+                    <li><a onclick="edit('5')">Edit</a></li>
+                    <li><a onclick="del('5')">Delete</a></li>
+                    <li id="returnButton"><a onclick="movieReturned('5')">Return</a></li>
+                    <li id="payButton"><a onclick="payment('5')">Pay</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    })
+       
+    </tbody>
+ </table>
+ `
+
+}

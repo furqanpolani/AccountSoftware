@@ -1,0 +1,1292 @@
+
+extends ../layout
+
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.admin-panels
+            div.row
+                div.hidden#customerSignUp
+                    div.col-md-10
+                        div.panel
+                            div.panel-heading
+                                span.panel-title Last 30 days sign up vs cancelled
+                            div.panel-body
+                                div#30daySale(style="width: 100%; height: 275px; margin: 0 auto")
+                    div.col-md-2
+                        div.panel.panel-tile.text-center.br-a.br-light
+                            div.panel-body.bg-light
+                                h1#currentMonth.fs35.mbn 0
+                                h6.text-system Month to Date
+                            div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                span.fs11#currentMonth-icon
+                                    i.fa.fa-arrow-up
+                                    span &nbsp;3% Increase
+                                    b 
+                                        span (43)
+
+                    div.col-md-2
+                        div.panel.panel-tile.text-center.br-a.br-light
+                            div.panel-body.bg-light
+                                h1#lastMonthSale.fs35.mbn 0
+                                h6.text-system Last Month
+                            div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                span.fs11#lastMonthSale-icon
+                                    i.fa.fa-arrow-up
+                                    span &nbsp;3% Increase
+                                    b 
+                                        span (43)
+
+                div.col-md-12#boxesDetail.hidden
+                    .col-md-10(style="padding: 0px")
+                        div.col-md-2(style="padding-left: 0px")
+                            a(href="http://members.unlockcodesource.com/main.php#" target="_blank" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center
+                                    div.panel-body.bg-alert
+                                        h1#boxUnlockBalance.fs35.mbn 0
+                                        h6.text-white Unlock Balance
+                                    div.panel-footer.br-n.p12
+                                        span.fs11
+                                            b Add more money
+                        div.col-md-2
+                            a(href="/stores?list=active" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center
+                                    div.panel-body.bg-success
+                                        h1#boxActiveStoreCount.fs35.mbn 0
+                                        h6.text-white Active Stores
+                                    div.panel-footer.br-n.p12
+                                        span.fs11
+                                            b Get List
+                                        
+                        div.col-md-2
+                            a(href="/leads" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center.br-a.br-light
+                                    div.panel-body.bg-info
+                                        h1#boxTotalLeads.fs35.mbn 0
+                                        h6.text-white Open Leads
+                                    div.panel-footer.br-n.p12
+                                        span.fs11
+                                            b Click for detail
+                                        
+                        div.col-md-2
+                            a(href="/invoice?list=passedDue" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center.br-a.br-light
+                                    div.panel-body.bg-light
+                                        h1#boxPassedDueInvoice.fs35.mbn 0
+                                        h6.text-system Passed Due Invoice
+                                    div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                        span.fs11
+                                            b Click for detail
+                        div.col-md-2
+                            a(href="/invoice?list=open" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center.br-a.br-light
+                                    div.panel-body.bg-light
+                                        h1#boxOpenInvoice.fs35.mbn 0
+                                        h6.text-system Open Invoice
+                                    div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                        span.fs11
+                                            b Click for detail
+                        div.col-md-2(style="padding-right: 0px")
+                            a(href="/invoice?list=manual-open" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center.br-a.br-light
+                                    div.panel-body.bg-light
+                                        h1#boxManualCharge.fs35.mbn 0
+                                        h6.text-system Manual Charge
+                                    div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                        span.fs11
+                                            b Click for detail
+                    
+                    .col-md-2(style="padding-right: 0px")
+                        .col-md-12(style="padding-right: 0px")
+                            a(href="/invoice/readytobemade" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center.br-a.br-light
+                                    div.panel-body.bg-light
+                                        h1#boxReadyInvoice.fs35.mbn 0
+                                        h6.text-system Ready Invoice
+                                    div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                        span.fs11
+                                            b Click for detail
+                        
+            div.row
+                div.col-md-7
+                    div.row
+                        div.col-md-12
+                            div.panel#p2
+                                div.panel-heading
+                                    span.panel-title Calendar
+                                div.panel-body
+                                    div#calendar
+                                    
+                        div.col-md-7.hidden#ratingByUserDiv
+                            div.panel
+                                div.panel-heading
+                                    span.panel-title Rating By Users
+                                div.panel-body
+                                    div.panel-scroller.scroller-md.scroller-pn.pn(style="width: 100%; height: 250px; margin: 0 auto")
+                                        table.table.mbn.tc-med-2.tc-bold-last.table-hover
+                                            thead
+                                                tr.hidden
+                                                    th Name
+                                                    th Value
+                                                tbody#ratingByUser
+                                                
+                        div.col-md-5
+                            div.panel#p2
+                                div.panel-heading
+                                    span.panel-title Ticket Status
+                                div.panel-body
+                                    div(style="width: 100%; height: 250px; margin: 0 auto")
+                                        table.table.mbn.tc-med-2.tc-bold-last.table-hover
+                                            thead
+                                                tr.hidden
+                                                    th Name
+                                                    th Value
+                                                tbody#ticketStatus
+                                
+                                    
+                        div.col-md-7
+                            div.panel#ticketByUser
+                                div.panel-heading
+                                    span.panel-title Tickets By User
+                                div.panel-body
+                                    div.panel-scroller.scroller-md.scroller-pn.pn(style="width: 100%; height: 250px; margin: 0 auto")
+                                        table.table.mbn.tc-med-2.tc-bold-last.table-hover
+                                            thead
+                                                tr.hidden
+                                                    th Name
+                                                    th Value
+                                                tbody#ticketCountByUser
+
+                        
+
+                                    
+                        div.col-md-5
+                            div.panel#storebyUserDiv
+                                div.panel-heading
+                                    span.panel-title Store By User
+                                div.panel-body
+                                    div.panel-scroller.scroller-md.scroller-pn.pn(style="width: 100%; height: 250px; margin: 0 auto")
+                                        table.table.mbn.tc-med-2.tc-bold-last.table-hover
+                                            thead
+                                                tr.hidden
+                                                    th Name
+                                                    th Value
+                                                tbody#storebyUser
+                                                
+                        
+
+                        div.col-md-7
+                            div.panel.hidden#PromotionData
+                                div.panel-heading
+                                    span.panel-title Promotion Send
+                                div.panel-body
+                                    div#promotion-pie(style="width: 100%; height: 250px; margin: 0 auto")
+                                    
+                        div.col-md-5
+                            div.panel.hidden#invoiceStatusDiv
+                                div.panel-heading
+                                    span.panel-title Invoice Status
+                                div.panel-body
+                                    div(style="width: 100%; height: 250px; margin: 0 auto")
+                                        table.table.mbn.tc-med-2.tc-bold-last.table-hover
+                                            thead
+                                                tr.hidden
+                                                    th Name
+                                                    th Value
+                                                tbody#invoiceStatus
+
+                        
+                        
+                                                
+
+                        div.col-md-7
+                            div.panel.hidden#customerStatus
+                                div.panel-heading
+                                    span.panel-title Customer Status
+                                div.panel-body
+                                    div#customerCount(style="width: 100%; height: 250px; margin: 0 auto")
+
+                        div.col-md-5
+                            div.panel.hidden#leadStatus
+                                div.panel-heading
+                                    span.panel-title Lead Status
+                                div.panel-body
+                                    div#lead-pie(style="width: 100%; height: 250px; margin: 0 auto")
+
+
+                div.col-md-5
+                    div.row
+                        div.col-md-6
+                            a(href="/leads" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center.br-a.br-light
+                                    div.panel-body.bg-light
+                                        h1#leadsWatting.fs35.mbn 0
+                                        h6.text-system Open Leads
+                                    div.panel-footer.bg-light.dark.br-t.br-light.p12
+                                        span.fs11
+                                            b Click for detail
+                    
+                                        
+                        div.col-md-6#addLocation
+                            a(href="/organizations/0/newStore" style="text-decoration: none !important;")
+                                div.panel.panel-tile.text-center
+                                    div.panel-body.bg-primary.light
+                                        //- i.fa.fa-twitter.text-muted.fs45.br64.bg-primary.p15.ph20.mt10
+                                        h1.fs35.mbn.p20 Sign Up
+                                        h6.text-white ADD NEW LOCATION
+                                        
+                                
+                        
+                div.col-md-5
+                    div.row
+                        div.col-md-12
+                            div.panel#rating.hidden
+                                div.panel-heading
+                                    span.panel-title Your Current Rating
+                                    span.panel-title.pull-right#ratingTitle 
+                                div.panel-body.text-center
+                                    div#rateYo(style="display:inline-block")
+                                    
+                        div.col-md-12
+                            div.panel#assignedStoreDiv.hidden
+                                div.panel-heading
+                                    span.panel-title Stores Assigned To You
+                                div.panel-body.pn.table-responsive
+                                    table.table.table-striped.table-hover#assignedTable(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th(width='30') CSPID
+                                                th Business Name
+                                                th Business Phone
+                                        tbody#assignedStoreRow
+                                    
+                        div.col-md-12
+                            div.panel.hidden#dueTicketDiv
+                                div.panel-heading
+                                    span.panel-title Due Tickets
+                                div.panel-body.pn.table-responsive
+                                    table.table.table-striped.table-hover#dueTicketList(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th(width='30') CSPID
+                                                th Title
+                                                th Caller
+                                                th Due Date
+                                        tbody#ticketRow
+
+                        div.col-md-12
+                            div.panel.hidden#dueLeadsDiv
+                                div.panel-heading
+                                    span.panel-title Due Leads
+                                div.panel-body.pn.table-responsive
+                                    table.table.table-striped.table-hover#dueLeadList(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th Name
+                                                th Business Name
+                                                th Phone Number
+                                                th Due Date
+                                        tbody#leadRow
+
+                        
+                                    
+                                
+                        div.col-md-12
+                            div.panel.hidden#allPassedDueTickets
+                                div.panel-heading
+                                    span.panel-title Passed due tickets for All users
+                                div.panel-body.pn.table-responsive
+                                    table.table.table-striped.table-hover#dueTicketsAllUser(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th User
+                                                th CSPID
+                                                th Title
+                                                th Caller
+                                                th Due Date
+                                        tbody#allTicketRow
+                                        
+                                        
+                        div.col-md-12
+                            div.panel.hidden#allPassedDueLeds
+                                div.panel-heading
+                                    span.panel-title Passed due leads for All users
+                                div.panel-body.pn.table-responsive
+                                    table.table.table-striped.table-hover#dueLeadsAllUser(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th User
+                                                th First Name
+                                                th Phone Number
+                                                th Due Date
+                                        tbody#allLeadRow
+
+
+    include ../endScript.html
+
+    <script src="/plugins/chart/highcharts.js"></script>
+    <script src="/plugins/js/fullcalendar.min.js"></script>
+    <script src="/plugins/js/jquery.animateNumber.min.js"></script>
+    script.
+    
+        var currentUser = !{JSON.stringify(userData)}
+        var animateCount = 2000
+        if(currentUser.accountTypeID != 5){
+            $('#boxesDetail').removeClass('hidden');
+        }
+        
+        $.ajax({
+            url:'/api/getAverageRating/#{result.userData.userID}',
+            success: function(data){
+                
+                //console.log("getAverageRating ", data);
+                if(data.data[0].average){
+                    $("#rateYo").rateYo({
+                      starWidth: "50px",
+                      rating: data.data[0].average,
+                      readOnly: true,
+                      spacing   : "5px",
+                      multiColor: {
+                        "startColor": "#FF0000", //RED
+                      }
+                    });
+                    var rating = parseFloat(data.data[0].average)
+                    
+                    $('#ratingTitle').text(rating.toFixed(2));
+                    $('#rating').removeClass('hidden');
+                }
+
+                
+            }
+        });        
+             
+        $.ajax({
+            url:'/api/getAllStoreByUser',
+            success: function(data){
+                
+                //console.log('store by user ', data)
+                $('#ticketByUser').removeClass('hidden');
+                    data.data.forEach(row => {
+                        
+                        //- var rowHTML = `<tr class='pointer'><td class ='text-info pr10'>` + row.fullName + `</td><td class='text-info pr10'>` + row.assignedToUser.length + `</td></tr>`
+                        
+                        var rowHTML = `<tr class='pointer' ><td class ='text-info pr10'>`
+                        
+                        if(row.imageUrl) {
+                            rowHTML = rowHTML + `<img src="` + row.imageUrl + `" alt="" height="30" width="30"><span> ` + row.fullName + `</span></td>`
+                             
+                        }else {
+                             rowHTML = rowHTML + `<img src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png" alt="" height="30" width="30"><span> ` + row.fullName + `</span></td>`
+                        }
+                        
+                        rowHTML = rowHTML + `<td>` + row.assignedToUser.length + `</td></tr>`
+                        
+                        
+                        $('#storebyUser').append(rowHTML);
+                    });
+            }
+        });
+         
+        $.ajax({
+            url:'/api/getAllTicketbyUser',
+            success: function(data){
+                //console.log("getAllTicketbyUser ", data);
+
+                $('#ticketByUser').removeClass('hidden');
+                    data.data.forEach(row => {
+                        //console.log('saqib', row)
+                                                            
+                        var rowHTML = `<tr class='pointer' onclick='openTicketByUser(` + row.userID + `)'><td class ='text-info pr10'>`
+                        
+                        if(row.imageUrl) {
+                            rowHTML = rowHTML + `<img src="` + row.imageUrl + `" alt="" height="30" width="30"><span> ` + row.fullName + `</span></td>`
+                             
+                        }else {
+                             rowHTML = rowHTML + `<img src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png" alt="" height="30" width="30"><span> ` + row.fullName + `</span></td>`
+                        }
+                        
+                        rowHTML = rowHTML + `<td>` + row.userTickets.length + `</td></tr>`
+                        
+                        $('#ticketCountByUser').append(rowHTML);
+                    });
+            }
+        });
+
+        $('#calendar').fullCalendar({
+
+        });
+
+        // get lead data for calendar
+        $.ajax({
+            url:'/api/getListOfUserAllTickets/#{result.userData.userID}',
+            success: function(data){
+                //console.log('all the ticket data ' , data)
+                $('#calendar').fullCalendar('addEventSource', data.data);
+                },
+            error: function(err){
+                console.log(err);
+            }
+        });
+
+        // get leads data for calendar
+        $.ajax({
+            url:'/api/getListOfUserAllLeads/#{result.userData.userID}',
+            success: function(data){
+                //console.log('all the lead data ' , data)
+                $('#calendar').fullCalendar('addEventSource', data.data);
+                },
+            error: function(err){
+                console.log(err);
+            }
+        });
+        
+        //console.log('print today date ', moment().tz('America/New_York').format('MM/DD/YYY'));
+        
+        $.ajax({
+            url:'/api/leadsCountById/#{result.userData.userID}',
+            success: function(data){
+                
+                //console.log("getAverageRating ", data);
+                var countDown = data.data * 100
+                if(data.data){
+                
+                    $('#leadsWatting').animateNumber(
+                      {
+                        number: data.data
+                      },animateCount
+                    );
+                    
+                }
+            }
+        });
+        
+        $.ajax({
+            url:'/api/leadsCountById',
+            success: function(data){
+                
+                //console.log("getAverageRating ", data);
+                
+                if(data.data){
+                
+                    $('#boxTotalLeads').animateNumber(
+                      {
+                        number: data.data
+                      },animateCount
+                    );
+                    
+                }
+            }
+        });
+
+        var activeStore = 0;
+        $(".nav li").removeClass('active');
+        $('#dashboard').addClass('active');
+
+        if(currentUser.accountTypeID != 5){
+            $.ajax({
+                url:'/api/getNewSignupCount',
+                success: function(data){
+                    //console.log(data);
+                    $('#customerSignUp').removeClass('hidden');
+                    if(data){
+                        var daySignupCount = [];
+                        var cancelledCount= [];
+                        var startingDate = data.data.customerSignups[0].selected_date;
+                        var myear = moment.utc(startingDate).format("YYYY");
+                        var mmonth = moment.utc(startingDate).format("MM");
+                        var mday = moment.utc(startingDate).format("DD");
+
+                        data.data.customerSignups.forEach(row =>{
+                            //console.log(row.total)
+                            daySignupCount.push(row.signinTotal);
+                            cancelledCount.push(row.cancelTotal);
+                        });
+
+                        // Area Chart
+                        var HighChartArea = $('#30daySale');
+                        if (HighChartArea.length) {
+
+                            HighChartArea.highcharts({
+                                credits: false,
+                                colors: ['#4a89dc', '#B20C24', '#3bafda'],
+                                chart: {
+                                    type: 'areaspline',
+                                    backgroundColor: 'transparent',
+                                },
+                                title: {
+                                    text: null
+                                },
+                                legend: {
+                                    enabled: true
+                                },
+                                xAxis: {
+                                    type: 'datetime',
+                                    dateTimeLabelFormats: {
+                                       day: '%e of %b'
+                                    }
+                                },
+                                yAxis: {
+                                    title: {
+                                        text: null
+                                    },
+                                    gridLineColor: 'transparent',
+                                },
+                                plotOptions: {
+                                    areaspline: {
+                                        fillOpacity: 0.25,
+                                    }
+                                },
+                                series: [{
+                                    name: 'Sign Up',
+                                    data: daySignupCount,
+                                    pointStart: Date.UTC(myear,mmonth,mday),
+                                    pointInterval: 24 * 3600 * 1000 // one day
+                                },
+                                {
+                                    name: 'Cancelled',
+                                    data: cancelledCount,
+                                    pointStart: Date.UTC(myear,mmonth,mday),
+                                    pointInterval: 24 * 3600 * 1000 // one day
+                                }]
+                            });
+                        }
+
+                    }
+                }
+            });
+
+             $.ajax({
+                url:'/api/getSignUpData',
+                success: function(data){
+                    console.log('return data ', data)
+                    $('#currentMonth').animateNumber(
+                          {
+                            number: data.data.currentMonthToDate
+                          },animateCount
+                        );
+                    $('#lastMonthSale').animateNumber(
+                        {
+                        number: data.data.lastMonth
+                        },animateCount
+                    );
+                    
+                    var value = data.data.currentMonthToDate - data.data.lastMonthToDate;
+                    var per = value / data.data.lastMonthToDate * 100;
+
+                    if(data.data.lastMonthToDate > data.data.currentMonthToDate){
+                        var html = `<span id="currentMonth-icon" class="fs11">
+                                    <i class="fa fa-arrow-down text-danger"></i>
+                                    <span>&nbsp;`+ per.toFixed(2) +`% Decrease</span>
+                                    <b> <span>(` + data.data.lastMonthToDate + `)</span></b>
+                                    </span>`
+                        $('#currentMonth-icon').html(html);
+                       
+                    }else{
+                         var html = `<span id="currentMonth-icon" class="fs11">
+                                    <i class="fa fa-arrow-up text-success"></i>
+                                    <span>&nbsp;`+ per.toFixed(2) +`% Increase</span>
+                                    <b> <span>(` + data.data.lastMonthToDate + `)</span></b>
+                                    </span>`
+                        $('#currentMonth-icon').html(html);
+                    }
+
+                    var value2 = data.data.lastMonth - data.data.monthBeforLastMonth;
+                    var per2 = value2 / data.data.monthBeforLastMonth * 100;
+
+                    if(data.data.monthBeforLastMonth > data.data.lastMonth){
+                        var html = `<span id="lastMonthSale-icon" class="fs11">
+                                    <i class="fa fa-arrow-down text-danger"></i>
+                                    <span>&nbsp;`+ per2.toFixed(2) +`% Decrease</span>
+                                    <b> <span>(` + data.data.monthBeforLastMonth + `)</span></b>
+                                    </span>`
+                        $('#lastMonthSale-icon').html(html);
+                       
+                    }else{
+                         var html = `<span id="lastMonthSale-icon" class="fs11">
+                                    <i class="fa fa-arrow-up text-success"></i>
+                                    <span>&nbsp;`+ per2.toFixed(2) +`% Increase</span>
+                                    <b> <span>(` + data.data.monthBeforLastMonth + `)</span></b>
+                                    </span>`
+                        $('#lastMonthSale-icon').html(html);
+                    }
+
+                    //- i.fa.fa-arrow-up#currentMonth-icon 
+                    //- span#currentMonth-per &nbsp;3% Increase
+                    //- b 
+                    //- span#currentMonth-value (43)
+
+                },
+                error:function(err){
+                    console.log("getOpenInvoiceCount ", err);
+                }
+            });
+        }
+
+        if(currentUser.accountTypeID != 5){
+            $('#boxesDetail').removeClass('hidden');
+            // customer status
+            $.ajax({
+                url: '/cspApi/unlock/balance',
+                success: function(data) {
+                    var decimal_places = 2;
+                    var decimal_factor = decimal_places === 0 ? 1 : Math.pow(10, decimal_places);
+                    $('#boxUnlockBalance').animateNumber(
+                        {
+                        number: data.data * decimal_factor,
+
+                            numberStep: function(now, tween) {
+                                var floored_number = Math.floor(now) / decimal_factor,
+                                    target = $(tween.elem);
+
+                                if (decimal_places > 0) {
+                                // force decimal places even if they are 0
+                                floored_number = floored_number.toFixed(decimal_places);
+
+                                // replace '.' separator with ','
+                                floored_number = floored_number.toString();
+                                }
+
+                                target.text('$' + floored_number);
+                            }
+                        },
+                        animateCount
+                    );
+                }
+            })
+
+            $.ajax({
+                url:'/api/getCustomerCount',
+                success: function(data){
+                    
+                    $('#boxActiveStoreCount').animateNumber(
+                      {
+                        number: data.data.activeCustomerCount[0].total
+                      },animateCount
+                    );
+                    
+                    //('store status ' , data);
+                    $('#customerStatus').removeClass('hidden');
+                    activeStore = data.data.activeCustomerCount[0].total
+                    if(data){
+                        var newData = [
+                            {
+                                name: data.data.activeCustomerCount[0].total + ' Active',
+                                y: data.data.activeCustomerCount[0].total,
+                                sliced: true,
+                                selected: true
+                            },
+                            {name: data.data.cancelledCustomerCount[0].total + ' Cancelled',y:data.data.cancelledCustomerCount[0].total},
+                            {name:data.data.lockedCustomerCount[0].total + ' Locked',y:data.data.lockedCustomerCount[0].total},
+                            {name: data.data.onTrialCustomerCount[0].total +  ' On Trial',y:data.data.onTrialCustomerCount[0].total}
+                        ];
+
+                    var HighChartPie = $('#customerCount');
+                    if (HighChartPie.length) {
+
+                        HighChartPie.highcharts({
+                            credits: false, // Disable HighCharts logo
+                            colors: ['#f6bb42', '#4a89dc', '#3bafda', '#8A1B1D'], // Set Colors
+                            chart: {
+
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                type: 'pie'
+                            },
+                            title: {
+                                text: null
+                            },
+                            tooltip: {
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            plotOptions: {
+                                pie: {
+                                    center: ['30%','50%'],
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: false
+                                    },
+                                    showInLegend: true
+                                }
+                            },
+                            legend: {
+                                enabled: true,
+                                x: 140,
+                                floating: false,
+                                verticalAlign: "middle",
+                                layout: "vertical",
+                                itemMarginTop: 10,
+
+                            },
+                            series: [{
+                                type: 'pie',
+                                name: 'Status',
+                                data: newData
+                            }]
+                        });
+                    }
+                    }
+
+                    getPromtionCount();
+
+                
+                }
+            });
+        }
+
+        function getPromtionCount(){
+            $.ajax({
+                url:'/api/promotionCount',
+                success: function(data){
+                    //console.log('prormotion data ', data);
+                    $('#PromotionData').removeClass('hidden');
+                    if(data){
+                        var newData = [];
+
+                        newData.push({
+                        name:'Sending',y:data.data
+                        });
+
+                        newData.push({
+                            name:'Not Sending',y:activeStore - data.data,sliced: true,
+                            selected: true
+                        });
+
+                    var HighChartPie = $('#promotion-pie');
+                    if (HighChartPie.length) {
+
+                        HighChartPie.highcharts({
+                            credits: false, // Disable HighCharts logo
+                            colors: ['#4a89dc','#8A1B1D'], // Set Colors
+                            chart: {
+
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                type: 'pie'
+                            },
+                            title: {
+                                text: null
+                            },
+                            tooltip: {
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            plotOptions: {
+                                pie: {
+                                    center: ['50%','40%'],
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true
+                                    },
+                                    showInLegend: true
+                                }
+                            },
+                            legend: {
+                                enabled: true,
+                                y: 10,
+                                floating: true,
+                                verticalAlign: "bottom",
+                                layout: "horizontal",
+                                itemMarginTop: 5,
+
+                            },
+                            series: [{
+                                type: 'pie',
+                                name: 'Status',
+                                colorByPoint: true,
+                                data: newData
+                            }]
+                        });
+                    }
+                    }
+                }
+            });
+        }
+
+        // All Tickets
+        $.ajax({
+            url:'/api/getAllTicketCount',
+            success: function(data){
+                //console.log('getAllTicketCount ', data);
+                
+                    data.data.ticketStatusCount.forEach(row =>{
+                        if (row.selector != 'Closed'){
+                            var rowHTML = `<tr class='pointer' onclick='openTicketByStatus(`+ row.id +`)'><td class ='text-info pr10'>` + row.selector + `</td><td class='text-info pr10'>` + row.total + `</td></tr>`
+
+                            $('#ticketStatus').append(rowHTML);
+                        }                        
+                    });
+                    
+
+
+
+            }
+        });
+        
+        // Invoice Status
+        if(currentUser.accountTypeID != 5){
+            $.ajax({
+                url:'/api/getInvoicesCount',
+                success: function(data){
+                    //console.log("getInvoicesCount ", data);
+
+                    $('#invoiceStatusDiv').removeClass('hidden');
+                        var rowHTML = `<tr class='pointer' onclick='readyInvoice()'><td class ='text-info pr10'>Invoice ready to made</td><td class='text-info pr10'>` + data.data.invoicesReadyToBeMade + `</td></tr>`
+
+                        $('#invoiceStatus').append(rowHTML);
+
+                        var rowHTML = `<tr class='pointer' onclick='openInvoiceStatus()'><td class='text-info pr10'>Manual Charge Invoice</td><td class='text-info pr10'>` + data.data.manualChargeInvoice + `</td></tr>`
+
+                        $('#invoiceStatus').append(rowHTML);
+                        
+                        $('#boxReadyInvoice').animateNumber(
+                          {
+                            number: data.data.invoicesReadyToBeMade
+                          },animateCount
+                        );
+                        
+                        $('#boxManualCharge').animateNumber(
+                          {
+                            number: data.data.manualChargeInvoice
+                          },animateCount
+                        );
+
+                }
+            });
+            
+            $.ajax({
+                url:'/api/getOpenInvoiceCount',
+                success: function(data){
+                    console.log("getOpenInvoiceCount ", data);
+
+                    $('#invoiceStatusDiv').removeClass('hidden');
+                        
+                        
+                        var rowHTML = `<tr class='pointer' onclick='openInvoices()'><td class ='text-info pr10'>Open Invoices</td><td class='text-info pr10'>` + data.data.openInvoiceCount + `</td></tr>`
+
+                        $('#invoiceStatus').append(rowHTML);
+                        
+                        var rowHTML = `<tr class='pointer' onclick='passedDueInvoices()'><td class ='text-info pr10'>Passed Due Invoices</td><td class='text-info pr10'>` + data.data.openInvoiceDueToday + `</td></tr>`
+
+                        $('#invoiceStatus').append(rowHTML);
+                        
+                        $('#boxPassedDueInvoice').animateNumber(
+                          {
+                            number: data.data.openInvoiceDueToday
+                          },animateCount
+                        );
+                        
+                        $('#boxOpenInvoice').animateNumber(
+                          {
+                            number: data.data.openInvoiceCount
+                          },animateCount
+                        );
+
+                    //<tr><td>Invoice ready to made</td><td class="text-info pr10">10</td></tr>
+                },
+                error:function(err){
+                    console.log("getOpenInvoiceCount ", err);
+                }
+            });
+        }
+
+        if(currentUser.accountTypeID != 5 && currentUser.accountTypeID != 6 &&  currentUser.accountTypeID != 3){
+            // all the leads
+            $.ajax({
+                url:'/api/getAllLeadCount',
+                success: function(data){
+                    //console.log('lead count ',data);
+                    $('#leadStatus').removeClass('hidden');
+                    if(data){
+                        var newData = [];
+                        data.data.LeadStatusCount.forEach(row =>{
+
+                            if (row.selector == 'Convert'){
+                            newData.push({name:row.selector,y:row.total,sliced: true,
+                            selected: true});
+                            }else{
+                                newData.push({name:row.selector,y:row.total})
+                            }
+
+                        });
+
+                    var HighChartPie = $('#lead-pie');
+                    if (HighChartPie.length) {
+
+                        HighChartPie.highcharts({
+                            credits: false, // Disable HighCharts logo
+                            colors: ['#4a89dc','#8A1B1D', '#4E9F45', '#453D25', '#F7B14C', '#009688', '#A29753', '#4E9F45', '#4D4D4D'], // Set Colors
+                            chart: {
+
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                type: 'pie'
+                            },
+                            title: {
+                                text: null
+                            },
+                            tooltip: {
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            plotOptions: {
+                                pie: {
+                                    center: ['50%','40%'],
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true
+                                    },
+                                    showInLegend: true
+                                }
+                            },
+                            legend: {
+                                enabled: true,
+                                y: 10,
+                                floating: true,
+                                verticalAlign: "bottom",
+                                layout: "horizontal",
+                                itemMarginTop: 5,
+
+                            },
+                            series: [{
+                                type: 'pie',
+                                name: 'Status',
+                                data: newData
+                            }]
+                        });
+                    }
+                    }
+
+                }
+            });
+        }
+
+        // list user leads
+        $.ajax({
+            url:'/api/getListOfUserDueLeads/#{result.userData.userID}',
+            success: function(data){
+                if(data.data.length != 0){
+                   $('#dueLeadsDiv').removeClass('hidden');
+                }
+                //console.log("lead Data",data);
+                var calendarLead = [];
+                data.data.forEach(row =>{
+
+                    if( moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY 23:59:59') < moment().tz('America/New_York').format('MM/DD/YYYY 23:59:59') ) {
+                        var rowHTML = `<tr class='pointer' onclick='openLead(` + row.id +  `)'><td>` + row.firstName + `</td><td>` + row.businessName + `</td><td>` + row.phoneNumber + `</td><td><span class="label label-danger">` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</span></td></tr>`
+
+
+                    }else{
+                        var rowHTML = `<tr class='pointer' onclick='openLead(` + row.id +  `)'><td>` + row.firstName + `</td><td>` + row.businessName + `</td><td>` + row.phoneNumber + `</td><td>` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</td></tr>`
+                    }
+
+
+                    $('#leadRow').append(rowHTML);
+                });
+
+
+
+
+                $('#dueLeadList').dataTable({
+                  "aaSorting": [[3, 'asc']],
+                  "oLanguage": {
+                  "oPaginate": {
+                    "sPrevious": "Previous",
+                    "sNext": "Next"
+                  }
+                },
+                  "iDisplayLength": 10,
+                  "aLengthMenu": [
+                    [10, 25, 35, 50, -1],
+                    [10, 25, 35, 50, "All"]
+                  ],
+                  "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                  });
+            }
+        });
+        
+        //list user tickets
+        $.ajax({
+            url:'/api/getListOfUserDueTickets/#{result.userData.userID}',
+            success: function(data){
+            //console.log("ticket Data",data);
+            if(data.data.length != 0){
+               $('#dueTicketDiv').removeClass('hidden');
+            }
+
+            var calendarLead = [];
+                data.data.forEach(row =>{
+
+                    if(moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY 23:59:59') < moment().tz('America/New_York').format('MM/DD/YYYY 23:59:59')) {
+                        var rowHTML = `<tr class='pointer' onclick='openTicket(` + row.id +  `)'><td>` + row.Store.CSPID + `</td><td>` + row.title + `</td><td>` + row.name + `</td><td><span class="label label-danger">` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</span></td></tr>`
+                    }else{
+                        var rowHTML = `<tr class='pointer' onclick='openTicket(` + row.id +  `)'><td>` + row.Store.CSPID + `</td><td>` + row.title + `</td><td>` + row.name + `</td><td>` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</td></tr>`
+                    }
+
+                    var newEvent = {
+                        title: row.id + " " + row.title,
+                        start: row.dueDate,
+                        url:'tickets/ticketPage/' + row.id
+                    }
+                    calendarLead.push(newEvent)
+
+                    $('#ticketRow').append(rowHTML);
+                });
+
+
+                $('#dueTicketList').dataTable({
+                  "aaSorting": [[0, 'desc']],
+                  "oLanguage": {
+                  "oPaginate": {
+                    "sPrevious": "Previous",
+                    "sNext": "Next"
+                  }
+                },
+                  "iDisplayLength": 10,
+                  "aLengthMenu": [
+                    [10, 25, 35, 50, -1],
+                    [10, 25, 35, 50, "All"]
+                  ],
+                  "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                  });
+
+
+            }
+        });
+        
+        $.ajax({
+            url:'/api/getAllStoreByUserID/#{result.userData.userID}',
+            success: function(data){
+            //console.log("getAllStoreByUserID Data",data);
+            if(data.data){
+               $('#assignedStoreDiv').removeClass('hidden');
+            
+            
+                data.data.assignedToUser.forEach(row =>{
+                
+                    var rowHTML = `<tr class='pointer' onclick='openStore(` + row.storeID +  `)'>
+                        <td>` + row.CSPID + `</td><td>` + row.businessName + `</td><td>` + row.businessPhone + `</td>
+                    </tr>`
+                
+
+                    $('#assignedStoreRow').append(rowHTML);
+                });
+
+
+                $('#assignedTable').dataTable({
+                  "aaSorting": [[0, 'desc']],
+                  "oLanguage": {
+                  "oPaginate": {
+                    "sPrevious": "Previous",
+                    "sNext": "Next"
+                  }
+                },
+                  "iDisplayLength": 10,
+                  "aLengthMenu": [
+                    [10, 25, 35, 50, -1],
+                    [10, 25, 35, 50, "All"]
+                  ],
+                  "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                  });
+              }
+
+            }
+        });
+        
+        if(currentUser.accountTypeID != 5 &&  currentUser.accountTypeID != 6 &&  currentUser.accountTypeID != 3){
+            $.ajax({
+                url:'/api/getAverageRatingAllUser',
+                success: function(data){
+                    $('#ratingByUserDiv').removeClass('hidden');
+                    
+                    console.log("getAverageRatingAllUser ", data);
+                    if (data.data.length > 0){
+                        
+                        data.data.forEach(row =>{
+                            var html = `<tr>
+                                <td>` + row.fullName + `</td>
+                                <td class="text-info pr10">
+                                    <div class="pull-right">
+                                        <div id="rateYo` + row.userID + `" style="display: inline-block;" ></div>
+                                        <span id="rateYoCounter` + row.userID + `"></span>
+                                    </div>
+                                </td>
+                            </tr>`
+                            
+                            var rowHTML = `<tr class='pointer' ><td class ='text-info pr10'>`
+                            
+                            if(row.imageUrl) {
+                                rowHTML = rowHTML + `<img src="` + row.imageUrl + `" alt="" height="30" width="30"><span> ` + row.fullName + `</span></td>`
+                                 
+                            }else {
+                                 rowHTML = rowHTML + `<img src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png" alt="" height="30" width="30"><span> ` + row.fullName + `</span></td>`
+                            }
+                            
+                            rowHTML = rowHTML + `<td class="text-info pr10">
+                                <div class="pull-right">
+                                    <div id="rateYo` + row.userID + `" style="display: inline-block;" ></div>
+                                    <span id="rateYoCounter` + row.userID + `"></span>
+                                </div>
+                            </td></tr>`
+                            
+                            var rateID = "#rateYo" + row.userID;
+                            $('#ratingByUser').append(rowHTML);
+                            
+                            var ratinga = parseFloat(row.average);
+                            var rateCounter = "#rateYoCounter" + row.userID;
+                            
+                            $(rateCounter).text(ratinga.toFixed(2));
+                            
+                            $(rateID).rateYo({
+                              starWidth: "20px",
+                              rating: row.average,
+                              readOnly: true,
+                              spacing   : "5px",
+                              multiColor: {
+                                "startColor": "#FF0000", //RED
+                                "endColor": "#00FF00"
+                              }
+                            });
+                        });
+                        
+                    }
+                
+                }
+            });
+            
+        }
+
+        //get all due tickets
+        if(currentUser.accountTypeID != 6 &&  currentUser.accountTypeID != 4){
+
+            $.ajax({
+                url:'/api/allUserDueTickets',
+                success: function(data){
+                    //console.log("Due Ticket for All Users ",data);
+                    $('#allPassedDueTickets').removeClass('hidden');
+                    data.data.forEach(row =>{
+
+                        if( moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY 23:59:59') < moment().tz('America/New_York').format('MM/DD/YYYY 23:59:59') ) {
+                            var rowHTML = `<tr class='pointer' onclick='openTicket(` + row.id +  `)'><td>` + row.assignedToUser.fullName + `</td><td>` + row.Store.CSPID + `</td><td>` + row.title + `</td><td>` + row.name + `</td><td><span class="label label-danger">` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</span></td></tr>`
+                        }else{
+                            var rowHTML = `<tr class='pointer' onclick='openTicket(` + row.id +  `)'><td>` + row.assignedToUser.fullName + `</td><td>` + row.Store.CSPID + `</td><td>` + row.title + `</td><td>` + row.name + `</td><td>` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</td></tr>`
+                        }
+
+
+
+                        $('#allTicketRow').append(rowHTML);
+                    });
+                    $('#dueTicketsAllUser').dataTable({
+                      "aaSorting": [[3, 'desc']],
+                      "oLanguage": {
+                      "oPaginate": {
+                        "sPrevious": "Previous",
+                        "sNext": "Next"
+                      }
+                    },
+                      "iDisplayLength": 10,
+                      "aLengthMenu": [
+                        [10, 25, 35, 50, -1],
+                        [10, 25, 35, 50, "All"]
+                      ],
+                      "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                      });
+                }
+            });
+        }
+        
+        //get all due leads
+        if(currentUser.accountTypeID != 6 &&  currentUser.accountTypeID != 5){
+
+            $.ajax({
+                url:'/api/allUserDueLeads',
+                success: function(data){
+                    //console.log("Due Leads for All Users ",data);
+                    $('#allPassedDueLeds').removeClass('hidden');
+                    data.data.forEach(row =>{
+
+                        if( moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY 23:59:59') < moment().tz('America/New_York').format('MM/DD/YYYY 23:59:59') ) {
+                            var rowHTML = `<tr class='pointer' onclick='openLead(` + row.id +  `)'><td>` + row.assignedToUser.fullName + `</td><td>` + row.firstName + `</td><td>` + row.phoneNumber + `</td><td><span class="label label-danger">` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</span></td></tr>`
+                        }else{
+                            var rowHTML = `<tr class='pointer' onclick='openLead(` + row.id +  `)'><td>` + row.assignedToUser.fullName + `</td><td>` + row.firstName + `</td><td>` + row.phoneNumber + `</td><td>` + moment(row.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A') + `</td></tr>`
+                        }
+
+
+
+                        $('#allLeadRow').append(rowHTML);
+                    });
+                    
+                    $('#dueLeadsAllUser').dataTable({
+                      "aaSorting": [[3, 'desc']],
+                      "oLanguage": {
+                      "oPaginate": {
+                        "sPrevious": "Previous",
+                        "sNext": "Next"
+                      }
+                    },
+                      "iDisplayLength": 10,
+                      "aLengthMenu": [
+                        [10, 25, 35, 50, -1],
+                        [10, 25, 35, 50, "All"]
+                      ],
+                      "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+                      });
+                }
+            });
+        }
+
+        function openTicket(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/tickets/ticketPage/" + id
+        }
+
+
+        function readyInvoice(){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/invoice/readytobemade"
+        }
+        
+        function openInvoices(){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/invoice?list=open"
+        }
+        
+        function passedDueInvoices(){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/invoice?list=passedDue"
+        }
+        
+        function openInvoiceStatus(){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/invoice?list=manual-open"
+        }
+        
+        function openTicketByUser(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/tickets?status=48,49,51,52&assignedTo=" + id 
+        }
+        
+        function openStore(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/stores/store/" + id
+        }
+        
+        function openTicketByStatus(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/tickets?status=" + id
+        }
+
+        function openLead(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/leads/leadPage/" + id
+        }

@@ -1,0 +1,17 @@
+div.panel
+    div.panel-heading(style="padding:0px;")
+        span.panel-icon
+            i.imoon.imoon-location(style="padding-left:5px;")
+        span.panel-title(style="padding-left:5px;font-size:14px;")
+        | Customer
+    div.panel-body(style="padding:10px;height:178px;")
+        div.row.form-inline(style="padding-top:15px;")
+            div.col-xs-12.form-group
+                label.control-label(style="margin-bottom: 5px;margin-top: 5px;") Caller
+                input.form-control.pull-right#callerName(type="text")
+            div.col-xs-12.form-group
+                label.control-label(style="margin-bottom: 5px;margin-top: 5px;") Phone #
+                input.form-control.pull-right#contactNumber(type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57')
+            div.col-xs-12.form-group
+                label.control-label(style="margin-bottom: 5px;margin-top: 5px;") Email
+                input.form-control.pull-right#ticketEmailAddress(type="email")

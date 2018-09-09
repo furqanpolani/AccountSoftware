@@ -1,0 +1,79 @@
+extends ../layout
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.panel.animated.bounceInDown
+            div
+                include ../list/sub-pages/lead-filter
+
+        div#leads-List.animated.bounceInUp
+            include ../list/leadsList
+        include ../endScript.html
+
+    <link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+    <script src="/plugins/js/select2.full.min.js"></script>
+
+    script.
+
+        function defaultLeadHeader(){
+            location.reload();
+        }
+
+        function reloadLeadList(){
+            var assignedTo = $("#assignedTo option:selected").map(function(){return this.value}).get().join(",");
+
+            var software = $("#software option:selected").map(function(){return this.value}).get().join(",");
+
+
+            var status = $("#status option:selected").map(function(){return this.value}).get().join(",");
+
+            var url = "/leads/listOnly?assignedTo=" + assignedTo + "&software=" + software + "&status=" + status
+
+            //console.log(url);
+            NProgress.start();
+                $.ajax({
+                    url: url,
+                    success: function(result){
+                     $('#leads-List').html(result);
+                     setTable()
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        $("#assignedTo").select2({
+            placeholder:"Select One"
+        });
+
+        $("#software").select2({
+            placeholder:"Select One"
+        });
+
+
+        $("#status").select2({
+            placeholder:"Select One"
+        });
+
+        function setTable() {
+            $('#leadsList').dataTable({
+              "aaSorting": [[0, 'desc']],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+        }
+        jQuery(document).ready(function() {
+            setTable()
+
+        });

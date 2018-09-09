@@ -1,0 +1,24 @@
+
+/* ==============
+    COLORS
+   ============== */
+
+.text-primary{
+	color:#f05323;
+}
+
+.bg-primary{
+	background:#f05323;
+}
+
+.gray{
+	color:#354344;
+}
+
+.bg-gray{
+	background:#354344;
+}
+
+.price-table>tfoot td:nth-child(2),.invoice-top,.price-table>thead th:first-child,.price-table> tbody> tr:nth-child(4n+3) td:first-child{
+	border-left-color:#f05323;
+}

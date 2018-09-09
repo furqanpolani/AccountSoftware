@@ -1,0 +1,19 @@
+div.animated.bounceInUp
+    div.col-md-12
+        div.panel.panel-visible#spy2
+            div.panel-heading
+                div.panel-title.hidden-xs #{tableName}
+            div.panel-body.pn.table-responsive
+                table.table.table-striped.table-hover#contactList(cellspacing="0" width="100%")
+                    thead
+                        tr
+                            th Name
+                            th Phone Number
+                            th Email Address
+                    tbody
+                        each result in contact.data
+                            tr
+                                td.text-info.pr10
+                                    a(href="/contacts/contact/#{contact.id}") #{result.name}
+                                td #{result.phoneNumber}
+                                td #{result.email}

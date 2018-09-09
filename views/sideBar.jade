@@ -1,0 +1,143 @@
+aside#sidebar_left.nano.nano-primary
+    div.sidebar-left-content.nano-content
+        ul.nav.sidebar-menu
+            li
+                div.pt20
+                div.sidebar-label(style="display: inline") Menu
+                div.pull-right.sidebar-label.pr20 
+                    em#softwareVersion             
+            li#dashboard
+                a(href='/')
+                    span.glyphicon.glyphicon-home
+                    span.sidebar-title Home
+            li.right42.hidden
+                a(href='/tickets?assignedTo=#{userData.userID}&status=48,49,51,52')
+                    span.fa.fa-tags
+                    span.sidebar-title Tickets
+            li.right33.hidden
+                a(href='/leads')
+                    span.fa.fa-sitemap
+                    span.sidebar-title Leads
+            li.right43.hidden
+                a(href='/tasks')
+                    span.fa.fa-check-square-o
+                    span.sidebar-title Tasks
+            li.right44.hidden
+                a(href='/invoice/unshippedHardware')
+                    span.fa.fa-truck
+                    span.sidebar-title Hardware
+            li#qaLog
+                a(href='/qaLog')
+                    span.imoon.imoon-meter
+                    span.sidebar-title QA Log
+
+            li#qaLog
+                a(href='/movies')
+                    span.fa.fa-film
+                    span.sidebar-title Movies
+           
+            li#qaLog
+                a(href='/customers')
+                
+                    span.fa.fa-users
+                    span.sidebar-title Customers    
+           
+            li#qaLog
+                a(href='/employees')
+                    span.fa.fa-user
+                    span.sidebar-title Employees
+
+            li#qaLog
+                a(href='/purchases')
+                    span.fa.fa-shopping-cart
+                    span.sidebar-title Purchase
+           
+            li#qaLog
+                a(href='/rentals')
+                    span.fa.fa-credit-card
+                    span.sidebar-title Rentals
+
+
+            li
+                a(href='#').accordion-toggle
+                    span.imoon.imoon-stats
+                    span.sidebar-title List
+                    span.caret
+                ul.nav.sub-nav
+                    li#contact.hidden
+                        a(href='/contacts')
+                            span.imoon.imoon-office
+                            |Contacts
+                    li#org.right2.hidden
+                        a(href='/organizations')
+                            span.imoon.imoon-office 
+                            |Organization
+                    li#stores.right2.hidden
+                        a#storeAtag(href='#').accordion-toggle
+                            span.imoon.imoon-stats
+                            span.sidebar-title Stores
+                            span.caret
+                        ul.nav.sub-nav
+                            li#allStore
+                                a(href='/stores?list=all') All Stores
+                            li#activeStore
+                                a(href='/stores?list=active') Active
+                            li#locakedStore
+                                a(href='/stores?list=lock') Locked
+                            li#cancelStore
+                                a(href='stores?list=cancel') Cancelled
+                    li#invoices
+                        a#invoicesAtag(href='#').accordion-toggle
+                            span.imoon.imoon-books
+                            span invoice
+                            span.caret
+                        ul.nav.sub-nav
+                            li#openInvoice
+                                a(href='/invoice?list=open') Open Invoices
+                            li#deletedInvoice
+                                a(href='/invoice?list=deleted') Deleted Invoices
+                            li#readyMadeInvoice
+                                a(href='/invoice/readytobemade') Ready to be made
+                    li.hidden
+                        a#invoicesAtag(href='#').accordion-toggle
+                            span.imoon.imoon-books
+                            span Prepaid Balance
+                            span.caret
+                        ul.nav.sub-nav
+                            li
+                                a(href='/invoice?list=open') Purchase Credit
+                            li#deletedInvoice
+                                a(href='/invoice?list=deleted') Promotions
+                            li#readyMadeInvoice
+                                a(href='/invoice/readytobemade') Unlocked     
+                 
+                li.right20.hidden
+                    a(href='#').accordion-toggle
+                        span.imoon.imoon-screen
+                        span.sidebar-title Admin Tools
+                        span.caret
+                    ul.nav.sub-nav
+                        li#users
+                            a(href='/users')
+                                span.imoon.imoon-user
+                                |User
+                        li#clickImage
+                            a(href='/adImage')
+                                span.imoon.imoon-tags
+                                |Ads Images
+                        li#qaSetting
+                            a(href='/qaLog/setting')
+                                span.imoon.imoon-tags
+                                |QA Setting
+
+    script.
+
+        jQuery(document).ready(function() { 
+            var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+            var firstDay = new Date(y, m, 1);
+            var lastDay = new Date(y, m+1, 0);
+
+            var html = `<li id="qaLog"><a href="/qaLog?startDate=`+ moment(firstDay).format('MM-DD-YYYY') +`&endDate=`+ moment(lastDay).format('MM-DD-YYYY') +`"><span class="imoon imoon-meter"></span><span class="sidebar-title">QA Log</span></a></li>`
+
+            $('#qaLog').replaceWith(html);                            
+        });

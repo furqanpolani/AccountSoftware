@@ -1,0 +1,176 @@
+div#modal-form.popup-basic.popup-lg.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                | Store Information
+        form#editStore.admin-form
+            div.panel-body.p25
+                div.section.row
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="businessName") Store Name
+                                em *
+                            label.field.prepend-icon(for="businessName")
+                                input.gui-input#businessName(name="businessName" type="text" value="#{store.data.businessName}")
+                                label.field-icon(for="businessName")
+                                    i.imoon.imoon-home
+                div.section.row
+                    div.col-md-12
+                        div.section
+                            label.field-label(for="address") Address
+                                em *
+                            label.field.prepend-icon(for="address")
+                                input.gui-input#address(name="address" type="text" value="#{store.data.address}" required)
+                                label.field-icon(for="address")
+                                    i.imoon.imoon-location
+                div.section.row
+                    div.col-md-4
+                        div.section
+                            label.field-label(for="city") City
+                                em *
+                            label.field.prepend-icon(for="city")
+                                input.gui-input#city(name="city" type="text" value="#{store.data.city}" required)
+                                label.field-icon(for="city")
+                                    i.imoon.imoon-location
+                    div.col-md-4
+                        div.section
+                            label.field-label(for="state") State
+                                em *
+                            label.field.select(for="state")
+                                select#state(name="state")
+                                    each statel in stateList.data
+                                        if state.data
+                                            if statel.stateID == state.data.stateID
+                                                option(value="#{statel.stateID}" selected="selected" required) #{statel.stateSymbol} - #{statel.stateName}
+                                            else
+                                                option(value="#{statel.stateID}") #{statel.stateSymbol} - #{statel.stateName}
+                                i.arrow
+                    div.col-md-4
+                        div.section
+                            label.field-label(for="zipcode") Zipcode
+                                em *
+                            label.field.prepend-icon
+                                input.gui-input#zipcode(name="zipcode" type="text" value="#{store.data.zipCode}" required)
+                                label.field-icon(for="zipcode")
+                                    i.imoon.imoon-location
+                div.section.row
+                    div.col-md-6
+                        div.section
+                            label.field-label(for="phoneNumber") Phone Number
+                                em *
+                            label.field.prepend-icon(for="phoneNumber")
+                                input.gui-input#phoneNumber(name="phoneNumber" type="text" value="#{store.data.businessPhone}")
+                                label.field-icon(for="phoneNumber")
+                                    i.imoon.imoon-phone
+                    div.col-md-6
+                        div.section
+                            label.field-label(for="emailAddress") Email Address
+                                em *
+                            label.field.prepend-icon(for="emailAddress")
+                                input.gui-input#emailAddress(name="emailAddress" type="email" value="#{store.data.businessEmail}")
+                                label.field-icon(for="emailAddress")
+                                    i.fa.fa-envelope
+                div.section-divider(style="margin-bottom: 20px; margin-top: 0px; padding-bottom: 10px;")
+                    span(style="padding-bottom: 5px; padding-top: 5px;") Admin Section
+                div.section.row
+                    div.col-md-6
+                        div.section.right24.hidden
+                            label.field-label(for="dueDate") Due Date
+                                em *
+                            label.field.prepend-icon(for="dueDate")
+                                input.gui-input#dueDate(name="dueDate" type="date" required value="#{moment.utc(store.data.dueDate).format('YYYY-MM-DD')}")
+                                label.field-icon(for="dueDate")
+                                    i.fa.fa-calendar-o
+                    div.col-md-6
+                        div.section.right25.hidden
+                            label.field-label(for="stripeID") Stripe ID
+                                em *
+                            label.field.prepend-icon(for="stripeID")
+                                input.gui-input#stipeID(name="stripeID" type="text" value="#{store.data.stripeID}")
+                                label.field-icon(for="stripeID")
+                                    i.fa.fa-envelope
+
+            div.panel-footer.clearfix
+                button.button.btn-primary.mr10.pull-right.ladda-button.progress-button#storeSaveButton(type="s" data-style="zoom-in" data-size="l" onclick="saveStore()") Save Change
+
+
+    script.
+        function saveStore(){
+            var validDone = $("#editStore").valid();
+            if (validDone){
+            var la = Ladda.create($('#storeSaveButton')[0]);
+            la.start();
+                var data = {
+                    businessName: $("#businessName").val(),
+                    businessPhone: $("#phoneNumber").val(),
+                    businessEmail: $("#emailAddress").val(),
+                    address: $("#address").val(),
+                    city: $("#city").val(),
+                    stateID: $("#state").val(),
+                    zipCode:$("#zipcode").val(),
+                    dueDate: new Date($('#dueDate').val()).toISOString(),
+                    stripeID:$("#stipeID").val(),
+                    userID: #{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                $.ajax({
+                    url: '/api/stores/#{store.data.storeID}',
+                    type: 'PUT',
+                    data: data,
+                    success: function(result){
+                    //console.log(result);
+                        if(result.status){
+                            $.magnificPopup.close();
+                            location.reload();
+                            showNotify('Store Information', 'Saved!','system');
+
+                        }else{
+                            showNotify('Store Information',  'Failed to Save','error');
+                        }
+
+                    },
+                    error: function(err){
+                    $.magnificPopup.close();
+                    showNotify('Store Information',  err.responseJSON.data,'error');
+                    }
+                }).always(function(){
+                 la.stop();
+                });
+            }
+
+        }
+
+        $( document ).ready(function() {
+            $("#editStore").validate({
+                rules:{
+                    businessName: {
+                        required: true
+                    },
+                    phoneNumber: {
+                        required: true,
+                        number: true
+                    },
+                    emailAddress:{
+                        email: true
+                    },
+                    dueDate:{
+                        required: true
+                    }
+
+                },
+                messages:{
+                    businessName: {
+                        required: "Please business name.",
+                    },
+                    phoneNumber: {
+                        required: "Please enter phone number.",
+                        number: "Please enter valid phone number."
+                    }
+                }
+            });
+        })
+
+
+        //$('#dueDate').mask('99/99/9999');

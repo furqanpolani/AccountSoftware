@@ -1,0 +1,75 @@
+<table cellpadding="0" cellspacing="0" width="700" class="w320" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;border-collapse: collapse !important;">
+<tr style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+  <td class="item-table" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: center;line-height: 21px;border-collapse: collapse;padding: 50px 20px;width: 560px;">
+    <table cellspacing="0" cellpadding="0" width="100%" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;border-collapse: collapse !important;">
+      <tr style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+        <td class="title-dark" width="497" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #4d4d4d;text-align: left;line-height: 21px;border-collapse: collapse;border-bottom: 1px solid #cccccc;font-weight: 600;padding-bottom: 5px;">
+          Item
+        </td>
+        <td class="title-dark" width="97" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #4d4d4d;text-align: left;line-height: 21px;border-collapse: collapse;border-bottom: 1px solid #cccccc;font-weight: 600;padding-bottom: 5px;">
+          Qty
+        </td>
+        <td class="title-dark" width="97" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #4d4d4d;text-align: left;line-height: 21px;border-collapse: collapse;border-bottom: 1px solid #cccccc;font-weight: 600;padding-bottom: 5px;">
+          Rate
+        </td>
+        <td class="title-dark" width="97" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #4d4d4d;text-align: left;line-height: 21px;border-collapse: collapse;border-bottom: 1px solid #cccccc;font-weight: 600;padding-bottom: 5px;">
+          Total
+        </td>
+      </tr>
+
+
+      <% invoice.InvoiceDetails.forEach(row => { %>
+
+          <tr style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+            <td class="item-col item" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;width: 450px;padding-top: 20px;vertical-align: top;">
+              <table cellspacing="0" cellpadding="0" width="100%" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;border-collapse: collapse !important;">
+                <tr style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+                  <td class="mobile-hide-img" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;width: 125px;">
+                    <a href="" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;color: #676767;text-decoration: none !important;"><img width="110" height="92" src="<%= row.Product.imageUrl %>" alt="item2" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;max-width: 600px;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;border: 1px solid #e6e6e6;border-radius: 4px;"></a>
+                  </td>
+                  <td class="product" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;vertical-align: top;width: 175px;">
+                    <span style="color: #4d4d4d;font-weight: bold;font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;"><%= row.productDetail %></span> <br style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;"> <%= row.Product.description %>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td class="item-col quantity" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;"><%= row.qty %>
+            </td>
+            <td class="item-col price" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;">$<%= row.rate %>
+            </td>
+
+            <td class="item-col price" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;">$<%= row.total.toFixed(2) %>
+            </td>
+          </tr>
+
+      <% }) %>
+
+
+
+      <tr style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+        <td class="item-col item mobile-row-padding" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;width: 300px;padding-top: 20px;vertical-align: top;"></td>
+        <td class="item-col quantity" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;"></td>
+        <td class="item-col price" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;"></td>
+        <td class="item-col price" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;"></td>
+      </tr>
+
+
+      <tr style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+        <td class="item-col item" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;width: 300px;padding-top: 20px;vertical-align: top;">
+        </td>
+        <td class="item-col item" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;text-align: left;line-height: 21px;border-collapse: collapse;width: 300px;padding-top: 20px;vertical-align: top;">
+        </td>
+        <td class="item-col quantity" style="text-align: right;padding-right: 10px;border-top: 1px solid #cccccc;font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;">
+          <span class="total-space" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;padding-bottom: 8px;display: inline-block;">Subtotal</span> <br style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+          <span class="total-space" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;padding-bottom: 8px;display: inline-block;">Tax</span> <br style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+
+          <span class="total-space" style="font-weight: bold;color: #4d4d4d;font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;padding-bottom: 8px;display: inline-block;">Total</span>
+        </td>
+        <td class="item-col price" style="text-align: left;border-top: 1px solid #cccccc;font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;font-size: 14px;color: #777777;line-height: 21px;border-collapse: collapse;padding-top: 20px;vertical-align: top;">
+          <span class="total-space" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;padding-bottom: 8px;display: inline-block;">$<%= invoice.invoiceAmount.toFixed(2) %></span> <br style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+          <span class="total-space" style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;padding-bottom: 8px;display: inline-block;">$<%= invoice.taxAmount.toFixed(2) %></span> <br style="font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;">
+
+          <span class="total-space" style="font-weight: bold;color: #4d4d4d;font-family: 'Oxygen', 'Helvetica Neue', 'Arial', 'sans-serif' !important;padding-bottom: 8px;display: inline-block;">$<%= invoice.invoiceAmount + invoice.taxAmount %></span>
+        </td>
+      </tr>
+    </table>

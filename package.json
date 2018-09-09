@@ -1,0 +1,80 @@
+{
+  "name": "newCRM",
+  "version": "1.5.20",
+  "private": true,
+  "author": {
+    "name": "Saqib",
+    "email": "saqib@cellsmartpos.com"
+  },
+  "scripts": {
+    "reinstall": "rm -rf node_modules;npm install",
+    "start": "NODE_ENV=production nodemon ./bin/www",
+    "dev": "NODE_ENV=staging nodemon ./bin/www"
+  },
+  "dependencies": {
+    "await": "^0.2.6",
+    "aws-sdk": "*",
+    "bcrypt": "^1.0.2",
+    "body-parser": "~1.15.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "~1.4.3",
+    "crypto": "^1.0.1",
+    "debug": "~2.2.0",
+    "easy-autocomplete": "^1.3.5",
+    "ejs": "^2.5.6",
+    "express": "~4.13.4",
+    "express-paginate": "^0.2.2",
+    "express-session": "^1.15.1",
+    "google-images": "^2.0.0",
+    "jQuery": "^1.7.4",
+    "jade": "~1.11.0",
+    "jquery": "^3.3.1",
+    "jsonwebtoken": "^7.3.0",
+    "md5": "^2.2.1",
+    "moment": "^2.17.1",
+    "moment-timezone": "^0.5.13",
+    "morgan": "~1.7.0",
+    "mysql": "^2.13.0",
+    "node-cron": "^1.1.3",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "require": "^2.4.20",
+    "sendgrid": "^4.10.0",
+    "sequelize": "^3.30.2",
+    "serve-favicon": "~2.3.0",
+    "stripe": "^4.15.0",
+    "twilio": "^2.11.1",
+    "unescape": "^1.0.1"
+  },
+  "main": "./bin/www",
+  "devDependencies": {
+    "browserify": "^11.0.1",
+    "eslint": "^4.4.1",
+    "eslint-config-rallycoding": "^3.2.0",
+    "eslint-plugin-node": "^5.1.1"
+  },
+  "apidoc": {
+    "title": "Billing",
+    "version": "1.0.0",
+    "header": {
+      "title": "Billing"
+    },
+    "footer": {
+      "title": "Billing"
+    }
+  },
+  "esformatter": {
+    "plugins": [
+      "esformatter-quotes"
+    ],
+    "quotes": {
+      "type": "double"
+    },
+    "indent": {
+      "value": "\t",
+      "FunctionExpression": "1",
+      "ArrayExpression": "1",
+      "ObjectExpression": "1"
+    }
+  }
+}

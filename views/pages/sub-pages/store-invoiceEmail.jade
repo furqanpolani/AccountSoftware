@@ -1,0 +1,25 @@
+div.panel
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-icon
+                    i.imoon.imoon-mail
+                span.panel-title Invoice Email
+            div.col-md-2
+                div.pull-right
+                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="editInvoiceEmail()")
+                        span.imoon.imoon-pencil(style="padding-right:2px;")
+                        | Edit
+    div.panel-body.pn
+        table.table.mbn.tc-med-2.tc-bold-last
+            thead
+                tr.hidden
+                    th Name
+                    th Value
+                tbody
+                    tr
+                        td Invoice Email
+                        td.text-info.pr10
+                            span#invoiceEmail #{store.data.invoiceEmail}
+
+    

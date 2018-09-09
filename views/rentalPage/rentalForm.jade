@@ -1,0 +1,83 @@
+div.panel.mb25.mt5#newRentals.p20.admin-form.hidden
+    div.section.row.mbn.p20
+        div.section.row.mb15 
+            label.field.prepend-icon(for='customerName')
+                input#customerName.event-name.gui-input.br-light.light(type='text' required placeholder='Enter customer Name here')
+                label.field-icon(for='customerName')
+                    i.fa.fa-user
+        div.section.row.mb15
+            
+            label.field.prepend-icon(for='movieTitle')
+                input#movieTitle.event-name.gui-input.br-light.light(type='text' required placeholder='Enter movie name here')
+                label.field-icon(for='movieTitle')
+                    i.fa.fa-user
+        div.section.row.mb15
+            label.field.prepend-icon(for='dueDate')
+                input#dueDate.event-name.gui-input.br-light.bg-light(type='text' placeholder='Enter due date')
+                label.field-icon(for='dueDate')
+                    i.fa.fa-envelope-o
+        div.section.row.mb15
+                label.field.prepend-icon(for='rentAmount')
+                    input#rentAmount.event-name.gui-input.br-light.light(type='number'  min="0" placeholder='rent Amount')
+                    label.field-icon(for='rentAmount')
+                        i.fa.fa-user
+        div.section.row.mb15
+            label.field.prepend-icon(for='paidStatus')
+                select.form-control#paidStatus
+                    option#paid1 Unpaid
+                    option#paid2 paid
+                label.field-icon(for='paidStatus')
+
+        div.pull-right
+            button.btn.ladda-button.btn-dark.progress-button.progress-button(type='button' onclick="addRental()" data-style='expand-right')
+                span.ladda-label Save
+                span.ladda-spinner
+                span.ladda-spinner
+                .ladda-progress
+
+            button.btn.ml10.ladda-button.btn-danger.progress-button.progress-button#cancel(type='button', data-style='expand-right')
+                span.ladda-label Cancel
+                span.ladda-spinner
+                span.ladda-spinner
+                .ladda-progress
+
+div.panel#addingCustomer.mb25.mt5.hidden
+        .panel-body.p20.pb10
+            .tab-content.pn.br-n.admin-form
+                #tab1_1.tab-pane.active
+                    .section.row.mbn 
+                        .section.row.mb15   
+                        button#existingCustomer.btn.btn.ml10.btn-dark.btn-gradient.progress-button.progress-button(type='button' data-style='expand-right')
+                            span.ladda-label Existing Customer
+                            span.ladda-spinner
+                            span.ladda-spinner
+                            .ladda-progress
+                        button#newCustomer.btn.btn.ml10.btn-dark.btn-gradient.progress-button.progress-button(type='button', data-style='expand-right')
+                            span.ladda-label New Customer
+                            span.ladda-spinner
+                            span.ladda-spinner
+                            .ladda-progress                       
+                    
+                #tab1_3.tab-pane
+                    
+div.panel
+    header#topbar.ph10
+        div.topbar-right.hidden-xs.hidden-sm
+            a.btn.btn-default.btn-sm.light.fw600.ml10#addingRentals
+                span.fa.fa-user.pr5
+                |  Add Rental
+            a.btn.btn-default.btn-sm.light.fw600.ml10#test(onClick = 'test()')
+                span.fa.fa-user.pr5
+                |  test
+            a.btn.btn-default.btn-sm.light.fw600.ml10#filterTesting()
+                span.fa.fa-user.pr5
+                |  filterTesting
+            div.col-md-4  
+                
+    div.panel-body.pn#panelBody
+        header#topbar.ph10
+                .col-xs-2
+                    div.pull-left
+                        input#dateRange.form-control.pull-right(type='text' name="daterange" value="01/01/2018 - 01/15/2018")
+        div.table-responsive
+            

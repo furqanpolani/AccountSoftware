@@ -1,0 +1,298 @@
+extends ../layout
+
+block content
+    section
+        div.animated.bounceInUp
+            section#content
+                section#movieForm.hidden 
+                    .panel.mb25.mt5.admin-form.p20
+                        .panel-body
+                            .section.row
+                                .section.row.mb15
+                                    label.field.prepend-icon(for='title')
+                                        input#title.event-name.gui-input.br-light.light(type='text' required placeholder='Enter movie name here')
+                                        label.field-icon(for='title')
+                                            i.fa.fa-user
+                                .section.row.mb15
+                                    label.field.prepend-icon(for='description')
+                                        input#description.event-name.gui-input.br-light.bg-light(type='text' placeholder='Enter movie description here')
+                                        label.field-icon(for='description')
+                                            i.fa.fa-envelope-o
+                                .section.row.mb15
+                                    label.field.prepend-icon(for='URL')
+                                        input#URL.event-name.gui-input.br-light.light(type='URL' placeholder='Enter movie URL Here')
+                                        label.field-icon(for='URL')
+                                            i.fa.fa-user
+                                .section.row.mb15
+                                    label.field.prepend-icon(for='rentAmount')
+                                        input#rentAmount.form-control(type='number' min="0" placeholder='Rent Amount')
+                                        label.field-icon(for='rentAmount')
+                                            i.fa.fa-money
+        
+                                            
+                                    .pull-right.m15
+                                        button.btn.ladda-button.btn-dark.progress-button.progress-button(type='button' onclick="addMovie()" data-style='expand-right')
+                                            span.ladda-label Save
+                                            span.ladda-spinner
+                                            span.ladda-spinner
+                                            .ladda-progress
+
+                                        button#cancel.btn.ml10.ladda-button.btn-danger.progress-button.progress-button(type='button', data-style='expand-right')
+                                            span.ladda-label Cancel
+                                            span.ladda-spinner
+                                            span.ladda-spinner
+                                            .ladda-progress
+
+
+
+                                            
+                                        
+                                
+                                
+                .panel
+                    header#topbar.ph10
+                        .topbar-right.hidden-xs.hidden-sm
+                            a.btn.btn-default.btn-sm.light.fw600.ml10#addingMovies
+                                span.fa.fa-user.pr5
+                                |  Add Movies
+                        .row
+
+                            .col-md-4
+                                label.field.select
+                                    
+                    .panel-body.pn
+                        div.panel-body.pn.table-responsive
+                            table.table.table-striped.table-hover#contactList(cellspacing="0" width="100%")
+                                thead
+                                    tr.bg-light
+                                        th Title
+                                        th Description
+                                        th Rent Amount
+                                        th Stock
+                                        th Action 
+                                tbody
+                                    
+                                    each r,index in result.completeMovie.data
+                                        tr
+                                            td #{r.title}
+                                            td #{r.description}
+                                            td #{r.rentAmount}
+                                            td #{r.balance}
+                                            td.text-right
+                                                .btn-group.text-right
+                                                    button.btn.btn-success.br2.btn-xs.fs12.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                                                        | menu
+                                                        span.caret.ml5
+                                                    ul.dropdown-menu(role='menu')
+                                                        li
+                                                            a.edit(href='#' onclick='edit(\'' + index + '\')' ) Edit
+                                                        li
+                                                            a(href='#' onclick='del(\'' + index + '\')' ) Delete
+
+                                    
+                                
+                                    
+
+            
+            //- div.col-md-12
+            //-     div.panel.panel-visible#spy2
+            //-         div.panel-heading
+            //-             div.panel-title.hidden-xs Movie List
+            //-                 .pull-right
+            //-                     button#addMovies.btn.ladda-button.btn-info.btn-primary(type='button')
+            //-                         span.ladda-label Add Movies
+            //-                         span.ladda-spinner
+            //-                         .ladda-progress
+            //-         div.panel-body.pn.table-responsive
+            //-             table.table.table-striped.table-hover#contactList(cellspacing="0" width="100%")
+            //-                 thead
+            //-                     tr
+            //-                         th Title
+            //-                         th Description
+            //-                         th Rent Amount
+                                    
+            //-                 tbody
+            //-                     each result in data
+            //-                         tr
+            //-                             td #{result.title}
+            //-                             td #{result.description}
+            //-                             td #{result.rentAmount}
+
+        include ../endScript.html
+
+    script.
+        var data = !{JSON.stringify(result.completeMovie.data)}
+        //- $('#addingMovies').click(function(){
+        //-     $('#newMovies').removeClass('hidden')
+        //- });
+        
+
+        $('#addingMovies').click(function(){
+            $('#movieForm').removeClass('hidden')
+        });
+        $('#cancel').click(function(){
+            $('#movieForm').addClass('hidden')
+        });
+        
+        //edit data 
+        var editedData ; 
+        var editFlag = false;
+        function edit(id) {
+            console.log("result is ", id)
+            editedData = data[id]
+            editFlag = true
+            console.log('edit is clicked')
+            $('#title').val(editedData.title)
+            $('#description').val(editedData.description)
+            $('#URL').val(editedData.artUrl)
+            $('#rentAmount').val(editedData.rentAmount) 
+            console.log(editedData)
+            $('#movieForm').removeClass('hidden')
+        }
+
+        //save Button functioning
+        function addMovie(){
+            console.log('add movie Started')
+            //getting data from user
+            var userEntry = {
+                    title: $('#title').val(),
+                    description: $('#description').val(),
+                    artUrl: $('#URL').val(),
+                    rentAmount: $('#rentAmount').val()
+            }
+            //  editing existing movie 
+            if(editFlag == true){
+        
+                console.log('user Entry is ', userEntry)
+                console.log('id is : ', editedData.id)
+                editFlag = false
+                $.ajax({
+                    type: "PUT",
+                    url: '/api/movieUpdate/'+editedData.id,
+                    data: userEntry,
+                    dataType: "json",
+                    success: function(result){
+                    if(result.status){
+                        return new Promise ((resolve, reject) =>{
+                            showNotify('Movie', 'Movie Edited', 'success')
+                            resolve()
+                        }).then(()=>{
+                            window.location.href = "/movies"
+                        })
+                        
+                    }
+                
+                },
+                    error: function(err){
+                        return new Promise ((resolve, reject) =>{
+                            showNotify('Movie', 'Movie not Updated', 'error')
+                            resolve()
+                        }).then(()=>{
+                            window.location.href = "/movies"
+                        })
+                    }
+                });
+                
+            }
+            //  Creating new movie
+            else{
+                    
+                console.log(userEntry);
+                $.ajax({
+                    type: "POST",
+                    url: '/api/movie',
+                    data: userEntry,
+                    dataType: "json",
+                    success: function(result){
+                    if(result.status){
+                        return new Promise ((resolve, reject) =>{
+                            showNotify('Movie', 'Movie Created', 'success')
+                            resolve()
+                        }).then(()=>{
+                            window.location.href = "/movies"
+                        })
+                        
+                    }
+                
+                },
+                    error: function(err){
+                        return new Promise ((resolve, reject) =>{
+                            showNotify('Movie', 'Movie not Created', 'error')
+                            resolve()
+                        }).then(()=>{
+                            window.location.href = "/movies"
+                        })
+                    }
+                }); 
+            
+
+            } 
+        }
+
+
+
+        //deleting movie
+        function del(index){
+            console.log(index)
+            let movie = data[index]
+            let id = movie.id
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                  confirmButtonText: 'Yes, delete it!'
+            }).then((result) =>{
+                if(result.value){
+                    $.ajax({
+                type: "DELETE",
+                url: '/api/movie/'+id,
+                data: "movie",
+                dataType: "json",
+                success: function(res){ 
+                            if(res.status){
+                                swal(
+                                    'Deleted!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                ).then(() =>{
+                                    window.location.href = '/movies'
+                                })
+                                
+                            }
+                },
+                error: function(err){
+                       return new Promise ((resolve, reject) =>{
+                            showNotify('Movie', 'Movie not deleted', 'error')
+                            resolve()
+                        }).then(()=>{
+                            window.location.href = "/movies"
+                        })
+                }
+            })       
+                }
+            })
+            
+        }
+        jQuery(document).ready(function() {
+            $('#contactList').dataTable({
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            })
+
+        })

@@ -1,0 +1,780 @@
+extends ../layout
+
+block content
+    div#fullStore(style="margin-top: -30px")
+        include sub-pages/store-header
+        div.animated.fadeInRightBig
+            include sub-pages/tab-control
+        div#dashboardDiv
+            include sub-pages/store-dashboard
+        div.hidden#invoiceDiv
+            include sub-pages/store-invoice
+        div.hidden#ticketsDiv
+            include sub-pages/store-tickets
+        div.hidden#promotionDiv
+            include sub-pages/store-promotion
+        div.hidden#otherLocationDiv
+            include sub-pages/store-otherLocation
+
+
+    include ../endScript.html
+
+
+    script.
+
+        function addTicket(){
+            var ticketForm = `<div class='admin-form theme-primary' id='comment1'>
+                        <form id='form-comment1'>
+                            <div class='panel-body pn'>
+                                <div class='section row'>
+                                    <div class='col-md-12'>
+                                        <label for='firstname' class='field prepend-icon'>
+                                            <input type='text' name='firstname' id='firstname' class='gui-input' placeholder='Full name'>
+                                            <label for='firstname' class='field-icon'><i class='fa fa-user'></i>
+                                            </label>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class='section row'>
+                                    <div class='col-md-12'>
+                                        <label for='phoneNumber' class='field prepend-icon'>
+                                            <input type='text' name='phoneNumber' id='phoneNumber' class='gui-input' placeholder='Phone number'>
+                                            <label for='lastnphoneNumberame' class='field-icon'><i class='fa fa-phone'></i>
+                                            </label>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class='section row'>
+                                    <div class='col-md-12'>
+                                        <label for='email' class='field prepend-icon'>
+                                            <input type='email' name='email' id='email' class='gui-input' placeholder='Email address'>
+                                            <label for='email' class='field-icon'><i class='fa fa-envelope'></i>
+                                            </label>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                </div>
+                `
+
+                bootbox.dialog({
+                  message: ticketForm,
+                  title: "Add Ticket",
+                  onEscape: function() {},
+                  show: true,
+                  backdrop: true,
+                  closeButton: true,
+                  animate: true,
+                  className: "my-modal",
+                  buttons: {
+                      cancel: {
+                        label: "Cancel",
+                        className: "btn-default",
+                        callback: function() {
+
+                        }
+                      },
+                    success: {
+                      label: "Save",
+                      className: "btn-primary",
+                      callback: function() {
+                       var testName = $('#firstname').val();
+                       if (testName){
+                            console.log(testName);
+                       }else{
+                       showNotify('Notes', 'Unable to update notes','error');
+                       return false;
+                       }
+                      }
+                    }
+
+                  }
+                });
+        }
+
+        function updateNote(){
+
+            NProgress.start();
+                var data = {
+                    Notes: $('#storeNotes').val()
+                }
+                console.log("notes ",data);
+
+                $.ajax({
+                    url: '/api/stores/#{store.data.storeID}',
+                    type: 'PUT',
+                    data: data,
+                    success: function(result){
+                        if (result.status){
+                            reloadActivity(#{store.data.storeID},1);
+
+                            showNotify('Notes', 'Note is updated','system');
+                        }else{
+                            showNotify('Notes', 'Unable to update notes','error');
+                        }
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function lockOrUnlock(){
+
+            function backToNormal(){
+                if(#{store.data.isLocked}){
+                    $('#lockButton').replaceWith('<input id="lockButton" type="checkbox"  onclick="lockOrUnlock()" name="lock" checked>');
+                }else{
+                    $('#lockButton').replaceWith('<input id="lockButton" type="checkbox"  onclick="lockOrUnlock()" name="lock" unchecked>');
+                }
+            }
+
+            if($('#lockButton').is(":checked")){
+                var buttonTitle = "Lock";
+            }else{
+                var buttonTitle = "UnLock";
+            }
+
+            bootbox.prompt({
+                title: buttonTitle + " Reason",
+                message: "Pleaes enter reason.",
+                buttons:{
+                    confirm:{
+                        label:buttonTitle
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback:function(result){
+
+                    if(result == null){
+                        backToNormal();
+                    }else{
+                        if(!result.length){
+                            backToNormal();
+                            showNotify(buttonTitle,  'Failed to Save','error');
+                        }else{
+                            var data = {};
+                            if ($('#lockButton').is(":checked"))
+                            {
+                              data.isLocked = true;
+                            }else{
+                              data.isLocked = false;
+                            }
+                            data.lockReason = result;
+                            console.log(data);
+                            $.ajax({
+                                url: '/api/stores/#{store.data.storeID}',
+                                type: 'PUT',
+                                data: data,
+                                dataType: 'json',
+                                success: function(result){
+                                    console.log(result);
+                                    if(result.status){
+                                        reloadActivity(#{store.data.storeID},1);
+                                        showNotify('Store ' + buttonTitle , 'Data Saved!','primary');
+                                    }else{
+                                        backToNormal();
+                                        showNotify(buttonTitle,  'Failed to Save','error');
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+                }
+
+            });
+        }
+
+        function addComment(){
+            bootbox.prompt({
+                title: "Comment",
+                message: "Pleaes enter comment (sametime customer can see this comment too.)",
+                buttons:{
+                    confirm:{
+                        label:'Save'
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback: function(result){
+
+                    if(result){
+                        if(!result.length){
+                            showNotify('Comment',  'Failed to Save','error');
+                        }else{
+                            var data = {
+                                comment: result,
+                                referenceID: #{store.data.storeID},
+                                storeID: #{store.data.storeID},
+                                userID: #{userData.userID},
+                                userName: '#{userData.fullName}',
+                                typeID: 1,
+                            }
+
+                            $.ajax({
+                                url: '/comment',
+                                type: 'POST',
+                                data: data,
+                                success: function(commentResult){
+                                    showNotify('Comment', 'Saved!','primary');
+                                        reloadComment(#{store.data.storeID},1);
+                                        reloadActivity(#{store.data.storeID},1);
+                                }
+                            });
+
+                        }
+                    }
+                }
+
+            });
+        }
+
+        function trailChange(){
+            if($('#onTrialButton').is(":checked")){
+                var buttonTitle = "Trial ON";
+            }else{
+                var buttonTitle = "Trial OFF";
+            }
+            bootbox.confirm({
+                    message: "Are you sure? you want " + buttonTitle,
+                    size: "small",
+                    buttons:{
+                            confirm:{
+                                label:buttonTitle
+                            },
+                            cancel:{
+                                label:'Cancel'
+                            }
+                        },
+                callback:function(result){
+                    function backToNormal(){
+                        if(#{store.data.isTrial}){
+                            $('#onTrialButton').replaceWith('<input id="onTrialButton" type="checkbox"  onclick="trailChange()" name="trial" checked>');
+                        }else{
+                            $('#onTrialButton').replaceWith('<input id="onTrialButton" type="checkbox"  onclick="trailChange()" name="trial" unchecked>');
+                        }
+                    }
+
+                    if(result){
+                        var data = {};
+
+                        if ($('#onTrialButton').is(":checked"))
+                        {
+                          data.isTrial = true;
+                        }else{
+                          data.isTrial = false;
+                        }
+
+                        $.ajax({
+                            url: '/api/stores/#{store.data.storeID}',
+                            type: 'PUT',
+                            data: data,
+                            dataType: 'json',
+                            success: function(result){
+                                if(result.code == 200){
+                                    reloadActivity(#{store.data.storeID},1);
+                                    showNotify('Store ' + buttonTitle , 'Data Saved!','primary');
+                                }else{
+                                    backToNormal();
+                                    showNotify(buttonTitle,  'Failed to Save','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            backToNormal();
+                            showNotify(buttonTitle,  'Failed to Save','error');
+                        }
+                    }
+
+            });
+        }
+
+        function showStoreChange(){
+            if($('#showStoreButton').is(":checked")){
+                var buttonTitle = "Show Stores";
+            }else{
+                var buttonTitle = "Hide Stores";
+            }
+            bootbox.confirm({
+                    message: "Are you sure? you want " + buttonTitle,
+                    size: "small",
+                    buttons:{
+                            confirm:{
+                                label:buttonTitle
+                            },
+                            cancel:{
+                                label:'Cancel'
+                            }
+                        },
+                callback:function(result){
+                    function backToNormal(){
+                        if(#{store.data.showOwnStores}){
+                            $('#showStoreButton').replaceWith('<input id="showStoreButton" type="checkbox"  onclick="showStoreChange()" name="showStore" checked>');
+                        }else{
+                            $('#showStoreButton').replaceWith('<input id="showStoreButton" type="checkbox"  onclick="showStoreChange()" name="showStore" unchecked>');
+                        }
+                    }
+
+                    if(result){
+                        var data = {};
+
+                        if ($('#showStoreButton').is(":checked"))
+                        {
+                          data.showOwnStores = true;
+                        }else{
+                          data.showOwnStores = false;
+                        }
+
+                        $.ajax({
+                            url: '/api/stores/#{store.data.storeID}',
+                            type: 'PUT',
+                            data: data,
+                            dataType: 'json',
+                            success: function(result){
+                                if(result.code == 200){
+                                    reloadActivity(#{store.data.storeID},1);
+                                    showNotify('Store ' + buttonTitle , 'Data Saved!','primary');
+                                }else{
+                                    backToNormal();
+                                    showNotify(buttonTitle,  'Failed to Save','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            backToNormal();
+                            showNotify(buttonTitle,  'Failed to Save','error');
+                        }
+                    }
+
+            });
+        }
+        
+        function forceUpdateChange(){
+            if($('#forceUpdate').is(":checked")){
+                var buttonTitle = "Force Update ON";
+            }else{
+                var buttonTitle = "Force Update OFF";
+            }
+            bootbox.confirm({
+                    message: "Are you sure? you want make changes to force update.",
+                    size: "small",
+                    buttons:{
+                            confirm:{
+                                label:buttonTitle
+                            },
+                            cancel:{
+                                label:'Cancel'
+                            }
+                        },
+                callback:function(result){
+                    
+                    function backToNormal(){
+                        if(#{store.data.forceUpdate}){
+                            $('#forceUpdate').replaceWith('<input id="forceUpdate" type="checkbox" name="forceUpdate" onclick="forceUpdateChange()" checked>');
+                        }else{
+                            $('#forceUpdate').replaceWith('<input id="forceUpdate" type="checkbox" name="forceUpdate" onclick="forceUpdateChange()" unchecked>');
+                        }
+                    }
+
+                    if(result){
+                        var data = {};
+
+                        if ($('#forceUpdate').is(":checked"))
+                        {
+                          data.forceUpdate = true;
+                        }else{
+                          data.forceUpdate = false;
+                        }
+
+                        $.ajax({
+                            url: '/api/stores/#{store.data.storeID}',
+                            type: 'PUT',
+                            data: data,
+                            dataType: 'json',
+                            success: function(result){
+                                if(result.code == 200){
+                                    reloadActivity(#{store.data.storeID},1);
+                                    showNotify('Store ' + buttonTitle , 'Data Saved!','primary');
+                                }else{
+                                    backToNormal();
+                                    showNotify(buttonTitle,  'Failed to Save','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            backToNormal();
+                            showNotify(buttonTitle,  'Failed to Save','error');
+                        }
+                    }
+
+            });
+        }
+        
+        function reqUpdatedInfo(){
+            if($('#reqUpdatedInfo').is(":checked")){
+                var buttonTitle = "ON";
+            }else{
+                var buttonTitle = "OFF";
+            }
+            bootbox.confirm({
+                    message: "Are you sure? you want request store information update.",
+                    buttons:{
+                            confirm:{
+                                label:buttonTitle
+                            },
+                            cancel:{
+                                label:'Cancel'
+                            }
+                        },
+                callback:function(result){
+                    
+                    function backToNormal(){
+                        console.log(#{store.data.reqUpdatedInfo});
+                        if(#{store.data.reqUpdatedInfo}){
+                            $('#reqUpdatedInfo').replaceWith('<input id="reqUpdatedInfo" type="checkbox" name="reqUpdatedInfo" onclick="reqUpdatedInfo()" checked>');
+                        }else{
+                            $('#reqUpdatedInfo').replaceWith('<input id="reqUpdatedInfo" type="checkbox" name="reqUpdatedInfo" onclick="reqUpdatedInfo()" unchecked>');
+                        }
+                    }
+
+                    if(result){
+                        var data = {};
+
+                        if ($('#reqUpdatedInfo').is(":checked"))
+                        {
+                          data.reqUpdatedInfo = true;
+                        }else{
+                          data.reqUpdatedInfo = false;
+                        }
+                        
+                        $.ajax({
+                            url: '/api/stores/#{store.data.storeID}',
+                            type: 'PUT',
+                            data: data,
+                            dataType: 'json',
+                            success: function(result){
+                                if(result.code == 200){
+                                    reloadActivity(#{store.data.storeID},1);
+                                    showNotify('Request Store Information ' + buttonTitle , 'Data Saved!','primary');
+                                }else{
+                                    backToNormal();
+                                    showNotify('Request Store Information ' + buttonTitle ,  'Failed to Save','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            backToNormal();
+                            showNotify('Request Store Information ' + buttonTitle ,  'Failed to Save','error');
+                        }
+                    }
+
+            });
+        }
+
+        function hideCommercial(){
+            if($('#hideCommercial').is(":checked")){
+                var buttonTitle = "Yes";
+            }else{
+                var buttonTitle = "No";
+            }
+            bootbox.confirm({
+                    message: "Are you sure? you want to hide commercial.",
+                    buttons:{
+                            confirm:{
+                                label:buttonTitle
+                            },
+                            cancel:{
+                                label:'Cancel'
+                            }
+                        },
+                callback:function(result){
+                    
+                    function backToNormal(){
+                        console.log(#{store.data.hideCommercial});
+                        if(#{store.data.hideCommercial}){
+                            $('#hideCommercial').replaceWith('<input id="hideCommercial" type="checkbox" name="hideCommercial" onclick="hideCommercial()" checked>');
+                        }else{
+                            $('#hideCommercial').replaceWith('<input id="hideCommercial" type="checkbox" name="hideCommercial" onclick="hideCommercial()" unchecked>');
+                        }
+                    }
+
+                    if(result){
+                        var data = {};
+
+                        if ($('#hideCommercial').is(":checked"))
+                        {
+                          data.hideCommercial = true;
+                        }else{
+                          data.hideCommercial = false;
+                        }
+                        
+                        $.ajax({
+                            url: '/api/stores/#{store.data.storeID}',
+                            type: 'PUT',
+                            data: data,
+                            dataType: 'json',
+                            success: function(result){
+                                if(result.code == 200){
+                                    reloadActivity(#{store.data.storeID},1);
+                                    showNotify('Hide Commercial ' + buttonTitle , 'Data Saved!','primary');
+                                }else{
+                                    backToNormal();
+                                    showNotify('Hide Commercial ' + buttonTitle ,  'Failed to Save','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            backToNormal();
+                            showNotify('Hide Commercial ' + buttonTitle ,  'Failed to Save','error');
+                        }
+                    }
+
+            });
+        }
+
+        function testStore(){
+            if($('#testStore').is(":checked")){
+                var buttonTitle = "YES";
+            }else{
+                var buttonTitle = "NO";
+            }
+            bootbox.confirm({
+                    message: "Are you sure? you want make this store test location?",
+                    buttons:{
+                            confirm:{
+                                label:buttonTitle
+                            },
+                            cancel:{
+                                label:'Cancel'
+                            }
+                        },
+                callback:function(result){
+                    
+                    function backToNormal(){
+                        console.log(#{store.data.testStore});
+                        if(#{store.data.testStore}){
+                            $('#testStore').replaceWith('<input id="testStore" type="checkbox" name="testStore" onclick="testStore()" checked>');
+                        }else{
+                            $('#testStore').replaceWith('<input id="testStore" type="checkbox" name="testStore" onclick="testStore()" unchecked>');
+                        }
+                    }
+
+                    if(result){
+                        var data = {};
+
+                        if ($('#testStore').is(":checked"))
+                        {
+                          data.testStore = true;
+                        }else{
+                          data.testStore = false;
+                        }
+                        
+                        $.ajax({
+                            url: '/api/stores/#{store.data.storeID}',
+                            type: 'PUT',
+                            data: data,
+                            dataType: 'json',
+                            success: function(result){
+                                if(result.code == 200){
+                                    reloadActivity(#{store.data.storeID},1);
+                                    showNotify('Test Location Set to ' + buttonTitle , 'Data Saved!','primary');
+                                }else{
+                                    backToNormal();
+                                    showNotify('Test Location Set to ' + buttonTitle ,  'Failed to Save','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            backToNormal();
+                            showNotify('Test Location Set to ' + buttonTitle ,  'Failed to Save','error');
+                        }
+                    }
+
+            });
+        }
+
+        function cancelStore(){
+            if($('#cancelButton').is(":checked")){
+                var buttonTitle = "Unsubcribe";
+            }else{
+                var buttonTitle = "Subscribe";
+            }
+            //alert(buttonTitle);
+            bootbox.prompt({
+                title: buttonTitle + " Reason",
+                message: "Pleaes enter reason.",
+                buttons:{
+                    confirm:{
+                        label:buttonTitle
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback:function(result){
+                    function backToNormal(){
+                        if(#{store.data.isCanceled}){
+                            $('#cancelButton').replaceWith('<input id="cancelButton" type="checkbox"  onclick="cancelStore()" name="cancel" checked>');
+                        }else{
+                            $('#cancelButton').replaceWith('<input id="cancelButton" type="checkbox"  onclick="cancelStore()" name="cancel" unchecked>');
+                        }
+                    }
+
+                    if(result == null){
+                        backToNormal();
+                    }else{
+                        if(!result.length){
+                            backToNormal();
+                            showNotify(buttonTitle,  'Failed to Save','error');
+                        }else{
+                            var data = {};
+                            if ($('#cancelButton').is(":checked"))
+                            {
+                              data.isCanceled = true;
+                            }else{
+                              data.isCanceled = false;
+                            }
+                            data.cancelReason = result;
+
+                            $.ajax({
+                                url: '/api/stores/#{store.data.storeID}',
+                                type: 'PUT',
+                                data: data,
+                                success: function(result){
+                                    if(result.code == 200){
+                                        reloadActivity(#{store.data.storeID},1);
+                                        showNotify('Store ' + buttonTitle , 'Data Saved!','primary');
+                                    }else{
+                                        backToNormal();
+                                        showNotify(buttonTitle,  'Failed to Save','error');
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+                }
+
+            });
+        }
+
+        function updateCollection(){
+            bootbox.confirm({
+                message: "Are you sure?",
+                size: "small",
+                buttons:{
+                        confirm:{
+                            label:'YES'
+                        },
+                        cancel:{
+                            label:'NO'
+                        }
+                    },
+                    callback: function(result){
+
+            if (result){
+                var data = {};
+                if ($('#autoChargeButton').is(":checked"))
+                {
+                  data.autoCollect = true;
+                }else{
+                  data.autoCollect = false;
+                }
+
+                    $.ajax({
+                        url: '/api/stores/#{store.data.storeID}',
+                        type: 'PUT',
+                        data: data,
+                        dataType: 'json',
+                        success: function(result){
+                            if(result.code == 200){
+                                reloadActivity(#{store.data.storeID},1);
+                                showNotify('Auto Collect', 'Auto Collect Saved','success');
+                            }else{
+
+
+                                if(#{store.data.autoCollect}){
+                                    $('#autoCollectButton').replaceWith('<input id="autoCollectButton" type="checkbox"  onclick="updateCollection()" name="autoCharge" checked>');
+                                }else{
+                                    $('#autoCollectButton').replaceWith('<input id="autoCollectButton" type="checkbox"  onclick="updateCollection()"  name="autoCharge" unchecked>');
+                                }
+                                showNotify('Auto Collect',  'Failed to Save Auto Collect','error');
+                            }
+
+
+                        }
+                    });
+            }else{
+                //alert(typeof #{store.data.autoCollect});
+                if(#{store.data.autoCollect}){
+                    $('#autoChargeButton').replaceWith('<input id="autoChargeButton" type="checkbox"  onclick="updateCollection()" name="trial" checked>');
+                }else{
+                    $('#autoChargeButton').replaceWith('<input id="autoChargeButton" type="checkbox"  onclick="updateCollection()" name="trial" unchecked>');
+                }
+                showNotify('Auto Collect', 'Nothing was save','info');
+
+            }
+         }
+        });
+
+        }
+
+        jQuery(document).ready(function() {
+
+                var activity = !{JSON.stringify(activity.data)}
+                $('#activityCount').text(activity.length);
+
+                if(activity.length == 0){
+                    $('#toggle_activity').addClass('hidden');
+                }else{
+                    $('#toggle_activity').removeClass('hidden');
+                }
+
+                $('#storeList').dataTable({
+                  "aaSorting": [[0, 'desc']],
+                  "aoColumnDefs": [{
+                    'bSortable': false
+                  }],
+                  "oLanguage": {
+                  "oPaginate": {
+                    "sPrevious": "Previous",
+                    "sNext": "Next"
+                  }
+                },
+                  "iDisplayLength": 15,
+                  "aLengthMenu": [
+                    [15, 25, 35, 50, -1],
+                    [15, 25, 35, 50, "All"]
+                  ],
+                  "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+                });
+            });
+
+
+            function newCSP(){
+                $.showLoading({name: 'line-scale'});
+
+                var x = $('#CSPID').val();
+                location.href = "/stores/store/" + x;
+            }
+
+            $('#CSPID').keypress(function(e){
+                if(e.which == 13){
+                    newCSP();
+                }
+            });

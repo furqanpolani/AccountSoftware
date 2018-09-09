@@ -1,0 +1,69 @@
+extends ../layout
+
+block content
+    div#fullTicket
+        include sub-pages/task/task-header
+        include sub-pages/task/task-dashboard
+
+
+    include ../endScript.html
+
+    script.
+
+        function addComment(){
+            bootbox.prompt({
+                title: "Comment",
+                message: "Pleaes enter comment",
+                buttons:{
+                    confirm:{
+                        label:'Save'
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback: function(result){
+
+                    if(result){
+                        if(!result.length){
+                            showNotify('Comment',  'Failed to Save','error');
+                        }else{
+
+                            var data = {
+                                comment: result,
+                                referenceID: #{task.data.id},
+                                storeID: #{task.data.id},
+                                userID: #{userData.userID},
+                                userName: '#{userData.fullName}',
+                                typeID: 6,
+                            }
+                            console.log('commet value ', data);
+
+                            $.ajax({
+                                url: '/comment',
+                                type: 'POST',
+                                data: data,
+                                success: function(commentResult){
+
+                                    sendNotification({
+                                        heading: 'New Comment',
+                                        body: 'Comment was left on your task # #{task.data.id} by ',
+                                        assignedToUserID:$('#assignedTo option:selected').val(),
+                                        link: 'tasks/taskPage/#{task.data.id}',
+                                        fromID: #{task.data.id},
+                                        typeID: 6,
+                                        user: !{JSON.stringify(userData)}
+                                    });
+
+                                    showNotify('Comment', 'Saved!','primary');
+                                        reloadComment(#{task.data.id},6);
+                                        reloadActivity(#{task.data.id},6);
+                                }
+                            });
+
+                        }
+                    }
+                }
+
+            });
+        }

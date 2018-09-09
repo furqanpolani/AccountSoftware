@@ -1,0 +1,72 @@
+extends ../layout
+
+block content
+    div#fullTicket
+        include ../pages/models/lead-modal
+        include ../pages/models/lead-edit-modal
+        include sub-pages/lead/lead-header
+        header#topbar.ph10
+
+            div.topbar-right.hidden-xs.hidden-sm#toggle_activity
+
+                div.ml15.ib.va-m
+                    a(href="#").pl5
+                        i.fa.fa-sign-in.fs22.text-primary
+                        span#activityCount.badge.badge-hero.badge-danger 0
+        include sub-pages/lead/lead-dashboard
+
+
+    include ../endScript.html
+
+    script.
+    
+        function convertStatus(statusID){
+            if(statusID == 30 ){
+                $('#convertedDiv').removeClass('hidden');
+            }else{
+                $('#convertedDiv').addClass('hidden');
+            }
+        }
+        
+        $('#toggle_activity').click(function(){
+            if( $('.activityDiv').hasClass('hidden') ){
+                $('.activityDiv').removeClass('hidden');
+                $('#toggle_activity i').removeClass('fa-sign-in');
+                $('#toggle_activity i').addClass('fa-sign-out');
+
+            }else{
+                $('.activityDiv').addClass('hidden');
+                $('#toggle_activity i').removeClass('fa-sign-out');
+                $('#toggle_activity i').addClass('fa-sign-in');
+            }
+        });
+        
+        var activity = !{JSON.stringify(activity.data)}
+        $('#activityCount').text(activity.length);
+
+        function updateNote(){
+                var leadData = {
+                    notes: $('#notes').val()
+                };
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/leads/#{leads.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(leadData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Lead',  'Note was updated','system');
+                            reloadActivity(#{leads.data.id},4);
+                        }else{
+                            showNotify('Lead',  'Unable to update note.','error');
+                        }
+                        console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }

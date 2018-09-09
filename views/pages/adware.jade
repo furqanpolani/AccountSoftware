@@ -1,0 +1,50 @@
+doctype html
+html
+    head
+        <meta charset="utf-8">
+        title CellSmart POS
+        <link rel='stylesheet' href='/stylesheets/superslides.css'>
+    body
+        div#slides  
+            div.slides-container
+                each item in adList
+                    //- a(href="#{item.clickUrl}" target="_blank")
+                    img(src="#{item.url}" id="image" alt="#{item.description}" onclick="clickImage(#{item.id}, '#{item.clickUrl}', #{storeId}, #{source})")
+                        
+    <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.easing.1.3.js"></script>
+    <script src="/javascripts/jquery.animate-enhanced.min.js"></script>
+    <script src="/javascripts/jquery.superslides.js" type="text/javascript" charset="utf-8"></script>
+    
+    script.
+
+        $(function(){
+            $('#slides').superslides({ 
+                hashchange: true,
+                play: 10000 
+            });
+        });
+
+        function clickImage(id,url,storeId,source) {
+
+             $.ajax({
+                url: '/noToken/clickImages/gotClick/' + storeId + '/' + id + '/' + source,
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function(result){
+                    //console.log('result ', result);
+                },
+                error:function(err){
+                  //console.log('we got error ', err);
+                    
+                }
+            });
+            
+            window.open(url,'_blank')
+        }
+
+    style.
+
+        .slides-pagination { display: none; }
+         html, body { overflow: hidden }

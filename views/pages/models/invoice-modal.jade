@@ -1,0 +1,193 @@
+style(type='text/css').
+    .shippingInput {
+        margin-bottom:10px;
+        margin-top: 10px;
+        min-width:65%;
+    }
+    .tray-center {
+        padding-bottom: 20px !important;
+    }
+
+<link href="/plugins/css/gspinner.min.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/g-spinner.min.js"></script>
+div#invoice-form.popup-basic.popup-full.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#invoiceTitle
+                    | Invoice
+        form#customerAndCharge.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-3
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Billing
+                            div.panel-body(style="padding:10px;height:170px")
+                                div#customerBody
+                                    div#loading
+                    div.col-md-4
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Shipping
+                                span.pull-right(style='padding-right:10px;')
+                                    input#sameAddress(type='checkbox')
+                                    label(style='padding-left:5px;') Same as billing
+                            div.panel-body(style="padding:10px")
+                                div.row.form-inline
+                                    div.col-xs-6.form-group
+                                        input.form-control#shippingName(type="text" placeHolder="Name" style="width:100%;margin-bottom: 5px;margin-top: 5px;")
+                                    div.col-xs-6.form-group
+                                        input.form-control#shippingBusinessName(type="text" placeHolder="Business Name" style="width:100%;margin-bottom: 5px;margin-top: 5px;")
+                                    div.col-xs-12.form-group
+                                        input.form-control#shippingAddress(type="text" placeHolder="Street Address" style="width:100%;margin-bottom: 5px;margin-top: 5px;")
+                                    div.col-xs-7.form-group
+                                        input.form-control#shippingCity(type="text" placeHolder="City" style="width:100%;margin-bottom: 5px;margin-top: 5px;")
+                                    div.col-xs-2.form-group
+                                        input.form-control#shippingState(type="text" placeHolder="State" style="width:100%;margin-bottom: 5px;margin-top: 5px;")
+                                    div.col-xs-3.form-group
+                                        input.form-control#shippingZipcode(type="text" placeHolder="Zipcode" style="width:100%;margin-bottom: 5px;margin-top: 5px;")
+
+                    div.col-md-5.col-lg-4.pull-right
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.imoon.imoon-calendar(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Date
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        label.control-label(style="margin-bottom: 5px;margin-top: 5px;") Invoice Date
+                                        input.form-control.pull-right#invoiceDate(type="text" name="invoiceDate" style="margin-bottom:5px; margin-top: 5px;")
+                                    div.col-xs-12.form-group.right32.hidden
+                                        label.control-label(style="margin-bottom: 5px;margin-top: 5px;") Charge Date
+                                        input.form-control.pull-right#chargeDate(type="text" name="chargeDate" style="margin-bottom:5px; margin-top: 5px;")
+                                    div.col-xs-12.form-group
+                                        label.control-label(style="margin-bottom: 5px;margin-top: 5px;") Paid Date
+                                        input.form-control.pull-right#paidDate(type="text" disabled name="paidDate" style="margin-bottom:5px; margin-top: 5px;")
+
+            section#content.table-layout
+                div.tray-center
+                    div.row
+                        div.col-md-12
+                            div.admin-form#entryLine
+                                div.panel
+                                    div.panel-body(style="padding:10px;")
+                                        div.row
+                                            div.col-md-11
+                                                div.row
+                                                    div.col-md-2
+                                                        label.field-label(for="itemCode") Search Item
+                                                        label.field(for="itemCode")
+                                                            input.form-control#itemCodeInput(type="text" placeholder="Search for...")
+                                                    div.col-md-4
+                                                        label.field-label(for="itemName") Item Name
+                                                        label.field(for="itemName")
+                                                            input.form-control#itemName(name="itemName" type="text")
+                                                    div.col-md-2
+                                                        label.field-label(for="qty") Quantity
+                                                        label.field(for="qty")
+                                                            input.form-control.text-center#qty(name="qty" onchange='updatePrice()' type="number" )
+                                                    div.col-md-2
+                                                        label.field-label(for="unitPrice") Unit Price
+                                                        label.field(for="unitPrice")
+                                                            input.form-control.text-right#unitPrice(name="unitPrice" type="number" onchange='updatePrice()' )
+                                                    div.col-md-2
+                                                        label.field-label(for="total") Total
+                                                        label.field(for="total" )
+                                                            input.form-control.text-right#total(name="total" type="number" readonly)
+                                            div.col-md-1
+                                                button.btn.btn-lg.btn-primary.btn-block.disabled#addButton(type="button" style="line-height:3;") ADD
+                            div.panel
+                                div.panel-body.pn(style="width:100%; display: inline-block;overflow-y: scroll; height:200px;")
+                                    table.table.table-striped.table-hover#productList(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th Item Name
+                                                th Quantity
+                                                th Tax
+                                                th Unit Price
+                                                th Total
+                                        tbody#invoiceRow
+                            div
+                                div.panel-body.pn(style="padding:10px;")
+                                    div.row
+                                        div.col-md-4
+                                            div.panel
+                                                div.panel-heading(style="padding:0px;")
+                                                    span.panel-icon
+                                                        i.imoon.imoon-truck(style="padding-left:5px;")
+                                                    span.panel-title(style="padding-left:5px;font-size:14px;")
+                                                    | Shipping
+                                                div.panel-body(style="padding:10px;")
+                                                    div.row.form-inline
+                                                        div.col-xs-12.form-group
+                                                            label.control-label(style="margin-bottom: 5px;margin-top: 10px;") Shipping Carrier
+                                                            input.form-control.pull-right.shippingInput#shipBy(type="text")
+                                                        div.col-xs-12.form-group(style="padding-top:10px;")
+                                                            label.control-label(style="margin-bottom: 10px;margin-top: 10px;") Tracking Number
+                                                            input.form-control.pull-right.shippingInput#trackingNumber(type="text" )
+                                        div.col-md-2
+                                        div.col-md-2#givenDays
+                                            table.pull-right.table.mbn.tc-med-1.tc-bold-last
+                                                thead
+                                                    tr.hidden
+                                                        th Action
+                                                        th CSP ID
+                                                tbody
+                                                    tr
+                                                        td(style="padding: 4px 9px 4px 9px;") Total Giving Days
+                                                        td#displayGivingDays(style="padding: 4px 9px 4px 9px;") 0
+                                                    tr
+                                                        td#labelForDueDate(style="padding: 4px 9px 4px 9px;") New Due Date
+                                                        td#newDueDate(style="padding: 4px 9px 4px 9px;")
+                                        div.col-md-2.pull-right
+                                            table.pull-right.table.mbn.tc-med-1.tc-bold-last
+                                                thead
+                                                    tr.hidden
+                                                        th Action
+                                                        th CSP ID
+                                                tbody
+                                                    tr
+                                                        td(style="padding: 4px 9px 4px 9px;") Sub Total
+                                                        td.currency#subTotal(style="padding: 4px 9px 4px 9px;") 0.00
+                                                    tr
+                                                        td(style="padding: 4px 9px 4px 9px;") Tax Amount
+                                                        td.currency#totalTaxAmount(style="padding: 4px 9px 4px 9px;") 0.00
+                                                    tr
+                                                        td(style="padding: 4px 9px 4px 9px;") Due Amount
+                                                        td#dueAmount.currency(style="padding: 4px 9px 4px 9px;") 0.00
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button.disabled#invoiceSaveButton(type="button" data-style="zoom-in" data-size="l" onclick='saveInvoice()'  ) Save Change
+
+
+
+    script.
+
+        var productName = !{JSON.stringify(invoiceProductList.data)}
+        var selectedValue = "";
+        console.log('productName ',productName)
+        $('#itemCodeInput').autocomplete({
+            lookup: productName,
+            onSelect: function(selected){
+                $('#addButton').removeClass('disabled');
+                 $('#itemName').val(selected.data.productDetail);
+                 $('#qty').val(selected.data.defaultQuantity);
+                 $('#unitPrice').val(selected.data.amount);
+                 $('#total').val(selected.data.amount * selected.data.defaultQuantity) ;
+                 $('#addButton').focus();
+                 selectedValue = selected
+                 $('#itemCodeInput').val("");
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: true,
+            groupBy: "productType"
+        });

@@ -1,0 +1,246 @@
+style.
+    .custom-button{
+        width:100%;
+        height:39px;
+    }
+div#user-From.popup-basic.popup-lg.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                | Edit User
+        form#editUser
+            div.panel-body.p25
+                div.panel-heading
+                    div
+                        span.panel-title
+                        | User Information
+                        div.pull-right
+                            span(style='vertical-align:top;padding-right:10px') Acitve
+                            div.switch.switch-danger.round.switch-inline(style="padding-top:6px; ")
+                                input#isActive(type="checkbox" name="isActive")
+                                label(for="isActive",data-on="YES",data-off="NO")
+
+                div.panel-body
+                    div.row
+                        div.col-md-3
+                            div.fileupload.fileupload-new(data-provides="fileupload")
+                                div.fileupload-preview.thumbnail.cursor.mb15
+                                    if userData.imageUrl
+                                        img#userImage(src="#{userData.imageUrl}"  title="placeholder img")
+                                    else
+                                        img#userImage(src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png"  title="placeholder img")
+                                span#imageChangeButton.btn.btn-primary.btn-file.btn-block
+                                    span.fileupload-new Change
+                                    span.fileupload-exists Change
+                                    input(type="file")
+                        div.col-md-9.admin-form
+                            div.row.form-inline
+                                div.col-xs-12.form-group
+                                    input.form-control#fullName(type="text" style="width:100%; margin-bottom:5px;" placeholder="Full Name")
+                                div.col-xs-12.form-group
+                                    input.form-control#emailAddress(type="email" autocomplete="off" style="width:100%;margin-bottom:5px;" placeholder="Email Address")
+                                div.col-xs-12.form-group
+                                    input.form-control.hidden#password_fake(type="password" autocomplete="off" style=" width:100%;margin-bottom:5px;" placeholder="Password")
+                                    input.form-control#password(type="password" autocomplete="off" style=" width:100%;margin-bottom:5px;" placeholder="Password")
+                                div.col-xs-12.form-group
+                                    label.field.select(for="currentAccessType" )
+                                        select#currentAccessType(name="currentAccessType" )
+                                            each accRow in accountType.data
+                                                if accRow.accountTypeID == 5
+                                                    option(value="#{accRow.accountTypeID}" selected) #{accRow.accountTypeName}
+                                                else
+                                                    option(value="#{accRow.accountTypeID}") #{accRow.accountTypeName}
+                                        i.arrow
+
+            section#content.table-layout
+                div.tray-center(style="padding-bottom:15px;")
+                    div.row
+                        div.col-md-12
+                            div
+                                div.panel-heading
+                                    span.panel-title
+                                    | User Access
+                                div.panel-body.admin-form
+                                    div.row
+                                        div.col-md-9(style="margin-bottom:10px;")
+                                            label.field.select(for="accountType")
+                                                select#accountType(name="accountType")
+                                                    each account in accountType.data
+                                                            option(value="#{account.accountTypeID}" data-rights="#{account.rightID}") #{account.accountTypeName}
+                                                i.arrow
+
+                                        div.col-md-3
+                                            button.custom-button.btn.btn-dark.btn-gradient.dark.btn-block(onclick="addRightFromType()" type="button") Give
+
+                                        div.col-md-9
+                                            label.field.select(for="userRights")
+                                                select#userRights(name="userRights")
+                                                    each right in userRights.data
+                                                            option(value="#{right.rightID}") #{right.rightName}
+                                                i.arrow
+
+                                        div.col-md-3
+                                            button.custom-button.btn.btn-dark.btn-gradient.dark.btn-block(onclick="addRight()" type="button") Add Right
+                            div.panel(style="margin-top:10px;")
+                                div.panel-body.pn(style="width:100%; display: inline-block;overflow-y: scroll; height:250px;")
+
+                                    table.table.table-striped.table-hover#accessList(cellspacing="0" width="100%")
+                                        thead
+                                            tr
+                                                th
+                                                    span Access
+                                                    span#rightCount.pull-right 0 Rights Giving
+
+                                        tbody#accessRow
+
+
+
+
+            div.panel-footer.clearfix.admin-form
+                button.button.btn-primary.mr10.pull-right(type="button" onclick="saveUser()") Save Change
+
+    <script src="/plugins/js/fileupload.js"></script>
+    script.
+
+        var imageChange = false
+        function saveUser(){
+            var userData = {
+                userName: $('#fullName').val(),
+                loginEmail: $('#emailAddress').val(),
+                accountTypeID: $("#currentAccessType option:selected").val(),
+                userRights: rightValues.toString(),
+                isActive: $('#isActive').is(':checked'),
+                imageUrl: $('img').prop('src')
+            };
+            if($('#password').val() != ""){
+                userData['loginPassword'] = $('#password').val();
+            }
+
+            console.log(userData);
+            //console.log(rightValues);
+
+            //- $.ajax({
+            //-     url: '/api/user/' + $('#user-From').attr('userid'),
+            //-     type: 'PUT',
+            //-     contentType: 'application/json',
+            //-     data: JSON.stringify(userData),
+            //-     dataType: 'json',
+            //-     success: function(result){
+            //-             console.log(result);
+            //-         if (result){
+            //-             $.magnificPopup.close();
+            //-             showNotify('User',  'User was updated','system');
+            //-             //location.reload();
+            //-         }else{
+            //-             showNotify('User',  'Unable to update user.','error');
+            //-         }
+            //-         //console.log("return values ", result)
+            //-     }
+            //- }).always(function(){
+            //-     NProgress.done();
+            //- });
+
+        }
+
+        $('.fileupload-preview').on('click', function() {
+
+            $('.btn-file > input').click();
+            imageChange = true;
+        });
+
+        $('#imageChangeButton').on('click', function(){
+            imageChange = true;
+        });
+
+        function addRightFromType(){
+            rightValues = [];
+            //empty the table.
+            $("#accessList > tbody").html("");
+
+            //var typeRights = $("#accountType option:selected").attr('data-rights').split(",");
+
+            var accountID = $('#accountType').val();
+            console.log("accountID ", accountID)
+
+
+            var rightValues = !{JSON.stringify(userRights.data)}
+                //console.log(rightValues);
+                rightValues.forEach(row =>{
+                    //console.log(row);
+                        var accountTypeIDs = row.accountTypeID.split(",");
+                            console.log("account in array ", accountTypeIDs);
+                            if($.inArray( accountID, accountTypeIDs ) != -1){
+                                var rowValues = {
+                                    accessID:parseInt(row.rightID),
+                                    accessName:row.rightName
+                                };
+
+                                addUserRow(rowValues);
+
+                                updateRights();
+                            }
+                });
+
+        }
+
+        function addRight(){
+
+            var rowValues = {
+                accessID:parseInt($("#userRights option:selected").val()),
+                accessName:$( "#userRights option:selected" ).text()
+            };
+
+
+            if (checkRightExisit(rowValues.accessID) != -1){
+                showNotify("Access",$( "#userRights option:selected" ).text() + " already exist.",'primary');
+            }else{
+                //console.log("found already ",checkRightExisit(rowValues.accessID))
+                addUserRow(rowValues);
+
+            }
+
+            updateRights();
+            //console.log(rowValues)
+
+        }
+
+        $("tbody").on("click",".removeBtn",function(e){
+            $(this).closest("tr").remove();
+            updateRights();
+        });
+
+        function addUserRow(rowValues){
+            //console.log(rowValues);
+            var htmlTableRow = "<tr class='animated fadeInDown'>"
+            htmlTableRow = htmlTableRow + "<td>"
+            htmlTableRow = htmlTableRow + "<div class='row form-inline'>"
+            htmlTableRow = htmlTableRow + "<div class='col-xs-12'>"
+            htmlTableRow = htmlTableRow + "<div class='col-md-1' style='width:5%;'>"
+            htmlTableRow = htmlTableRow + "<button type='button' class='btn btn-xs btn-danger removeBtn' ><i class='imoon imoon-remove2'></i></button></div>"
+
+            htmlTableRow = htmlTableRow + "<div class='col-md-1 text-center' style='padding-top:2px;'><span class='accessID'>" + rowValues.accessID + "</span></div>"
+
+            htmlTableRow = htmlTableRow + "<div class='col-md-10' style='padding-top:2px;'><span class='accessName'>" + rowValues.accessName + "</span>"
+
+            htmlTableRow = htmlTableRow + "</div></div></td></tr>"
+
+            $('#accessRow').append(htmlTableRow);
+        }
+
+        function updateRights(){
+            rightValues = [];
+            $('#accessList tbody tr').each(function(){
+                rightValues.push(parseInt($(this).find('.accessID').html()));
+            });
+            $('#rightCount').text(rightValues.length + " Rights giving")
+            $('#rightCount').removeClass('animated bounceIn').addClass('animated bounceIn').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+              $(this).removeClass('animated bounceIn');
+            });
+
+
+        }
+
+        function checkRightExisit(id){
+             return $.inArray( id, rightValues );
+        }

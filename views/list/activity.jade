@@ -1,0 +1,108 @@
+ol.timeline-list.pl5.mt5
+    each activeRow in activity.data
+        li.timeline-item
+            case activeRow.status
+                when "create"
+                    div.timeline-icon.bg-system.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-plus
+                when "note"
+                    div.timeline-icon.bg-warning.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-book
+                when "comment"
+                    div.timeline-icon.bg-alert.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-comment
+                when "trialOn"
+                    div.timeline-icon.bg-alert.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-cloud-download
+                when "chargeFail"
+                    div.timeline-icon.bg-danger.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-credit-card
+                when "dueDate"
+                    div.timeline-icon.bg-warning.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-calendar
+                when "invoiceCollected"
+                    div.timeline-icon.bg-system.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-credit-card
+                when "delete"
+                    div.timeline-icon.bg-danger.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-trash-o
+                when "trialOff"
+                    div.timeline-icon.bg-alert.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-cloud-download
+                when "collectOn"
+                    div.timeline-icon.bg-success.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-money
+                when "collectOff"
+                    div.timeline-icon.bg-danger.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-money
+                when "auto"
+                    div.timeline-icon.bg-danger.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-money
+                when "alertOn"
+                    div.timeline-icon.bg-success.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-warning
+                when "rate"
+                    div.timeline-icon.bg-success.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-star
+                when "alertOff"
+                    div.timeline-icon.bg-danger.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-warning
+                when "cardDelete"
+                    div.timeline-icon.bg-danger.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-trash-o
+                when "description"
+                    div.timeline-icon.bg-system.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-edit
+                when "progress"
+                    div.timeline-icon.bg-warning.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-edit
+                when "status"
+                    div.timeline-icon.bg-default.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-stack
+                when "assined"
+                    div.timeline-icon.bg-info.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.glyphicon.glyphicon-move
+                when "close"
+                    div.timeline-icon.bg-system.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-close
+                when "open"
+                    div.timeline-icon.bg-danger.ligth(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-sign-in
+                when "solution"
+                    div.timeline-icon.bg-success.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-check
+                when "cardAdded"
+                    div.timeline-icon.bg-system.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-credit
+                when "cardChange"
+                    div.timeline-icon.bg-alert.dark(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-exchange
+                when "unlock"
+                    div.timeline-icon.bg-success.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-unlock
+                when "lock"
+                    div.timeline-icon.bg-danger.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-lock
+                when "cancel"
+                    div.timeline-icon.bg-danger.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-stop
+                when "uncancel"
+                    div.timeline-icon.bg-success.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.imoon.imoon-play
+                when "update"
+                    div.timeline-icon.bg-primary.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-pencil
+                when "ticketCreated"
+                    div.timeline-icon.bg-primary.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-tags
+                default
+                    div.timeline-icon.bg-dark.light(data-toggle="tooltip" title="#{activeRow.data}")
+                        span.fa.fa-tags
+
+            div.timeline-desc
+                if activeRow.userName
+                    b #{activeRow.userName}
+                else
+                    b No User
+                |  #{activeRow.activity}
+            div.timeline-date(data-toggle="tooltip" title="#{moment(activeRow.createdAt).tz('America/New_York').format('MM/DD/YYYY h:mm:ss A')}") #{moment(activeRow.createdAt).fromNow(true)}

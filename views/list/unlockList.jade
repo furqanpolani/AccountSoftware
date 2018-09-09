@@ -1,0 +1,54 @@
+div.panel.panel-visible#spy3
+    div.panel-heading
+        div.panel-title.hidden-xs Unlock
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#unlockList(cellspacing="0" width="100%" )
+            thead
+                tr
+                    th ID #
+                    th Date
+                    th Phone Name
+                    th IMEI Number
+                    th PrecessTime
+                    th Price
+                    th Status
+                    th Unlock Code
+                    th Alert Email
+                    th Employee Name
+                    th Charge
+            tbody
+                each item in unlocks.data
+                    tr
+                        td #{item.id}
+                        td #{moment(item.createdAt).tz('America/New_York').format('MM/DD/YYYY')}
+                        td #{item.toolName}
+                        td.text-center #{item.imeiNumber}
+                        td #{item.processTime}
+                        td.text-right.currency #{item.price}
+                        td.text-center #{item.status}
+                        td #{item.unlockCode}
+                        td #{item.alertEmail}
+                        td #{item.employeeName}
+                        td #{item.charge}
+
+    script.
+
+        jQuery(document).ready(function() {
+
+            $('#unlockList').dataTable({
+              "aaSorting": [[0, 'desc']],
+              "oLanguage": {
+              "oPaginate": {
+                "sPrevious": "Previous",
+                "sNext": "Next"
+              }
+            },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+              });
+        });

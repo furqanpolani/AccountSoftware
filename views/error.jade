@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    div.center-block.mt50.mw800
+        h1.error-title 404!
+        h1.error-subtitle Page Not Found.
+            p #{message}
+    include endScript.html
+    script.
+        $('body').addClass('error-page');

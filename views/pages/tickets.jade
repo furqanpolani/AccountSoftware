@@ -1,0 +1,139 @@
+extends ../layout
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.panel.animated.bounceInDown
+            div
+                include ../list/sub-pages/ticket-filter
+
+
+        div#ticket-List.animated.bounceInUp
+            include ../list/ticketList
+        include ../endScript.html
+
+    <link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+    <script src="/plugins/js/select2.full.min.js"></script>
+    <script src="/plugins/js/jquery-ui-datepicker.min.js"></script>
+    script.
+
+        $("#datepicker-from").datepicker({
+              defaultDate: "+1w",
+              numberOfMonths: 1,
+              prevText: '<i class="fa fa-chevron-left"></i>',
+              nextText: '<i class="fa fa-chevron-right"></i>',
+              beforeShow: function(input, inst) {
+                var themeClass = $(this).parents('.admin-form').attr('class');
+                var smartpikr = inst.dpDiv.parent();
+                if (!smartpikr.hasClass(themeClass)) {
+                    inst.dpDiv.wrap('<div class="' + themeClass + '"></div>');
+                }
+              },
+              onClose: function( selectedDate ) {
+                $("#datepicker-to").datepicker( "option", "minDate", selectedDate );
+              }
+        });
+
+
+        $("#datepicker-to").datepicker({
+              defaultDate: "+1w",
+              numberOfMonths: 1,
+              prevText: '<i class="fa fa-chevron-left"></i>',
+              nextText: '<i class="fa fa-chevron-right"></i>',
+              beforeShow: function(input, inst) {
+                var themeClass = $(this).parents('.admin-form').attr('class');
+                var smartpikr = inst.dpDiv.parent();
+                if (!smartpikr.hasClass(themeClass)) {
+                    inst.dpDiv.wrap('<div class="' + themeClass + '"></div>');
+                }
+              },
+              onClose: function( selectedDate ) {
+                $("#datepicker-from").datepicker( "option", "maxDate", selectedDate );
+              }
+        });
+
+        function defaultHeader(){
+            location.reload();
+        }
+
+        function reloadTicketList(){
+            var assignedTo = $("#assignedTo option:selected").map(function(){return this.value}).get().join(",");
+
+            var ticketType = $("#ticketType option:selected").map(function(){return this.value}).get().join(",");
+
+            var priority = $("#priority option:selected").map(function(){return this.value}).get().join(",");
+
+            var status = $("#status option:selected").map(function(){return this.value}).get().join(",");
+
+            var fromDate = $('#datepicker-from').val();
+
+            var toDate = $('#datepicker-to').val();
+
+            var url = "/tickets/listOnly?assignedTo=" + assignedTo + "&ticketType=" + ticketType + "&priority=" + priority + "&status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate
+            
+            console.log(url);
+            NProgress.start();
+                $.ajax({
+                    url: url,
+                    success: function(result){
+                     $('#ticket-List').html(result);
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        $("#assignedTo").select2({
+            placeholder:"Select One",
+            initSelection: function(element, callback) {                   
+            }
+        });
+
+        $("#ticketType").select2({
+            placeholder:"Select One",
+            allowClear: true
+        });
+
+        $("#priority").select2({
+            placeholder:"Select One",
+            allowClear: true
+        });
+
+        $("#status").select2({
+            placeholder:"Select One",
+            allowClear: true
+        });
+        
+        
+        
+        jQuery(document).ready(function() {
+            var assignedTo = getUrlParameter('assignedTo')
+            var status1 = getUrlParameter('status')
+            var status = status1.split(',')
+            console.log('saqib ', status);
+            if(status != 'undefined'){
+                //- $("#assignedTo").select2("val", "");
+            
+                $('#status').val(status).trigger('change');
+                
+                $("#status").select2({
+                    placeholder:"Select One",
+                    allowClear: true
+                });
+                //- reloadTicketList()
+            }
+            
+            if(assignedTo != 'undefined'){
+                
+                $('#assignedTo').val(assignedTo).trigger('change');
+                $("#assignedTo").select2({
+                    placeholder:"Select One",
+                    allowClear: true
+                });
+                //- reloadTicketList()
+            }
+            
+            console.log('getUrlParameter ' ,getUrlParameter('assignedTo'))
+        });
+
+        
+        

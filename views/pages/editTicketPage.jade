@@ -1,0 +1,152 @@
+extends ../layout
+
+block content
+    div#fullTicket
+        include sub-pages/ticket/ticket-header
+        header#topbar.ph10
+
+            div.topbar-right.hidden-xs.hidden-sm#toggle_activity
+
+                div.ml15.ib.va-m
+                    a(href="#").pl5
+                        i.fa.fa-sign-in.fs22.text-primary
+                        span#activityCount.badge.badge-hero.badge-danger 0
+
+        include sub-pages/ticket/ticket-dashboard
+
+
+    include ../endScript.html
+
+    script.
+
+        function solutionStatus(){
+            var status = $( "#status option:selected" ).val()
+
+            if (status == 50){
+                $("#solution").prop("disabled",false);
+                $("#solutionButton").prop("disabled",false);
+            }else{
+                $("#solution").prop("disabled",true);
+                $("#solutionButton").prop("disabled",true);
+            }
+        }
+
+        $('#toggle_activity').click(function(){
+            if( $('.activityDiv').hasClass('hidden') ){
+                $('.activityDiv').removeClass('hidden');
+                $('#toggle_activity i').removeClass('fa-sign-in');
+                $('#toggle_activity i').addClass('fa-sign-out');
+
+            }else{
+                $('.activityDiv').addClass('hidden');
+                $('#toggle_activity i').removeClass('fa-sign-out');
+                $('#toggle_activity i').addClass('fa-sign-in');
+            }
+        });
+
+        var activity = !{JSON.stringify(activity.data)}
+        $('#activityCount').text(activity.length);
+
+        if(activity.length == 0){
+            $('#toggle_activity').addClass('hidden');
+        }else{
+            $('#toggle_activity').removeClass('hidden');
+        }
+
+        $('#status').val('#{ticket.data.statusID}');
+
+        console.log('DUE Date Check', moment('#{ticket.data.dueDate}').tz('America/New_York').format('MM/DD/YYYY hh:mm A'))
+
+        function addComment(){
+            bootbox.prompt({
+                title: "Comment",
+                message: "Pleaes enter comment (sametime customer can see this comment too.)",
+                buttons:{
+                    confirm:{
+                        label:'Save'
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback: function(result){
+
+                    if(result){
+                        if(!result.length){
+                            showNotify('Comment',  'Failed to Save','error');
+                        }else{
+                            var data = {
+                                comment: result,
+                                assignedToUserID: $( "#assignedTo option:selected" ).val(),
+                                referenceID: #{ticket.data.id},
+                                storeID: #{ticket.data.id},
+                                userID: #{userData.userID},
+                                userName: '#{userData.fullName}',
+                                typeID: 3,
+                                label: 'ticket'
+                            }
+
+                            $.ajax({
+                                url: '/comment',
+                                type: 'POST',
+                                data: data,
+                                success: function(commentResult){
+
+                                    sendNotification({
+                                        heading: 'New Comment',
+                                        body: 'Comment was left on your ticket # #{ticket.data.id} by ',
+                                        comment: data.comment,
+                                        forUserID:$('#assignedTo option:selected').val(),
+                                        forUserName: $('#assignedTo option:selected').text(),
+                                        link: 'tickets/ticketPage/#{ticket.data.id}',
+                                        fromID: #{ticket.data.id},
+                                        typeID: 3,
+                                        from: 'comment',
+                                        label: 'ticket',
+                                        emailAddress: $('#assignedTo option:selected').data('email'),
+                                        fromUserID: #{userData.userID},
+                                        fromUserName: '#{userData.fullName}',
+                                        user: !{JSON.stringify(userData)}
+                                    });
+
+                                    showNotify('Comment', 'Saved!','primary');
+                                    reloadActivity(#{ticket.data.id},3);
+                                        reloadComment(#{ticket.data.id},3);
+                                }
+                            });
+
+                        }
+                    }
+                }
+
+            });
+        }
+
+        function editTicket(){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#ticket-form'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    $('#language').val('#{ticket.data.languageID}');
+                    $('#type').val('#{ticket.data.ticketTypeID}');
+                    $('#priority').val('#{ticket.data.priorityID}');
+                    $('#source').val('#{ticket.data.sourceID}');
+                    $('#contactNumber').val('#{ticket.data.phoneNumber}');
+                    $('#callerName').val('#{ticket.data.name}');
+                    $('#ticketEmailAddress').val('#{ticket.data.email}');
+
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#ticket-form').draggable();
+        }
+
+        $(document).ready(function(){
+            solutionStatus();
+        });

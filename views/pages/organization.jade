@@ -1,0 +1,256 @@
+extends ../layout
+
+block content
+    section#contact
+        div.animated.bounceInDown
+            div.page-heading
+                div.row
+                    div.media-body.va-m.col-md-8
+                        h1 #{organization.data.organizationName}
+                            h4 #{organization.data.ownerName}
+                    div.col-md-4
+                        div.topbar-right.hidden-xs.hidden-sm.pull-right(style="padding-top:20px")
+                            a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="giveUpdate(#{organization.data.organizationID})")
+                                | Give Update
+                            a.btn.btn-default.btn-sm.light.fw600.ml10
+                                span.fa.fa-plus.pr5
+                                | Bring Store
+                            a.btn.btn-default.btn-sm.light.fw600.ml10
+                                span.fa.fa-plus.pr5
+                                | New Store
+    section#content.table-layout.animated.bounceInUp
+        div.tray.tray-center
+            div.row
+                div.col-md-4
+                    div.panel
+                        div.panel-heading
+                            div.row
+                                div.col-md-10
+                                    span.panel-icon
+                                        i.imoon.imoon-phone
+                                    span.panel-title Contact Information
+                                div.col-md-2
+                                    div.pull-right
+                                        button.btn.btn-default.btn-sm(type="button")
+                                            i.imoon.imoon-pencil
+                        div.panel-body.pn
+                            table.table.mbn.tc-med-2.tc-bold-last
+                                thead
+                                    tr.hidden
+                                        th Name
+                                        th Value
+                                    tbody
+                                        tr
+                                            td Primary #
+                                            td.text-info.pr10 #{organization.data.primaryPhone}
+                                        tr
+                                            td Secondary #
+                                            td.text-info.pr10 #{organization.data.secondaryPhone}
+                                        tr
+                                            td Primary Email
+                                            td.text-info.pr10
+                                                a(href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=#{organization.data.primaryEmail}", target="_blank") #{organization.data.primaryEmail}
+                                        tr
+                                            td Secondary Email
+                                            td.text-info.pr10
+                                                a(href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=#{organization.data.secondaryEmail}", target="_blank") #{organization.data.secondaryEmail}
+                    div.panel
+                        div.panel-heading
+                            span.panel-icon
+                                i.imoon.imoon-screen
+                            span.panel-title Login Information
+                        div.panel-body.pn
+                            table.table.mbn.tc-med-2.tc-bold-last
+                                thead
+                                    tr.hidden
+                                        th Name
+                                        th Value
+                                    tbody
+                                        tr
+                                            td Login
+                                            td.text-info.pr10 #{organization.data.loginEmail}
+                                        tr
+                                            td Password
+                                            td.text-info.pr10 #{organization.data.loginPassword}
+                div.col-md-8
+                    div.panel
+                        div.panel-heading
+                            div.row
+                                div.col-md-3
+                                    span.panel-icon
+                                        i.imoon.imoon-notebook
+                                    span.panel-title Note
+                                div.col-md-7.switch.switch-danger.round.switch-inline(style="padding-top:6px; ")
+                                    div.right48.hidden
+                                        input#alertNote(type="checkbox" name="alert" onclick="alertSave()" checked=organization.data.alertOn)
+                                        label(for="alertNote",data-on="YES",data-off="NO")
+
+                                div.col-md-2.right35.hidden
+                                    div.pull-right
+                                        a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="updateNote()")
+                                            span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                            | Save
+
+                        div.panel-body.pn
+                            textarea#orgNotes.form-control(rows="7") #{organization.data.notes}
+                div.col-md-8
+                    div.panel
+                        div.panel-heading
+                            div.col-md-10
+                                span.panel-icon
+                                    i.fa.fa-tags
+                                span.panel-title Tags
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="saveOrganizationTags()")
+                                        span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                        | Save
+                        div.panel-body
+                            input.form-control#orgTagManager.hidden(type="text" placeHolder="Start typing for tag list")
+                            input.form-control#orgTagManager1(type="text" placeHolder="Start typing for tag list")
+
+                            div.tag-container.tags
+                div.col-md-12.pn
+                    include ../list/inPage-storeList
+
+        aside.col-md-2.tray.tray-right.tray290.pn.panel-scroller.scroller-md.scroller-pn.activityDiv
+            include ../list/activity
+
+
+    include ../endScript.html
+
+    <script src="/plugins/js/jquery.autocomplete.min.js"></script>
+
+    script.
+
+        function alertSave(){
+
+            NProgress.start();
+                var data = {
+                    alertOn: $('#alertNote').is(':checked')
+                }
+                $.ajax({
+                    url: '/api/organizations/#{organization.data.organizationID}',
+                    type: 'PUT',
+                    data: data,
+                    success: function(result){
+                        if (result.status){
+                            reloadActivity(#{organization.data.organizationID},2);
+                            showNotify('Alert', 'Alert is and it will start showing on all the location of this organization','system');
+                        }else{
+                            showNotify('Alert', 'Unable to set alert','primary');
+                        }
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function updateNote(){
+            NProgress.start();
+                var data = {
+                    notes: $('#orgNotes').val()
+                }
+                console.log("notes ",data);
+
+                $.ajax({
+                    url: '/api/organizations/#{organization.data.organizationID}',
+                    type: 'PUT',
+                    data: data,
+                    success: function(result){
+                    console.log('save data' , result)
+                        if (result.status){
+                            reloadActivity(#{organization.data.organizationID},2);
+
+                            showNotify('Notes', 'Note is updated','system');
+                        }else{
+                            showNotify('Notes', 'Unable to update notes','error');
+                        }
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        
+        jQuery(document).ready(function() {
+
+            $('#storeList').dataTable({
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+        });
+
+        $('#orgTagManager1').autocomplete({
+            lookup: !{JSON.stringify(allTags)},
+            onSelect: function(selected){
+                 $("#orgTagManager").tagsManager("pushTag",selected.value);
+                 $('#orgTagManager1').val('');
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: false
+        });
+
+        $('#orgTagManager1').keypress(function (e) {
+         var key = e.which;
+         if(key == 13)  // the enter key code
+          {
+              $("#orgTagManager").tagsManager("pushTag",$('#orgTagManager1').val());
+              $('#orgTagManager1').val('');
+          }
+        });
+
+        $("#orgTagManager").tagsManager({
+            tagsContainer: '.tags',
+            tagClass: 'tm-tag-alert',
+            prefilled: '#{tagLink}'
+        });
+
+        function saveOrganizationTags(){
+            var gotTags = $("#orgTagManager").tagsManager('tags')
+            if(gotTags){
+                NProgress.start();
+
+                var tagData = {
+                    tags: gotTags,
+                    id: #{organization.data.organizationID},
+                    type: 2,
+                    userID: #{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                $.ajax({
+                    url: '/api/tags',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(tagData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Tags',  'Tag was updated!','system');
+                        }else{
+                            showNotify('Tags',  'Faile to update tags. error:' + result.data,'error');
+                        }
+                        //console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+            }
+        }

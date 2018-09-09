@@ -1,0 +1,184 @@
+div.panel.panel-visible#spy3
+    include ../pages/models/image-modal
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-title User List
+            div.col-md-2
+                div.pull-right
+                    a.btn.btn-primary.btn-sm.light.fw600.ml10(onclick="openAds(0)")
+                        span.fa.fa-plus.pr5
+                        | Add Image
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#imageList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th(width='100') Image
+                    th Name
+                    th Version
+                    th Click Url
+                    th Company Name
+                    th Contact Email
+                    th Click Count
+                    th Active
+                    th
+
+            tbody
+                each item in data
+                    tr
+                        td.pointer(onclick='openAds(#{item.id})')
+                            img(src='#{item.url}' width='150' height="80")
+                        td.pointer(onclick='openAds(#{item.id})') #{item.id} - #{item.description}
+                        td.pointer(onclick='openAds(#{item.id})') #{item.version}
+                        td.pointer(onclick='openAds(#{item.id})') #{item.clickUrl}
+                        td.pointer(onclick='openAds(#{item.id})') #{item.companyName}
+                        td.pointer(onclick='openAds(#{item.id})') #{item.contactEmail}
+                        td.pointer(onclick='openAds(#{item.id})') #{item.ClickImageDetails.length}
+                        td.pointer(onclick='openAds(#{item.id})')
+                            if item.isActive
+                                div.switch.switch-danger.round.switch-inline(style="padding-top:6px; ")
+                                    input(id='checkBox-#{item.id}' type="checkbox" name="isActive" disabled value='#{item.isActive}' checked)
+                                    label(for='checkBox-#{item.id}',data-on="YES",data-off="NO")
+                            else
+                                div.switch.switch-danger.round.switch-inline(style="padding-top:6px; ")
+                                    input(id='checkBox-#{item.id}' type="checkbox" name="isActive" disabled value='#{item.isActive}' unchecked)
+                                    label(for='checkBox-#{item.id}',data-on="YES",data-off="NO")
+                                
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown' aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="#" onclick='openAds(#{item.id})') Edit
+                                    li
+                                        a(href="#" onclick='deleteAds(#{item.id})') Delete
+
+    script.
+        
+        function resetModel(){
+            $('#adImage').attr('src','');
+            $('#name').val('');
+            $('#urlLink').val('');
+            $('#version').val('0');
+            $('#isActive').replaceWith('<input id="isActive" type="checkbox" name="isActive" value="false" checked>');
+        }
+        
+        function deleteAds(id){
+            bootbox.confirm({
+                message: "Are you sure, You want to delete this ads?",
+                size: "medium",
+                buttons:{
+                        confirm:{
+                            label:'YES'
+                        },
+                        cancel:{
+                            label:'NO'
+                        }
+                    },
+                    callback: function(result){
+
+            if (result){
+                
+                $.ajax({
+                    url: '/api/clickImages/' + id,
+                    type: 'DELETE',
+                    success: function(result){
+                        console.log(result);
+                        if(result.status){
+                            showNotify('Ad Image',  'Successfully Saved','success');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 500);
+                        }
+                                            }
+                });
+            }
+         }
+        });
+
+        }
+    
+        function openAds(id){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#image-From'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-rotateLeft';
+                    if(id !== 0){
+                    $.ajax({
+                        url: '/api/clickImages/' + id,
+                        type: 'GET',
+                        success: function(adResult){
+                            console.log(adResult);
+                            var version = adResult.data.version.split(',');
+                             if(adResult.status){
+                                 $('#name').val(adResult.data.description);
+                                 $('#urlLink').val(adResult.data.clickUrl);
+                                 $('#contactEmail').val(adResult.data.contactEmail);
+                                 $('#companyName').val(adResult.data.companyName);
+                                 $('#version').val(version);
+                                 $("#version").multiselect("refresh");
+                                
+                                 if(adResult.data.isActive){
+                                     $('#isActive').replaceWith('<input id="isActive" type="checkbox" name="isActive" value="false" checked>');
+                                 }else{
+                                     $('#isActive').replaceWith('<input id="isActive" type="checkbox" name="isActive" value="true" unchecked>');
+                                 }
+                                 
+                                 if(adResult.data.isCommercial){
+                                     $('#isCommercial').replaceWith('<input id="isCommercial" type="checkbox" name="isCommercial" value="false" checked>');
+                                 }else{
+                                     $('#isCommercial').replaceWith('<input id="isCommercial" type="checkbox" name="isCommercial" value="true" unchecked>');
+                                 }
+
+                                 $('#adImage').attr('src',adResult.data.url);
+                                 $('#image-From').attr('data-id',id);
+                             }
+                             
+                            },
+                        error: function(err){
+                             showNotify('Ad Image',  'Failed to find ad image','error');
+                        }
+                        });
+                    } else{
+                        resetModel();
+                    }
+                    $('#image-From').attr('data-id',id);
+                },
+                close: function(){
+                    resetModel();
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#image-From').draggable();
+        }
+
+        $(document).ready(function() {
+
+            $('#imageList').dataTable({
+              "aaSorting": [[0, 'asc']],
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 10,
+              "aLengthMenu": [
+                [10, 25, 35, 50, -1],
+                [10, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+
+        });

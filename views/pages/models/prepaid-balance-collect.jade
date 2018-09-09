@@ -1,0 +1,95 @@
+div#prepaid-collect.popup-basic.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span Add Prepaid Balance
+        div#p-editStoreSoftware
+            div.panel-body
+                div.panel-heading
+                    span.panel-title.hidden-xs
+                    ul.nav.panel-tabs-border.panel-tabs
+                        li#p-stripeTab.right16.hidden.active
+                            a(href="#p-stripeCollect" data-toggle="tab") Stripe
+                        li.hidden
+                            a(href="#p-manualCollect" data-toggle="tab") Manual
+                div.panel-body
+                    div.tab-content.pn.br-n
+                        div#p-stripeCollect.tab-pane.active
+                            form#p-stripe-collection.admin-form
+                                div.col-md-6.form-group
+                                    label.field-label(for="stripe-payment") Select card
+                                        em *
+                                    select.form-control#p-stripe-payment
+                                        if creditCards.status
+                                            each card in creditCards.data.sources.data
+                                                option(value="#{card.id}") #{card.last4}
+                                    i.arrow
+                                div.col-md-6
+                                    label.field-label(for="stripe-paymentAmount") Amount
+                                        em *
+                                    input.form-control.pull-right.text-right.paymentAmount#prepaid-stripe-payment(type="text" name="paymentAmount")
+                                div.row
+                                    div.clearfix.col-md-12
+                                        if creditCards.status
+                                            button.button.btn-primary.mr10.pull-right#p-saveStripePayment(type="button" style="margin-top:20px;" onclick="prepaidPayment()") Add Balance
+                                        else
+                                            button.button.btn-primary.mr10.pull-right#p-saveStripePayment(type="button" style="margin-top:20px;" onclick="prepaidPayment()" disabled) Add Balance
+                        div#p-manualCollect.tab-pane
+                            form#p-manual-collection.admin-form
+                                div.col-md-6
+                                    label.field-label(for="paidDate") Paid Date
+                                        em *
+                                    input.form-control.pull-right#paidDate(type="text" name="invoiceDate")
+                                div.col-md-6.form-group
+                                    label.field-label(for="payment") Payment Method
+                                        em *
+                                    select.form-control#p-payment
+                                    i.arrow
+                                div.col-md-6
+                                    label.field-label(for="paymentID") Transaction #
+                                        em *
+                                    input.form-control#p-paymentID(type="text" name="paymentID")
+                                div.col-md-6.pull-right
+                                    label.field-label(for="paymentAmount") Amount
+                                        em *
+                                    input.form-control.pull-right.text-right.paymentAmount#p-paymentAmount(type="text" name="paymentAmount")
+                                div.row
+                                    div.clearfix.col-md-12
+                                        button.button.btn-primary.mr10.pull-right#p-saveManualID(type="button" disabled style="margin-top:20px;" onclick="saveManualPayment()") Save Payment
+
+
+            div.panel-footer.clearfix
+
+
+    script.
+
+        function prepaidPayment() {
+            var stripeAmount = $('#prepaid-stripe-payment').val()
+            if (!stripeAmount) {
+                showNotify('Prepaid Balance', 'Please enter valid amount.','error');
+                return false;
+            }
+            $("#p-saveStripePayment").prop("disabled",true);
+            var data = {
+                storeID: #{store.data.storeID},
+                amount: stripeAmount,
+                card: $('#p-stripe-payment').val()
+            };
+
+            $.ajax({
+                url: '/api/purchaseCredit/#{store.data.storeID}',
+                type: 'POST',
+                data: data,
+                success: function(result){
+                console.log(result);
+                    showNotify('Prepaid', result.data,'system');
+                    location.reload();
+                },
+                error: error =>{
+                    showNotify('Prepaid Balance', error.responseJSON.data,'error');
+                    $("#p-saveStripePayment").prop("disabled",false);
+                    console.log('error adding funds ', error)
+                }
+            });
+        }

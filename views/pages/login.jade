@@ -1,0 +1,104 @@
+doctype html
+html
+  head
+    title CSP Billing
+    <meta charset="utf-8">
+    <meta name="keywords" content="HTML5 Bootstrap 3 Admin Template UI Theme" />
+    <meta name="description" content="AdminDesigns - A Responsive HTML5 Admin UI Framework">
+    <meta name="author" content="AdminDesigns">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+    <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700'>
+
+    link(rel='stylesheet', href='/fonts/icomoon/icomoon.css')
+
+    <!-- Datatables CSS -->
+    <link rel="stylesheet" type="text/css" href="/plugins/css/dataTables.bootstrap.css">
+
+    <!-- Datatables Addons CSS -->
+    <link rel="stylesheet" type="text/css" href="/plugins/css/dataTables.plugins.css">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/cellSmartIcon.ico">
+
+    <link rel="stylesheet" type="text/css" href="/plugins/css/magnific-popup.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/theme.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/admin-forms.min.css">
+
+    <script src="/plugins/js/moment.min.js"></script>
+
+    <script src="/jquery/jquery-1.11.1.min.js"></script>
+    <script src="/plugins/js/jquery.maskedinput.min.js"></script>
+    <script src="/jquery/jquery.validate.min.js"></script>
+    <script src="/jquery/jquery.formatCurrency-1.4.0.min.js"></script>
+    <script src="/jquery/additional-methods.min.js"></script>
+
+    body.external-page.sb-l-c.sb-r-c
+        div#main.animated.fadeIn
+            div#content_wrapper
+                div#canvas-wrapper
+                    canvas#demo-canvas
+                section#content
+                    div.admin-form.theme-info.mw500#login
+                        div.row.table-layout
+                            a(href="test")
+                                img.center-block.img-responsive(src="https://www.cellsmartpos.com/assets/img/v1/logo.png" style="max-width: 275px;")
+                        div.panel.mt30.mb25
+                            form#contact(method="post" action="/login")
+                                div.panel-body.bg-light.p25.pb15
+                                    div.section
+                                        label.field-label.text-muted.fs18.mb10(for="email") Email
+                                        label.field.prepend-icon(for="email")
+                                            input.gui-input(name="email" required type="text" for='email' placeholder="Enter email address")
+                                            label.field-icon(for="email")
+                                                i.fa.fa-user
+
+                                    div.section
+                                        label.field-label.text-muted.fs18.mb10(for="username") Password
+                                        label.field.prepend-icon(for="password")
+                                            input.gui-input(name="password" required type="password" for=password placeholder="Enter password")
+                                            label.field-icon(for="password")
+                                                i.fa.fa-lock
+                                div.panel-footer.clearfix
+                                    button.button.btn-primary.mr10.pull-right#login(type="submit") Sign In
+                                    label.switch.ib.switch-primary.mt10
+                            
+                        div.alert.alert-primary.alert
+                            strong What New!
+
+                        div.alert.alert-success.alert.alert-border-left(style="margin-bottom: 0")
+                            span Time of sign up now you can get customer cell phone number
+                        div.alert.alert-alert.alert.alert-border-left(style="margin-bottom: 0")
+                            span Search box if you enter csp id. that will open store page.
+                        div.alert.alert-system.alert.alert-border-left(style="margin-bottom: 0")
+                            span you can hide commercial for any store from store dashbaord
+                        
+                    
+                                    
+                                    
+    include ../endScript.html
+
+    script.
+
+        CanvasBG.init({
+          Loc: {
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 3.3
+          },
+        });
+
+        if('#{failedLogin}' != ''){
+            //console.log('#{failedLogin}');
+            showNotify("Login Failed",'#{failedLogin}','error');
+        }

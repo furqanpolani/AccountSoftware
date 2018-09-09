@@ -1,0 +1,17 @@
+table.table.admin-form.theme-warning.tc-checkbox-1.fs13#contactList
+ 
+    thead
+        tr.bg-light
+        th Movie Title
+        th Costing
+        th Total Sell
+        th Quantity
+        th Profit/Loss
+    tbody#dataBody
+        each b,index in result.data
+            tr
+                td #{b.movieData.title}
+                td #{b.costing}
+                td #{b.totalRentAmount}
+                td #{b.quantity}
+                td #{b.profitLoss}

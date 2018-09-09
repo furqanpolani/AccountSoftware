@@ -1,0 +1,88 @@
+
+extends ../layout
+block content
+    section#contact
+        div.animated.zoomIn.p10                               
+            .panel
+                .panel-heading
+                    span.panel-title Rental Registration 
+                .panel-body
+                    form.form-horizontal(role='form')
+                        
+                        .form-group
+                            label.col-lg-3.control-label(for='movieName') Movie Name
+                            .col-lg-8
+                                .bs-component
+                                    input#movieName.form-control(type='text' )
+                        
+                                    
+                                        
+                                                                                    
+                                                                                                                                                     
+        
+        include ../endScript.html
+
+    script.
+        var customerName = !{JSON.stringify(data.customerName)}
+           
+        
+
+        //- latest
+        //- jQuery(document).ready(function()
+        //- {
+        //-     var vala = []
+        //-     customerName.forEach((customer) =>{
+        //-     var i = 0
+        //-     var userData = {
+        //-             "label": customer.value, "value": customer.value, "id": customer.data.id 
+        //-         }
+        //-     vala[i] = userData
+        //-     i++;
+        //-     })
+        //-     console.log(vala[0])
+            
+        //-     var req = [
+        //-     {"label":"item 1", "value":"item 1", "id": 1}, 
+        //-     {"label":"item 2", "value":"item 2", "id": 2}, 
+        //-     {"label":"item 3", "value":"item 1", "id": 3}];
+
+        //-     $('#movieName').autocomplete({ 
+        //-         source: req,
+        //-         change: function (event, ui)
+        //-          { 
+        //-              console.log('clicked')
+        //-              alert(ui.item.id); } });
+        //- })
+        var inputId 
+        jQuery(document).ready(() =>{
+
+
+
+            var countries = [
+                {"value": "Afghanistan", "data": "AF"},
+                {"value": "Aland Islands", "data": "AX"},
+                {"value": "Albania", "code": "data"},
+                {"value": "Algeria", "code": "data"},
+                {"value": "American Samoa", "data": "AS"}
+            ];
+
+            $('#movieName').autocomplete({
+                source: customerName,
+                change: function (event, ui)
+                        {   inputId = ui.item.data.id
+                            console.log(inputId)
+                            alert(ui); 
+                        } 
+                        
+            //-     autoSelectFirst: true,
+            //-     showNoSuggestionNotice: true
+                
+            })
+        })
+           
+       
+        
+            
+            
+                 
+        

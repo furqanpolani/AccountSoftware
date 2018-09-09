@@ -1,0 +1,43 @@
+div.panel.panel-visible
+    div.panel-heading
+        div.row
+            div.col-xs-10
+                span.panel-title Comments
+            div.col-xs-2
+                div.pull-right
+                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addComment()")
+                        span.fa.fa-plus.pr5
+                        | Comment
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#commentList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th Date
+                    th User
+                    th Comment
+            tbody
+                each comment in comments.data
+                    tr
+                        td.col-xs-3 #{moment(comment.createDateTime).tz('America/New_York').format('MM/DD/YYYY h:mm:ss A')}
+                        td #{comment.userName}
+                        td #{comment.comment}
+
+    script.
+
+        $(document).ready(function(){
+            $('#commentList').dataTable({
+             "aaSorting": [[0, 'desc']],
+              "oLanguage": {
+              "oPaginate": {
+                "sPrevious": "Previous",
+                "sNext": "Next"
+              }
+            },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+        });

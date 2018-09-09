@@ -1,0 +1,50 @@
+<link rel="stylesheet" type="text/css" href="/plugins/css/daterangepicker.css">
+<script src="/plugins/js/daterangepicker.js"></script>
+div.panel-heading
+    div.col-md-12
+        span.panel-icon
+            i.imoon.imoon-settings
+        span.panel-title Filter
+
+        //- div.pull-right
+        //-     a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="saveStoreTags()")
+        //-         span.fa.fa-retweet(style="padding-right:2px;")
+        //-         | Default
+        //-     a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="reloadTaskList()")
+        //-         span.fa.fa-search(style="padding-right:2px;")
+        //-         | Fetch Data
+
+div.panel-body
+    div.row.admin-form
+        div.col-md-6
+            label.field-label(for="datefromTo") Date Range
+                em *
+            input.form-control#daterangepicker(type='text' name='daterangepicker')
+
+script.
+
+    var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    var firstDay = new Date(y, m, 1);
+    var lastDay = new Date(y, m+1, 0);
+    
+    $('#daterangepicker').daterangepicker({
+        onChange: function () {
+            var tempValues = JSON.parse($('#daterangepicker').val());
+            console.log('change : ' + tempValues.start + ' - ' + tempValues.end)
+        },
+
+        format: 'MM-DD-YYYY',
+        startDate: firstDay,
+        endDate: lastDay
+     },
+     function(start, end, label){
+         //alert("A new date range was chosen: " + start.format('MM-DD-YYYY') + ' to ' + end.format('MM-DD-YYYY'));
+         $.showLoading({name: 'line-scale'});
+         window.location.replace(`/qaLog?startDate=${start.format('MM-DD-YYYY')}&endDate=${end.format('MM-DD-YYYY')}`);
+     });
+
+      jQuery(document).ready(function() { 
+        //- console.log(getUrlParameter('startDate'));
+        //- console.log(getUrlParameter('endDate'));
+        $('#daterangepicker').val(`${getUrlParameter('startDate')} - ${getUrlParameter('endDate')}`)
+      });

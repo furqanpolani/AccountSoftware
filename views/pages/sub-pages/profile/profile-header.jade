@@ -1,0 +1,26 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/plugins/js/select2.full.min.js"></script>
+block content
+    section#contact
+        div.animated.bounceInDown.admin-form
+            div.page-heading
+                div.media.clearfix
+                    div.media-left.pr10
+                        div.fileupload-new(data-provides="fileupload" style="width:150px;")
+                            div#imageDiv.fileupload-preview.thumbnail.cursor.mb15
+                                if userData.imageUrl
+                                    img#userImage(src="#{userData.imageUrl}"  title="placeholder img")
+                                else
+                                    img#userImage(src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png"  title="placeholder img")
+                            span#imageChangeButton.btn.btn-primary.btn-file.btn-block
+                                span.fileupload-new Change
+                                span.fileupload-exists Change
+                                input(type="file")
+                    div.media-body.va-m
+                        div(style="position: absolute; top: 36px;left: 210px;")
+                            h2.media-heading #{user.data.fullName}
+                                small  - #{user.data.AccountType.accountTypeName}
+                            h5.media-heading #{user.data.loginEmail}
+                    

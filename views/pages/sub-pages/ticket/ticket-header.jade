@@ -1,0 +1,242 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/plugins/js/select2.full.min.js"></script>
+block content
+    section#contact
+        div.animated.bounceInDown.admin-form
+            div.page-heading
+                div.row
+                    div.media-body.va-m.col-md-8
+                        h1 #{ticket.data.id} - #{ticket.data.title}
+                        div.row(style="padding-top:20px;")
+                            div.col-md-3
+                                label.field.select(for="status" style="width:200px;")
+                                    select#status(onchange="updateStatus()")
+                                        each comboList in comboBox.data
+                                            if comboList.comboBoxTypeId == 6
+                                                each row in comboList.ComboBoxDetails
+                                                    if row.id == ticket.data.statusID
+                                                        option(value="#{row.id}" selected="selected") #{row.selector}
+                                                    else
+                                                        option(value="#{row.id}") #{row.selector}
+                                    i.arrow
+                            div.col-md-3
+                                select#assignedTo.basic-single.form-control.w200(onchange="updateAssigned()")
+                                    each user in allUser.data
+                                        if user.userID == ticket.data.assignedToUserID
+                                            option(value="#{user.userID}" data-email="#{user.loginEmail}" selected="selected") #{user.fullName}
+                                        else
+                                            option(value="#{user.userID}" data-email="#{user.loginEmail}") #{user.fullName}
+                                i.arrow
+
+                    div.col-md-4.text-right
+                        div.admin-form
+                            div.row
+                                div.col-md-4
+                                div.col-md-8
+                                    div.section
+
+                                div.col-md-2
+                                div.col-md-10
+                                    table.pull-right.table.mbn.tc-med-1.tc-bold-last
+                                        thead
+                                            tr.hidden
+                                                th Action
+                                                th CSP ID
+                                        tbody
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Created At
+                                                td(style="padding: 4px 9px 4px 9px;") #{moment(ticket.data.createdAt).tz('America/New_York').format('MM/DD/YYYY')} | #{moment(ticket.data.createdAt).diff(moment(), "days")} days
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Follow Up
+                                                td(style="padding: 4px 9px 4px 9px;")
+                                                    div.smart-widget.sm-right.smr-50
+                                                        label.field
+                                                            input#dueDate.gui-input(type="text" name="dueDate")
+                                                        button#followUpButton.button.btn-primary(type="button" onclick='saveDueDate()')
+                                                                i.fa.fa-floppy-o("style=font-size:20px;")
+
+
+    script.
+
+        checkStatusState();
+
+        function updateAssigned(){
+
+                var ticketData = {
+                    assignedToUserID: $('#assignedTo option:selected').val(),
+                    assignedToUserName: $('#assignedTo option:selected').text()
+                };
+
+
+                    sendNotification({
+                        heading: 'Ticket',
+                        body: 'Ticket # #{ticket.data.id} was assigned to you by ',
+                        forUserID:$('#assignedTo option:selected').val(),
+                        forUserName: $('#assignedTo option:selected').text(),
+                        link: 'tickets/ticketPage/#{ticket.data.id}',
+                        fromID: #{ticket.data.id},
+                        from: 'assigned',
+                        label: 'ticket',
+                        typeID: 3,
+                        emailAddress: $('#assignedTo option:selected').data('email'),
+                        fromUserID: #{userData.userID},
+                        fromUserName: '#{userData.fullName}',
+                        user: !{JSON.stringify(userData)}
+                    });
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/tickets/#{ticket.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ticketData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Assigned',  'Ticket was updated','system');
+                            reloadActivity(#{ticket.data.id},3);
+                        }else{
+                            showNotify('Assigned',  'Unable to update ticket.','error');
+                        }
+                        console.log("return values ", result)
+                        checkStatusState();
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Ticket', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function checkStatusState(){
+            if($('#assignedTo').val() == #{userData.userID}){
+                $('#status').prop('disabled', false);
+            }else{
+                $('#status').prop('disabled', true);
+            }
+
+        }
+
+        function updateStatus(){
+                var ticketData = {
+                    statusID: $('#status').val()
+                };
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/tickets/#{ticket.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ticketData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            solutionStatus();
+                            
+                            showNotify('Ticket',  'Ticket was updated','system');
+                            reloadActivity(#{ticket.data.id},3);
+                        }else{
+                            showNotify('Ticket',  'Unable to update ticket.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Ticket', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        setDatePicker();
+        function setDatePicker(){
+        var pickerTime = moment('#{ticket.data.dueDate}').utc();
+
+            $('#dueDate').datetimepicker({
+                defaultDate: pickerTime.tz('America/New_York').format('MM/DD/YYYY hh:mm A')
+            });
+        }
+
+
+        function saveDueDate(){
+
+            bootbox.prompt({
+                title: "Please provide reason for date change.",
+                buttons:{
+                    confirm:{
+                        label:'Save'
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback: function(reason){
+
+                    if(reason){
+                        if(reason.length == 0){
+                            showNotify('Follow up ',  'Please provide reason for date change','error');
+                        }else{
+                            var ticketData = {
+                                dueDate: new Date($('#dueDate').val()).toISOString(),
+                                changeReason: reason
+                            };
+
+                            NProgress.start();
+
+                                $.ajax({
+                                    url: '/api/tickets/#{ticket.data.id}',
+                                    type: 'PUT',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(ticketData),
+                                    dataType: 'json',
+                                    success: function(result){
+
+
+                                        if (result){
+                                            //$.magnificPopup.close();
+                                            showNotify('Follow Up',  'Ticket was updated','system');
+                                            reloadActivity(#{ticket.data.id},3);
+                                        }else{
+                                            showNotify('Follow Up',  'Unable to update ticket.','error');
+                                        }
+                                        console.log("return values ", result)
+                                    },
+                                    error: function(result){
+                                        console.log(result)
+                                        //$.magnificPopup.close();
+                                        showNotify('Follow Up', result.responseJSON.data ,'error');
+                                    }
+                                }).always(function(){
+                                    NProgress.done();
+                                });
+                        }
+                    }
+                }
+            });
+        }
+
+        $("#assignedTo").select2();
+        $("#status").val("#{ticket.data.status}");
+
+        function getTicket(){
+            var x = $('#getTicketID').val();
+            location.href = "/tickets/ticketPage" + x;
+        }
+
+        $('#getTicketID').keypress(function(e){
+            if(e.which == 13){
+                getTicket();
+            }
+        });

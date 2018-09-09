@@ -1,0 +1,96 @@
+div.panel.panel-visible#spy3
+    include ../pages/models/user-modal
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-title User List
+            div.col-md-2
+                div.pull-right
+                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="createUser()")
+                        span.fa.fa-plus.pr5
+                        | User
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#userList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th User #
+                    th User Name
+                    th Email Address
+
+            tbody
+                each user in users.data
+                    tr.pointer(id='#{user.userID}' onclick='openUser(#{user.userID})')
+                        td.text-center #{user.userID}
+                        td #{user.fullName}
+                        td #{user.loginEmail}
+
+    script.
+        var rightValues = [];
+
+        function openUser(id){
+            
+            var currentUser = !{JSON.stringify(userData)}
+            if(currentUser.accountTypeID == 1 || currentUser.accountTypeID == 2){
+                window.location.href = "/users/profile?user=" + id
+            }else{
+                bootbox.alert("You are not authorized to access this user account.");
+            }
+        }
+
+
+
+
+        function createUser(){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#user-From'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+
+                    $('#emailAddress').val();
+                    $('#password').val();
+                },
+                close: function(){
+                    clearUser();
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#user-From').draggable();
+        }
+
+        function clearUser(){
+            $('#emailAddress').val('');
+            $('#password').val('');
+            $('#fullName').val('');
+            $("#accessList > tbody").html("");
+            $('#rightCount').text("0 Rights giving")
+        }
+
+        $(document).ready(function() {
+
+            $('#userList').dataTable({
+              "aaSorting": [[0, 'asc']],
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+
+        });

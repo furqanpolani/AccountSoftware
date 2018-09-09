@@ -1,0 +1,148 @@
+div#ticket-form.popup-basic.popup-xl.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#ticketTitle
+                    | New Ticket for #{store.data.CSPID} - #{store.data.businessName}
+        form#ticketSystem.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-4
+                        include sub-pages/customer-ticket-info
+                    div.col-md-8
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Source
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="ticketTitle1" style="margin-bottom: 5px;margin-top: 5px;") Ticket Title
+                                            input.form-control.pull-right#ticketTitle1(type="text" value=ticket.data.title style="width:81.75%;")
+
+                                div.row.form-inline
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="language" style="margin-bottom: 5px;margin-top: 5px;") Language
+                                            select.pull-right.form-control#language(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 1
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="priority" style="margin-bottom: 5px;margin-top: 5px;") Priority
+                                            select.pull-right.form-control#priority(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 2
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="type" style="margin-bottom: 5px; margin-top: 5px;") Ticket Type
+                                            select.pull-right.form-control#type( required style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 4
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="source" style="margin-bottom: 5px;margin-top: 5px;") Source
+                                            select.pull-right.form-control#source(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 9
+                                                            each row in comboList.ComboBoxDetails
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                            
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="source" style="margin-bottom: 5px;margin-top: 5px;") Software
+                                            select.pull-right.form-control#software(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 3
+                                                            each row in comboList.ComboBoxDetails
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#invoiceSaveButton(type="button" data-style="zoom-in" data-size="l" onclick='updateTicket()'  ) Save Change
+
+    script.
+
+        function updateTicket(){
+
+                var ticketData = {
+                    title: $('#ticketTitle1').val(),
+                    ticketTypeID: $("#type option:selected").val(),
+                    languageID:$("#language option:selected").val(),
+                    sourceID:$("#source option:selected").val(),
+                    phoneNumber:$('#contactNumber').val(),
+                    name:$('#callerName').val(),
+                    email:$('#ticketEmailAddress').val(),
+                    priorityID:$("#priority option:selected").val(),
+                    softwareID:$("#software option:selected").val()
+                };
+                console.log('ticketData ', ticketData);
+
+
+                if(ticketData.source == 0){
+                    bootbox.alert("Please select source.");
+                    return false;
+                }
+
+
+                if(ticketData.title.length == 0){
+                    bootbox.alert("Please enter ticket title.");
+                    return false;
+                }
+
+                if(ticketData.source == 43){
+                    if(ticketData.name.length == 0){
+                        bootbox.alert("source was selected phone, Please enter phone number.");
+                        return false;
+                    }
+                }
+
+                if(ticketData.source == 44){
+                    if(ticketData.email.length == 0){
+                        bootbox.alert("source was selected chat, Please enter email address.");
+                        return false;
+                    }
+                }
+
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/tickets/#{ticket.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ticketData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Ticket',  'Ticket was updated','system');
+                            location.reload();
+
+                        }else{
+                            showNotify('Ticket',  'Unable to update ticket.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Ticket', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }

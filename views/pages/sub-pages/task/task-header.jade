@@ -1,0 +1,211 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/bootstrap-editable.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/plugins/js/bootstrap-editable.min.js"></script>
+<script src="/plugins/js/select2.full.min.js"></script>
+block content
+    section#contact
+        div.animated.bounceInDown.admin-form
+            div.page-heading
+                div.row
+                    div.media-body.va-m.col-md-8
+                        h1 #{task.data.id} -&nbsp;
+                            a(href="#" id="xedit-basic" data-type="text" data-pk="1" data-title="Editable Data" class="editable editable-click") #{task.data.title}
+                    div.row
+                        div.col-md-8
+                            div.col-md-3
+                                label.field.select(for="status" style="width:200px;" onchange="updateStatus()")
+                                    select#status
+                                        each comboList in comboBox.data
+                                            if comboList.comboBoxTypeId == 20
+                                                each row in comboList.ComboBoxDetails
+                                                    if row.id == task.data.statusID
+                                                        option(value="#{row.id}" selected) #{row.selector}
+                                                    else
+                                                        option(value="#{row.id}") #{row.selector}
+                                    i.arrow
+                            div.col-md-3
+                                label.field.select(for="priority" style="width:200px;" onchange="updatePriority()")
+                                    select#priority
+                                        each comboList in comboBox.data
+                                            if comboList.comboBoxTypeId == 14
+                                                each row in comboList.ComboBoxDetails
+                                                    if row.id == task.data.taskPriorityID
+                                                        option(value="#{row.id}" selected) #{row.selector}
+                                                    else
+                                                        option(value="#{row.id}") #{row.selector}
+                                    i.arrow
+                            div.col-md-3
+                                select#assignedTo.basic-single.form-control.w200(onchange="updateAssigned()")
+                                    each user in allUser.data
+                                        if user.userID == task.data.assignedToUserID
+                                            option(value="#{user.userID}" selected="selected") #{user.fullName}
+                                        else
+                                            option(value="#{user.userID}") #{user.fullName}
+                                i.arrow
+
+                        div.col-md-4
+                            table.pull-right.table.mbn.tc-med-1.tc-bold-last
+                                thead
+                                    tr.hidden
+                                        th Action
+                                        th CSP ID
+                                tbody
+                                    tr.pull-right
+                                        td(style="padding: 4px 9px 4px 9px;") Due Date
+                                        td(style="padding: 4px 9px 4px 9px;")
+                                            div.input-group
+                                                span.input-group-addon
+                                                    input#dueDateCheckbox(type='checkbox' aria-label="...")
+                                                input.form-control#dueDate(type="text" name="dueDate" aria-label="..." )
+
+
+
+
+
+
+    script.
+
+        $('#dueDate').datetimepicker({
+            defaultDate: new Date
+        });
+
+        $("#dueDate").prop('disabled', true);
+
+        $('#dueDateCheckbox').click(function(){
+            var dueDateStatus = $('#dueDateCheckbox').prop('checked');
+            if(dueDateStatus){
+                $("#dueDate").prop('disabled', false);
+            }else{
+                $("#dueDate").prop('disabled', true);
+
+            }
+
+        });
+
+        $('#xedit-basic').editable({
+            type: 'text',
+            mode: 'inline',
+            pk: 1,
+            name: 'taskTitle',
+            title: 'Editable Data',
+            url: '/api/task/#{task.data.id}',
+            ajaxOptions:{
+                type: 'put'
+            }
+        });
+
+        function updateStatus(){
+                var taskData = {
+                    statusID: $('#status').val()
+                };
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/task/#{task.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(taskData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Status',  'Task status was updated','system');
+                            reloadActivity(#{task.data.id}, 6);
+                        }else{
+                            showNotify('Status',  'Unable to update task status.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Ticket', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function updatePriority(){
+                var taskData = {
+                    taskPriorityID: $('#priority').val()
+                };
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/task/#{task.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(taskData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Priority',  'Task status was updated','system');
+                            reloadActivity(#{task.data.id}, 6);
+                        }else{
+                            showNotify('Priority',  'Unable to update task status.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Task', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function updateAssigned(){
+                var taskData = {
+                    assignedToUserID: $('#assignedTo').val()
+                };
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/task/#{task.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(taskData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Assigned',  'Task status was updated','system');
+                            reloadActivity(#{task.data.id}, 6);
+                        }else{
+                            showNotify('Assigned',  'Unable to update task status.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Task', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+
+        function checkStatusState(){
+            if($('#assignedTo').val() == #{userData.userID}){
+                $('#status').prop('disabled', false);
+            }else{
+                $('#status').prop('disabled', true);
+            }
+
+        }
+
+        $("#assignedTo").select2();

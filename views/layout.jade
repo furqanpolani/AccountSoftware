@@ -1,0 +1,126 @@
+doctype html
+html
+  head
+    title CSP Billing
+    <meta charset="utf-8">
+    <meta name="keywords" content="HTML5 Bootstrap 3 Admin Template UI Theme" />
+    <meta name="description" content="AdminDesigns - A Responsive HTML5 Admin UI Framework">
+    <meta name="author" content="AdminDesigns">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" value="notranslate">
+
+
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+    <link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700'>
+
+    link(rel='stylesheet', href='/fonts/icomoon/icomoon.css')
+
+    <!-- Datatables CSS -->
+    <link rel="stylesheet" type="text/css" href="/plugins/css/dataTables.bootstrap.css">
+    <link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+    <link href="/plugins/css/loading.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Datatables Addons CSS -->
+    <link rel="stylesheet" type="text/css" href="/plugins/css/dataTables.plugins.css">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/cellSmartIcon.ico">
+    <link href="/plugins/css/jquery.rateyo.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="/plugins/css/magnific-popup.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/theme.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/admin-forms.min.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="/plugins/css/animate.min.css">
+    
+    <link href="/plugins/css/fullcalendar.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.15.0/sweetalert2.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
+    
+    <script src="/plugins/js/moment.min.js"></script>
+    <script src="/plugins/js/moment-timezone.js"></script>
+
+    <script src="/jquery/jquery-1.11.1.min.js"></script>
+    <script src="/plugins/js/jquery.maskedinput.min.js"></script>
+    <script src="/plugins/js/nprogress.js"></script>
+    <script src="/jquery/jquery.validate.min.js"></script>
+    <script src="/jquery/additional-methods.min.js"></script>
+    <script src="/jquery/jquery.formatCurrency-1.4.0.min.js"></script>
+    <script src="/plugins/js/tagmanager.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.15.0/sweetalert2.min.js"></script>
+    <script src="/plugins/js/jquery.autocomplete.min.js"></script>
+    //- //new 
+    //- <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="/plugins/js/jquery.rateyo.min.js"></script>
+    <script src="/plugins/js/jquery.loading.min.js"></script>
+    <script src="/javascripts/rightFunction.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+
+
+    body.sb-l-o
+        div(id="main")
+            include navbar
+            div
+                
+                //- include sideBar
+                //- section(id="content_wrapper")
+                div(style="padding-top: 60px;") 
+                    div#globalAlert
+                    //- div.alert.alert-danger.alert-dismissable.mb30
+                    //-     button.close(type='button', data-dismiss='alert', aria-hidden='true') ×
+                    //-     h3.mt5 Pending Unlock
+                    //-     p
+                    //-         | You have pending unlock please add fund to unlock portal.
+                    //-     br
+                    //-     p
+                    //-         a.btn.btn-danger(href='#') Retry Unlocks
+                    div
+                        block content
+    script.
+
+        $( document ).ready(function() {
+            let alert;
+            //- $.ajax({
+            //-     url:'/api/alert',
+            //-     success: function(data){
+            //-         let alertHTML = '';
+            //-         data.data.forEach(alert => {
+            //-             alertHTML = alertHTML + `<div class="alert alert-danger alert-dismissable" style="margin-bottom: 0px;">
+            //-                 <button type="button" data-dismiss="alert" aria-hidden="true" class="close">×</button>
+            //-                 <h3 class="mt5">` + alert.header + `</h3>
+            //-                     <p>` + alert.body + `</p>
+            //-                     <br>
+            //-                     <p><a href="#" onclick="runAlertFunction('`+ alert.type +`')" class="btn btn-danger">` + alert.button + `</a></p>
+            //-                 </div>`
+            //-         });
+            //-         $('#globalAlert').replaceWith(alertHTML)
+            //-     }
+            //- });
+        });
+
+        function runAlertFunction(data){
+            if (data === 'unlock') {
+                $.ajax({
+                    url: '/cspApi/unlock/resubmitOrder',
+                    type: 'POST',
+                    success: function(result){
+                        console.log('unlock Result ', result);
+                          location.reload();
+                    },
+                    error: function(err){
+                        console.log("unlock error ", err)
+                    }
+
+                })
+            }
+        }
+        
+                

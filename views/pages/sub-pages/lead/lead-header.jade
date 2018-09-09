@@ -1,0 +1,296 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/plugins/js/select2.full.min.js"></script>
+block content
+    section#contact
+        div.animated.bounceInDown.admin-form
+            div.page-heading
+                div.row
+                    div.media-body.va-m.col-md-8
+                        h1 #{leads.data.id} - #{leads.data.firstName}, #{leads.data.lastName}
+                        h3 #{leads.data.businessName}
+                        div.row
+                            div.col-md-3
+                                label.field.select(for="status" style="width:200px;")
+                                    select#status(onchange="updateStatus()")
+                                        each comboList in comboBox.data
+                                            if comboList.comboBoxTypeId == 7
+                                                each row in comboList.ComboBoxDetails
+                                                    if row.id == leads.data.statusID
+                                                        option(value="#{row.id}" selected="selected") #{row.selector}
+                                                    else
+                                                        option(value="#{row.id}") #{row.selector}
+                                    i.arrow
+                            div.col-md-3
+                                select#assignedTo.basic-single.form-control.w200(onchange="updateAssigned()")
+                                    each user in allUser.data
+                                        if user.userID == leads.data.assignedToUserID
+                                            option(value="#{user.userID}" data-email="#{user.loginEmail}" selected="selected") #{user.fullName}
+                                        else
+                                            option(value="#{user.userID}" data-email="#{user.loginEmail}") #{user.fullName}
+                                i.arrow
+
+                    div.col-md-4.text-right
+                        div.admin-form
+                            div.row
+                                div.col-md-4
+                                div.col-md-8
+                                    div.section
+                                        a.btn.btn-primary.btn-sm.light.fw600.ml10.right45.hidden(onclick="createLead()")
+                                            | New Lead
+                                        a.btn.btn-danger.btn-sm.light.fw600.ml10.right45.hidden(onclick='deleteLead(#{leads.data.id})')
+                                            | Delete
+
+                                div.col-md-2
+                                div.col-md-10
+                                    table.pull-right.table.mbn.tc-med-1.tc-bold-last
+                                        thead
+                                            tr.hidden
+                                                th Action
+                                                th CSP ID
+                                        tbody
+                                            tr
+                                                td(style="padding: 4px 9px 4px 9px;") Follow Up
+                                                td(style="padding: 4px 9px 4px 9px;")
+                                                    div.smart-widget.sm-right.smr-50
+                                                        label.field
+                                                            input#dueDate.gui-input(type="text" name="dueDate")
+                                                        button#followUpButton.button.btn-primary(type="button" onclick='saveDueDate()')
+                                                                i.fa.fa-floppy-o("style=font-size:20px;")
+
+    script.
+
+        setDatePicker();
+        function setDatePicker(){
+        var pickerTime = moment('#{leads.data.dueDate}').utc();
+
+            $('#dueDate').datetimepicker({
+                defaultDate: pickerTime.tz('America/New_York').format('MM/DD/YYYY hh:mm A')
+            });
+        }
+
+
+        checkStatusState();
+
+        function checkStatusState(){
+            if($('#assignedTo').val() == #{userData.userID}){
+                $('#status').prop('disabled', false);
+            }else{
+                $('#status').prop('disabled', true);
+            }
+        }
+
+
+        function updateStatus(){
+            
+                if(#{leads.data.statusID} == 30){
+                    bootbox.confirm({
+                            title:'Status',
+                            message:"Changing status from convert will remove all converted store from this lead. are you sure you want to do it?",
+                            size: "medium",
+                            buttons:{
+                                    confirm:{
+                                        label: 'Yes'
+                                    },
+                                    cancel:{
+                                        label:'No'
+                                    }
+                                },
+                        callback: function(result){
+                                if(result){
+                                saveStatus();
+                                removeAllConvertedStores(#{leads.data.id});
+                                }else{
+                                    $('#status').val(#{leads.data.statusID});
+                                }
+                            }
+                        });
+                }else{
+                    saveStatus();
+                }
+        }
+
+        function removeAllConvertedStores(leadID){
+
+            NProgress.start();
+
+            $.ajax({
+                url: '/api/removeAllConvertedStores/' + leadID,
+                type: 'PUT',
+                contentType: 'application/json',
+                success: function(result){
+                    console.log(result);
+                    if (result.status){
+
+                        showNotify('Lead',  'All converted store are removed.','system');
+                        reloadActivity(#{leads.data.id}, 4);
+                    }else{
+
+                        showNotify('Lead',  'Unable to remove stores.','error');
+                    }
+                    
+                },
+                error: function(result){
+
+                    showNotify('Lead', result.responseJSON.data ,'error');
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+        function saveStatus(){
+
+            var leadData = {
+                statusID: $('#status').val()
+            };
+            
+            if(leadData.statusID == 28){
+                var d = new Date($('#dueDate').val()).toISOString()
+                leadData.dueDate = moment(d).add(3,'M');
+                leadData.changeReason = 'Lead change to cold.';
+            }
+            console.log(leadData);
+            NProgress.start();
+
+            $.ajax({
+                url: '/api/leads/#{leads.data.id}',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(leadData),
+                dataType: 'json',
+                success: function(result){
+                    
+                    if (result.status){
+                        convertStatus(leadData.statusID);
+                        showNotify('Status',  'Leads status was updated','system');
+                        reloadActivity(#{leads.data.id}, 4);
+                    }else{
+                        $('#status').val(#{leads.data.statusID})
+                        showNotify('Status',  'Unable to update lead status.','error');
+                    }
+
+                },
+                error: function(result){
+                    //console.log(result)
+                    $('#status').val(#{leads.data.statusID})
+                    showNotify('Lead', result.responseJSON.data ,'error');
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+
+        $("#assignedTo").select2();
+
+        function updateAssigned(){
+
+                var leadData = {
+                    assignedToUserID: $('#assignedTo option:selected').val(),
+                    assignedToUserName: $('#assignedTo option:selected').text()
+                };
+
+
+
+                NProgress.start();
+
+                sendNotification({
+                    heading: 'Lead',
+                    body: 'Lead # #{leads.data.id} was assigned to you by ',
+                    forUserID:$('#assignedTo option:selected').val(),
+                    forUserName: $('#assignedTo option:selected').text(),
+                    link: 'leads/leadPage/#{leads.data.id}',
+                    fromID: #{leads.data.id},
+                    typeID: 4,
+                    from: 'assigned',
+                    label: 'lead',
+                    emailAddress: $('#assignedTo option:selected').data('email'),
+                    fromUserID: #{userData.userID},
+                    fromUserName: '#{userData.fullName}',
+                    user: !{JSON.stringify(userData)}
+                });
+
+
+
+
+                $.ajax({
+                    url: '/api/leads/#{leads.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(leadData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Lead',  'Assigne was updated','system');
+                            reloadActivity(#{leads.data.id},4);
+                        }else{
+                            showNotify('Lead',  'Unable to update Assinge of lead.','error');
+                        }
+
+                        checkStatusState();
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+
+        function saveDueDate(){
+
+            bootbox.prompt({
+                title: "Please provide reason for date change.",
+                buttons:{
+                    confirm:{
+                        label:'Save'
+                    },
+                    cancel:{
+                        label: 'Cancel'
+                    }
+                },
+                callback: function(reason){
+
+                    if(reason){
+                        if(reason.length == 0){
+                            showNotify('Follow up ',  'Please provide reason for date change','error');
+                        }else{
+                            var leadData = {
+                                dueDate: new Date($('#dueDate').val()).toISOString(),
+                                changeReason: reason
+                            };
+                            console.log('lead time ', leadData);
+                            NProgress.start();
+
+                                $.ajax({
+                                    url: '/api/leads/#{leads.data.id}',
+                                    type: 'PUT',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(leadData),
+                                    dataType: 'json',
+                                    success: function(result){
+
+
+                                        if (result){
+                                            //$.magnificPopup.close();
+                                            showNotify('Follow Up','Lead was updated','system');
+                                            reloadActivity(#{leads.data.id},4);
+                                        }else{
+                                            showNotify('Follow Up',  'Unable to update lead.','error');
+                                        }
+                                        console.log("return values ", result)
+                                    },
+                                    error: function(result){
+                                        console.log(result)
+                                        //$.magnificPopup.close();
+                                        showNotify('Follow Up', result.responseJSON.data ,'error');
+                                    }
+                                }).always(function(){
+                                    NProgress.done();
+                                });
+                        }
+                    }
+                }
+            });
+        }

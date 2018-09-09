@@ -1,0 +1,533 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/plugins/js/typeahead.bundle.min.js"></script>
+section#content.table-layout.animated.bounceInUp
+    div.tray.tray-center
+        div.row
+            div.col-md-4
+                div.row
+                    div.col-md-6
+                        a(href="#" style="text-decoration: none !important;")
+                            div.panel.panel-tile.text-center.br-a.br-light
+                                div.panel-body.bg-light
+                                    div.loading
+                                    div.hideLoading.hidden
+                                        h1#boxPromotionCount.fs35.mbn 0
+                                        h6.proH6.text-system Promotion Delivered
+                                
+                    div.col-md-6
+                        a(href="#" style="text-decoration: none !important;")
+                            div.panel.panel-tile.text-center.br-a.br-light
+                                div.panel-body.bg-light
+                                    div.loading
+                                    div.hideLoading.hidden
+                                        h1#boxPromotionPaid.fs35.mbn 0
+                                        h6.proH6.text-system Promotion Amount Paid
+                                
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-xs-10
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Software Information
+                            div.col-xs-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="editSoftware()")
+                                        span.imoon.imoon-pencil(style="padding-right:2px;")
+                                        | Edit
+                    div.panel-body.pn
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td Software
+                                        if software.data
+                                            td.text-info.pr10 #{store.data.cSoftware.selector}
+                                        else
+                                            td.text-info.pr10 N/A
+                                    tr
+                                        td Plan
+                                        td.text-info.pr10 #{product.data.productDetail}
+                                    tr
+                                        td Monthly
+                                        td.text-info.pr10.currency #{store.data.softwareFee}
+                                    tr
+                                        td Promotion Code
+                                            if promotionCode.data != null
+                                                td.text-info.pr10 #{promotionCode.data.code} - #{promotionCode.data.description}
+                                            else
+                                                td.text-info.pro10 N/A
+                                    tr
+                                    tr
+                                        td Where did you find us
+                                        td.text-info.pr10
+                                            if store.data.findUsDetail
+                                                span #{store.data.findUsDetail.selector}
+                                            else
+                                                span N/A
+
+                                    tr
+                                        td Business type
+                                        td.text-info.pr10
+                                            if store.data.businessTypeDetail
+                                                span #{store.data.businessTypeDetail.selector}
+                                            else
+                                                span N/A
+
+                                    tr
+                                        td Current Version
+                                        td.text-info.pr10 #{store.data.softwareCurrentVersion}
+                                    tr
+                                        td Version Limit
+                                        td.text-info.pr10 #{store.data.UpdateSoftwareVersion}
+                                    tr
+                                        td Last Used
+                                        td.text-info.pr10 #{moment(store.data.attandanceDateTime).tz('America/New_York').format('MM/DD/YYYY')} | 
+                                            if store.data.cSoftware.id === 53 || store.data.cSoftware.id === 55 || store.data.cSoftware.id === 56
+                                                a(href="#" onclick="lastTransaction()" data-toggle="tooltip" title="View Last 10 Transaction") #{moment(store.data.attandanceDateTime).diff(moment(), "days")} days
+                                            else
+                                                | #{moment(store.data.attandanceDateTime).diff(moment(), "days")} days
+                div.panel
+                    div.panel-heading
+                        span.panel-icon
+                            i.imoon.imoon-office
+                        span.panel-title Organization Information
+                    div.panel-body.pn.table-responsive
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td Organization Name
+                                        td.text-info.pr10
+                                            a(href="/organizations/organization/#{organization.data.organizationID}"  data-toggle="tooltip" title="Open this organization") #{organization.data.organizationName}
+                                    tr
+                                        td Owner Name
+                                        td.text-info.pr10 #{organization.data.ownerName}
+                                    tr
+                                        td Primary Email
+                                        td.text-info.pr10
+                                            a(href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=#{organization.data.primaryEmail}", target="_blank"  data-toggle="tooltip" title="Send email") #{organization.data.primaryEmail}
+                                    tr
+                                        td Login Email
+                                        td.text-info.pr10
+                                            a(href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=#{organization.data.loginEmail}", target="_blank"  data-toggle="tooltip" title="Send email") #{organization.data.loginEmail}
+                                    tr.right31.hidden
+                                        td Password
+                                        td.text-info.pr10 #{organization.data.loginPassword}
+                                    tr
+                                        td Location Count
+                                        td.text-info.pr10.pointer
+                                            a#locationCount(onclick="showOtherLocation()") #{stores.data.length}
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-xs-10
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Contact
+                            div.col-xs-2.right36.hidden
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addContact('Add Contact',#{store.data.storeID},1)")
+                                        span.imoon.imoon-plus(style="padding-right:2px;")
+                                        | Add
+                    div#contactDiv
+                        include ../../list/contactPanel
+
+
+            div.col-md-3
+                div.panel
+                    div.panel-heading.clearfix
+                        span.panel-icon
+                            i.imoon.imoon-list2
+                        span.panel-title Status
+                    div.panel-body.pn.admin-form
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td Lock
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-warning
+                                                input#lockButton(type="checkbox" onclick="lockOrUnlock()" name="lock" checked=store.data.isLocked)
+                                                label(for="lockButton",data-on="YES",data-off="NO")
+                                    tr
+                                        td Cancel
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-danger
+                                                input#cancelButton(type="checkbox" disabled name="cancel" onclick="cancelStore()" checked=store.data.isCanceled)
+                                                label(for="cancelButton",data-on="YES",data-off="NO")
+                                    tr
+                                        td Auto Charge
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-system
+                                                input#autoChargeButton(type="checkbox" name="autoCharge" onclick="updateCollection()" checked=store.data.autoCollect)
+                                                label(for="autoChargeButton",data-on="ON",data-off="OFF")
+                                    tr
+                                        td On Trial
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-info
+                                                input#onTrialButton(type="checkbox" name="trial" onclick="trailChange()" checked=store.data.isTrial)
+                                                label(for="onTrialButton",data-on="ON",data-off="OFF")
+                                    tr
+                                        td See other Store
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-info
+                                                input#showStoreButton(type="checkbox" name="showStore" onclick="showStoreChange()" checked=store.data.showOwnStores)
+                                                label(for="showStoreButton",data-on="YES",data-off="NO")
+                                    tr
+                                        td Force Update
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-alert
+                                                input#forceUpdate(type="checkbox" name="forceUpdate" onclick="forceUpdateChange()" checked=store.data.forceUpdate)
+                                                label(for="forceUpdate",data-on="YES",data-off="NO")
+                                    
+                                    tr
+                                        td Request Info Update
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-alert
+                                                input#reqUpdatedInfo(type="checkbox" name="reqUpdatedInfo" onclick="reqUpdatedInfo()" checked=store.data.reqUpdatedInfo)
+                                                label(for="reqUpdatedInfo",data-on="YES",data-off="NO")
+                                    tr
+                                        td Hide Commercial
+                                        td(style="padding:0px;")
+                                            span.switch.block.mt5.switch-danger
+                                                input#hideCommercial(type="checkbox" name="hideCommercial" onclick="hideCommercial()" checked=store.data.hideCommercial)
+                                                label(for="hideCommercial",data-on="YES",data-off="NO")
+
+
+            div.col-md-5
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-xs-5
+                                span.panel-icon
+                                    i.imoon.imoon-notebook
+                                span.panel-title Note
+                            div.col-xs-5.switch.switch-danger.round.switch-inline(style="padding-top:6px; ")
+                                div.right48.hidden
+                                    input#alertNote(type="checkbox" name="alert" onclick="alertSave()" checked=store.data.alertOn)
+                                    label(for="alertNote",data-on="YES",data-off="NO")
+
+                            div.col-xs-2.right35.hidden
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="updateNote()")
+                                        span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                        | Save
+
+                    div.panel-body.pn
+                        textarea#storeNotes.form-control(rows="15") #{store.data.Notes}
+
+            div.col-md-8
+                div.panel
+                    div.panel-heading
+                        div.col-xs-10
+                            span.panel-icon
+                                i.fa.fa-tags
+                            span.panel-title Tags
+                        div.col-xs-2.right27.hidden
+                            div.pull-right
+                                a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="saveStoreTags()")
+                                    span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                    | Save
+                    div.panel-body
+                        input.form-control#storeTagManager.hidden(type="text" placeHolder="Start typing for tag list")
+                        input.form-control#storeTagManager1(type="text" placeHolder="Start typing for tag list")
+
+                        div.tag-container.tags
+
+            div.col-md-8#commentDiv
+                include ../../list/commentList
+    aside.col-md-2.tray.tray-right.tray290.activityDiv.panel-scroller.scroller-md.scroller-pn.pn.hidden
+        include ../../list/activity
+
+    include ../models/store-modal
+    include ../models/store-software-modal
+    include ../models/last-transaction
+
+    - if(store.data.alertOn)
+        script.
+            var storeAlert = #{store.data.alertOn}
+    - else
+        script.
+            var storeAlert = false
+
+    - if(organization.data.alertOn)
+        script.
+            var orgAlert = #{organization.data.alertOn}
+    - else
+        script.
+            var orgAlert = false
+
+    <script src="/plugins/js/jquery.animateNumber.min.js"></script>
+    script.
+        
+        $( document ).ready(function() {
+
+            var $loading = $('.loading');
+            $loading.gSpinner({
+                scale:.5
+            });
+
+            $.ajax({
+                url:'/cspApi/sms/getPromotionDeliveredByStoreID/#{store.data.storeID}',
+                success: function(data){
+                    $loading.gSpinner("hide");
+                    $('.hideLoading').removeClass('hidden');
+                    
+                    if(data.data){
+                        console.log('promotion count ', data);
+                        var decimal_places = 0;
+                        var decimal_factor = decimal_places === 0 ? 1 : Math.pow(10, decimal_places);
+                        var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
+                        
+                        if(data.data.deliverCount <= 0){
+                            $('.bg-light').addClass('bg-danger');
+                            $('.bg-light').removeClass('bg-light');
+                            $('.proH6').removeClass('text-system');
+                            $('.proH6').addClass('text-white');
+                        }
+                        
+                        $('#boxPromotionCount').animateNumber(
+                          {
+                            number: data.data.deliverCount,
+                            numberStep: comma_separator_number_step
+                        }
+                        );
+
+                        var decimal_places = 2;
+                        var decimal_factor = decimal_places === 0 ? 1 : Math.pow(10, decimal_places);
+                        $('#boxPromotionPaid').animateNumber(
+                            {
+                            number: data.data.amountPaid * decimal_factor,
+
+                                numberStep: function(now, tween) {
+                                    var floored_number = Math.floor(now) / decimal_factor,
+                                        target = $(tween.elem);
+
+                                    if (decimal_places > 0) {
+                                    // force decimal places even if they are 0
+                                    floored_number = floored_number.toFixed(decimal_places);
+
+                                    // replace '.' separator with ','
+                                    floored_number = floored_number.toString();
+                                    }
+
+                                    target.text('$' + floored_number);
+                                }
+                            }
+                        );
+                    }
+                }
+            });
+                    
+            $('#phoneNumberDisplay').replaceWith(`<h4 id="phoneNumberDisplay">` + maskPhoneNumber($('#phoneNumberDisplay').text()) + `</h4>`);
+    
+            $.ajax({
+                url: '/api/invoice/open/#{store.data.storeID}',
+                type: 'GET',
+                success: function(result){
+                    
+                    if(!result.length) {
+                        $("#cancelButton").prop("disabled",false);
+                    }
+
+                }
+            });
+            
+            if(storeAlert){
+                $('#alertBanner').removeClass('hidden');
+            }else{
+                $('#alertBanner').addClass('hidden');
+            }
+
+            if(orgAlert){
+                $('#orgAlertBanner').removeClass('hidden');
+                if(storeAlert){
+                    $('#alertBanner').removeClass('mb30');
+                }else{
+                    $('#alertBanner').addClass('mb30');
+                }
+            }else{
+                $('#orgAlertBanner').addClass('hidden');
+            }
+        });
+
+        function lastTransaction(){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#lastTransaction'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    var $last10Loading = $('#loading');
+                    $last10Loading.gSpinner({
+                        scale:1
+                    });
+
+                    $.ajax({
+                        url:'/cspApi/getInvoice/#{store.data.storeID}',
+                        success: function(data){
+                            console.log(data);
+                            data.data.forEach(row => {
+                                var html = `<tr>
+                                    <td>${row.InvoiceID}</td>
+                                    <td>${moment(row.InvoiceDate).format('MM/DD/YYYY LT')}</td>
+                                    <td>${row.AccountName}</td>
+                                    <td class="currency">${row.SubTotal}</td>
+                                    <td class="currency">${row.TaxAmount}</td>
+                                    <td class="currency">${row.GrandTotal}</td>
+                                </tr>`
+                                $("#transactionlistTable").append(html);
+                                console.log(html)    
+                            })
+                            
+                            $last10Loading.gSpinner("hide");
+                            $('#transactionlistTable').removeClass("hidden");
+                            $('.currency').formatCurrency();
+                        }
+                    });
+                    
+                },
+                close: function(){
+                    setDefaultValues()
+
+                }
+             },
+             midClick: true,
+             closeOnBgClick: true
+             });
+
+        }
+
+        function editSoftware(){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#softwareFrom'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                },
+                close: function(){
+                    setDefaultValues()
+
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#softwareFrom').draggable();
+        }
+
+        $('#storeTagManager1').autocomplete({
+            lookup: !{JSON.stringify(allTags)},
+            onSelect: function(selected){
+                 $("#storeTagManager").tagsManager("pushTag",selected.value);
+                 $('#storeTagManager1').val('');
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: false
+        });
+
+        $('#storeTagManager1').keypress(function (e) {
+         var key = e.which;
+         if(key == 13)  // the enter key code
+          {
+              $("#storeTagManager").tagsManager("pushTag",$('#storeTagManager1').val());
+              $('#storeTagManager1').val('');
+          }
+        });
+
+        $("#storeTagManager").tagsManager({
+            tagsContainer: '.tags',
+            tagClass: 'tm-tag-primary',
+            prefilled: '#{tagLink}'
+        });
+
+        function alertSave(){
+            if ($('#alertNote').is(':checked')){
+                $('#alertBanner').removeClass('hidden');
+
+                $('#alertBanner').removeClass('animated fadeInDown').addClass('animated fadeInDown').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                  $(this).removeClass('animated fadeInDown');
+                });
+
+            }else{
+
+                $('#alertBanner').removeClass('animated fadeOutUp').addClass('animated fadeOutUp').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                  $(this).removeClass('animated fadeOutUp');
+                  $('#alertBanner').addClass('hidden');
+                });
+
+            }
+            NProgress.start();
+                var data = {
+                    alertOn: $('#alertNote').is(':checked')
+                }
+                $.ajax({
+                    url: '/api/stores/#{store.data.storeID}',
+                    type: 'PUT',
+                    data: data,
+                    success: function(result){
+                        if (result.status){
+                            reloadActivity(#{store.data.storeID},1);
+                            showNotify('Alert', 'Alert is Set','system');
+                        }else{
+                            showNotify('Alert', 'Unable to set alert','primary');
+                        }
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function saveStoreTags(){
+            var gotTags = $("#storeTagManager").tagsManager('tags')
+            if(gotTags){
+                NProgress.start();
+
+                var tagData = {
+                    tags: gotTags,
+                    id: #{store.data.storeID},
+                    type: 1,
+                    userID: #{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                $.ajax({
+                    url: '/api/tags',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(tagData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Tags',  'Tag was updated!','system');
+                            reloadActivity(#{store.data.storeID},1);
+                        }else{
+                            showNotify('Tags',  'Faile to update tags. error:' + result.data,'error');
+                        }
+                        //console.log("return values ", result)
+
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+            }
+
+        }

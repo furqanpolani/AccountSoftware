@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+    section#contact
+        include ../list/contactList
+        include ../endScript.html
+
+    script.
+        jQuery(document).ready(function() {
+
+            $('#contactList').dataTable({
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+            
+
+
+            });

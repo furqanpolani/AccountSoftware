@@ -1,0 +1,316 @@
+<link href="/plugins/css/jquery.rateyo.css" rel="stylesheet" type="text/css">
+section#content.table-layout.animated.bounceInUp
+    include ../../models/ticket-edit-modal
+    div.tray.tray-center
+        div.row
+            div.col-md-4
+
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-12
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Store Information
+
+                    div.panel-body.pn
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td CSP ID
+                                        td.text-info.pr10
+                                            a(href="/stores/store/#{store.data.storeID}") #{store.data.CSPID}
+                                    tr
+                                        td Store Name
+                                        td.text-info.pr10 #{store.data.businessName}
+                                    tr
+                                        td Phone
+                                        td.text-info.pr10 #{store.data.businessPhone}
+                                    tr
+                                        td Email
+                                        td.text-info.pr10 #{store.data.businessEmail}
+                                    tr
+                                        td Current Version
+                                        td.text-info.pr10 #{store.data.softwareCurrentVersion}
+                                    tr
+                                        td Last Used
+                                        td.text-info.pr10 #{moment(store.data.attandanceDateTime).tz('America/New_York').format('MM/DD/YYYY')} | #{moment(store.data.attandanceDateTime).tz('America/New_York').diff(moment(), "days")} days
+
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Source
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="editTicket()")
+                                        span.imoon.imoon-pencil(style="padding-right:2px;")
+                                        | Edit
+
+                    div.panel-body.pn.table-responsive
+                        table.table.mbn.tc-med-2.tc-bold-last
+                            thead
+                                tr.hidden
+                                    th Name
+                                    th Value
+                                tbody
+                                    tr
+                                        td Caller Name
+                                        td.text-info.pr10 #{ticket.data.name}
+                                    tr
+                                        td Phone Number
+                                        td.text-info.pr10 #{ticket.data.phoneNumber}
+                                    tr
+                                        td Email
+                                        td.text-info.pr10 #{ticket.data.email}
+                                    tr
+                                        td Software
+                                            if ticket.data.softwareDetail
+                                                td.text-info.pr10 #{ticket.data.softwareDetail.selector}
+                                            else 
+                                                td.text-info.pr10 N/A
+                                    tr
+                                        td Language
+                                        td.text-info.pr10 #{ticket.data.languageDetail.selector}
+                                    tr
+                                        td Priority
+                                        td.text-info.pr10 #{ticket.data.priorityDetail.selector}
+                                    tr
+                                        td Ticket Type
+                                        td.text-info.pr10 #{ticket.data.ticketTypeDetail.selector}
+                                    tr
+                                        td Source
+                                        td.text-info.pr10 #{ticket.data.sourceDetail.selector}
+                                    tr
+                                        td Created By
+                                        if ticket.data.reporterUser
+                                            td.text-info.pr10 #{ticket.data.reporterUser.fullName}
+                                        else
+                                            td.text-info.pr10 N/A
+                                    if ticket.data.rating != 0
+                                        tr
+                                            td Rate
+                                            td.text-info.pr10
+                                                div.pull-right#rateYo
+
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.imoon.imoon-screen
+                                span.panel-title Contact
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addContact('Add Contact',#{store.data.storeID},1)")
+                                        span.imoon.imoon-plus(style="padding-right:2px;")
+                                        | Add
+                    div#contactDiv
+                        include ../../../list/contactPanel
+
+
+            div.col-md-4
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.fa.fa-edit
+                                span.panel-title Description
+
+                            div.col-md-2
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="updateDescription()")
+                                        span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                        | Save
+                    div.panel-body.pn
+                        textarea#description.form-control(rows="11") #{ticket.data.description}
+
+            div.col-md-4
+                div.panel
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-icon
+                                    i.fa.fa-check
+                                span.panel-title Solution
+
+                            div.col-md-2
+                                div.pull-right
+                                    button.btn.btn-default.btn-sm.light.fw600.ml10#solutionButton(onclick="updateSolution()" type='button' disabled)
+                                        span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                        | Save
+                    div.panel-body.pn
+                        textarea#solution.form-control(rows="11" disabled) #{ticket.data.solution}
+
+            div.col-md-8
+                div.panel
+                    div.panel-heading
+                        div.col-md-10
+                            span.panel-icon
+                                i.fa.fa-tags
+                            span.panel-title Tags
+                        div.col-md-2
+                            div.pull-right
+                                a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="updateTicketTags()")
+                                    span.glyphicon.glyphicon-floppy-disk(style="padding-right:2px;")
+                                    | Save
+                    div.panel-body
+                        input.form-control#ticketTagManager.hidden(type="text" placeHolder="Start typing for tag list")
+                        input.form-control#ticketTagManager1(type="text" placeHolder="Start typing for tag list")
+
+                        div.tag-container.tags
+
+            div.col-md-8#commentDiv
+                include ../../../list/commentList
+    aside.tray.tray-right.tray290.pn.activityDiv.hidden
+        include ../../../list/activity
+
+    script.
+
+        $(function () {
+              $("#rateYo").rateYo({
+                starWidth: "20px",
+                halfStar: true,
+                rating: '#{ticket.data.rating}',
+                readOnly: true
+              });
+         });
+
+        $('#ticketTagManager1').autocomplete({
+            lookup: !{JSON.stringify(allTags)},
+            onSelect: function(selected){
+                 $("#ticketTagManager").tagsManager("pushTag",selected.value);
+                 $('#ticketTagManager1').val('');
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: false
+        });
+
+        $('#ticketTagManager1').keypress(function (e) {
+         var key = e.which;
+         if(key == 13)  // the enter key code
+          {
+              $("#ticketTagManager").tagsManager("pushTag",$('#ticketTagManager1').val());
+              $('#ticketTagManager1').val('');
+          }
+        });
+
+        $("#ticketTagManager").tagsManager({
+            tagsContainer: '.tags',
+            tagClass: 'tm-tag-system',
+            prefilled: '#{tagLink}'
+        });
+
+        function updateDescription(){
+
+                var ticketData = {
+                    description: $('#description').val()
+                };
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/tickets/#{ticket.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ticketData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Ticket',  'Ticket was updated','system');
+                            reloadActivity(#{ticket.data.id},3);
+                        }else{
+                            showNotify('Ticket',  'Unable to update ticket.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Ticket', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function updateSolution(){
+
+                var ticketData = {
+                    solution: $('#solution').val()
+                };
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/tickets/#{ticket.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ticketData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Ticket',  'Ticket was updated','system');
+                            reloadActivity(#{ticket.data.id},3);
+                        }else{
+                            showNotify('Ticket',  'Unable to update ticket.','error');
+                        }
+                        console.log("return values ", result)
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Ticket', result.responseJSON.data ,'error');
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        function updateTicketTags(){
+            var gotTags = $("#ticketTagManager").tagsManager('tags')
+
+            if(gotTags.length != 0){
+                NProgress.start();
+
+                var tagData = {
+                    tags: gotTags,
+                    id: #{ticket.data.id},
+                    type: 3,
+                    userID: #{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                $.ajax({
+                    url: '/api/tags',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(tagData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Tags',  'Tag was updated!','system');
+                            reloadActivity(#{ticket.data.id},3);
+                        }else{
+                            showNotify('Tags',  'Faile to update tags. error:' + result.data,'error');
+                        }
+                        //console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+            }
+
+        }

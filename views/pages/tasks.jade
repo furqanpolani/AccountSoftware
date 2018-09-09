@@ -1,0 +1,50 @@
+extends ../layout
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.panel.animated.bounceInDown
+            div
+                include ../list/sub-pages/task-filter
+
+
+        div#task-List.animated.bounceInUp
+            include ../list/taskList
+        include ../endScript.html
+
+    <link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+    <script src="/plugins/js/select2.full.min.js"></script>
+    script.
+
+        function defaultHeader(){
+            location.reload();
+        }
+
+        function reloadTaskList(){
+            var assignedTo = $("#assignedTo option:selected").map(function(){return this.value}).get().join(",");
+
+            var priority = $("#priority option:selected").map(function(){return this.value}).get().join(",");
+
+            var status = $("#status option:selected").map(function(){return this.value}).get().join(",");
+
+            var url = "/tasks/listOnly?assignedTo=" + assignedTo + "&priority=" + priority + "&status=" + status
+            //console.log(url);
+            NProgress.start();
+                $.ajax({
+                    url: url,
+                    success: function(result){
+                     $('#task-List').html(result);
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        $("#assignedTo").select2({
+            placeholder:"Select One"
+        });
+        $("#priority").select2({
+            placeholder:"Select One"
+        });
+        $("#status").select2({
+            placeholder:"Select One"
+        });

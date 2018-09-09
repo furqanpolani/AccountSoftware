@@ -1,0 +1,139 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<link href="/plugins/css/jquery.rateyo.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+
+div#qalog-form.popup-basic.popup-lg.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#ticketTitle
+                    | QA Log
+        form#ticketSystem.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-4
+                        div.panel(style="margin-bottom: 0px;")
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-comments-o(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Contact Type
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        select.form-control#software(style=" width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                            option(value="0") Select One
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 15
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                        i.arrow
+                    div.col-md-4
+                        div.panel(style="margin-bottom: 0px;")
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-user(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Rep who handle
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        select.form-control#software(style=" width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                            option(value="0") Select One
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 15
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                        i.arrow
+                    div.col-md-4(style="margin-bottom: 0px;")
+                        div.panel(style="margin-bottom: 0px;")
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-calendar(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Contact Date/Time
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#nextFollowUp(type="text" style="width:100%;")
+            div.panel-heading
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-office(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Subject
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#firstName(type="text" placeHolder="What is log about *" style="width:100%;")
+
+
+
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.fa.fa-pencil-square-o(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Note
+                            div.panel-body.pn
+                                textarea#note.form-control(style="height: 100px;")
+
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.fa.fa-star-half-full(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Rating
+                            div.panel-body.pn
+                                table.table.mbn.tc-med-2.tc-bold-last
+                                    thead
+                                        tr.hidden
+                                            th Name
+                                            th Value
+                                        tbody
+                                            each comboList in comboBox.data
+                                                if comboList.comboBoxTypeId == 16
+                                                    each row in comboList.ComboBoxDetails
+                                                        tr
+                                                            td(width="70%") #{row.selector}
+                                                            td.text-info.pr10(width="30%")
+                                                                div.pull-right(id='R#{row.id}')
+                                                                div.counter
+
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#saveLogButton(type="button" data-style="zoom-in" data-size="l" onclick='saveLog()'  ) Save Log
+
+    
+    script.
+        $(function () {
+            var comboData = !{JSON.stringify(comboBox.data)};
+            console.log(comboData)
+            comboData.forEach(comboList =>{
+                if(comboList.comboBoxTypeId == 16){
+                    comboList.ComboBoxDetails.forEach(row =>{
+                        var rateID = "#R" + row.id
+                        $(rateID).rateYo({
+                          starWidth: "20px",
+                          rating: 0,
+                          onChange: function (rating, rateYoInstance) {
+                              $(this).next().text(rating);
+                          }
+                        });
+                    });
+                }
+            });
+         });
+
+        $('#nextFollowUp').datetimepicker({
+            defaultDate: new Date
+        });

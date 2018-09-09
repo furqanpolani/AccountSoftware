@@ -1,0 +1,318 @@
+
+div#ticket-form.popup-basic.popup-xl.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#ticketTitle
+                    | New Ticket for #{store.data.CSPID} - #{store.data.businessName}
+        form#ticketSystem.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-4
+                        include sub-pages/customer-ticket-info
+                    div.col-md-8
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Source
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="language" style="margin-bottom: 5px;margin-top: 5px;") Software
+                                            select.pull-right.form-control#software(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 3
+                                                        each row in comboList.ComboBoxDetails
+                                                            if comboList.defaultID == row.id
+                                                                option(value="#{row.id}"  selected) #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                                            
+                                                            
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="language" style="margin-bottom: 5px;margin-top: 5px;") Language
+                                            select.pull-right.form-control#language(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 1
+                                                        each row in comboList.ComboBoxDetails
+                                                            if comboList.defaultID == row.id
+                                                                option(value="#{row.id}"  selected) #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                                            
+                                                            
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="priority" style="margin-bottom: 5px;margin-top: 5px;") Priority
+                                            select.pull-right.form-control#priority(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 2
+                                                        each row in comboList.ComboBoxDetails
+                                                            if comboList.defaultID == row.id
+                                                                option(value="#{row.id}"  selected) #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="type" style="margin-bottom: 5px; margin-top: 5px;") Ticket Type
+                                            select.pull-right.form-control#type( required style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 4
+                                                        each row in comboList.ComboBoxDetails
+                                                            if comboList.defaultID == row.id
+                                                                option(value="#{row.id}"  selected) #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="source" style="margin-bottom: 5px;margin-top: 5px;") Source *
+                                            select.pull-right.form-control#source(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 9
+                                                            each row in comboList.ComboBoxDetails
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="status" style="margin-bottom: 5px;margin-top: 5px;") Status
+                                            select.pull-right.form-control#status(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 6
+                                                        each row in comboList.ComboBoxDetails
+                                                            if comboList.defaultID == row.id
+                                                                option(value="#{row.id}"  selected) #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-6.form-group
+                                        label.field.select(for="assignedTo" style="margin-bottom: 5px;margin-top: 5px;") Assigned To
+                                            select#assignedTo.pull-right.form-control(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each user in allUser.data
+                                                    if user.userID == userData.userID
+                                                        option(value="#{user.userID}" data-email="#{user.loginEmail}"  selected="selected") #{user.fullName}
+                                                    else
+                                                        option(value="#{user.userID}" data-email="#{user.loginEmail}" ) #{user.fullName}
+                                            i.arrow
+
+                div.panel
+                    div.panel-heading(style="padding:0px;")
+                        span.panel-icon
+                            i.imoon.imoon-location(style="padding-left:5px;")
+                        span.panel-title(style="padding-left:5px;font-size:14px;")
+                        | Ticket Detail
+                    div.panel-body
+                        div.row.form-inline
+                            div.col-md-12.form-group
+                                input.form-control.typeahead#ticketTitle1(type="text" placeHolder="Ticket title" style="width:100%;")
+                        div.row(style="padding-top:20px;")
+                            div.col-md-6
+                                div.panel
+                                    div
+                                        span(style="padding-left:10px;") Description
+                                    div.panel-body.pn
+                                        textarea#description.form-control(rows="5")
+
+                            div.col-md-6
+                                div.panel
+                                    div
+                                        span(style="padding-left:10px;") Solution
+                                    div.panel-body.pn
+                                        textarea#solution.form-control(rows="5")
+                        div.row.form-inline
+                            div.col-md-12.form-group
+                                input.form-control#tagmanager.hidden(type="text" )
+                                input.form-control#tagmanager1(type="text" style="width:100%;" placeHolder="Tags")
+                                div.tag-container.tickettags
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#invoiceSaveButton(type="button" data-style="zoom-in" data-size="l" onclick='saveTicket()' ) Create Ticket
+
+    script.
+
+        // Init Twitter Typeahead.js
+        var substringMatcher = function(strs) {
+          return function findMatches(q, cb) {
+            var matches, substrRegex;
+
+            // an array that will be populated with substring matches
+            matches = [];
+
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
+
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function(i, str) {
+              if (substrRegex.test(str)) {
+                // the typeahead jQuery plugin expects suggestions to a
+                // JavaScript object, refer to typeahead docs for more info
+                matches.push({
+                  value: str
+                });
+              }
+            });
+
+            cb(matches);
+          };
+        };
+
+
+
+
+        $('.typeahead').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        }, {
+          name: 'title',
+          displayKey: 'value',
+          source: substringMatcher(!{JSON.stringify(typeahead.data)})
+        });
+
+        $('#tagmanager1').autocomplete({
+            lookup: !{JSON.stringify(allTags)},
+            onSelect: function(selected){
+                $("#tagmanager1").tagsManager("pushTag",selected.value);
+                $('#tagmanager1').val('');
+            },
+            autoSelectFirst: true,
+            showNoSuggestionNotice: false
+        });
+
+        $('#tagmanager1').keypress(function (e) {
+         var key = e.which;
+         if(key == 13)
+          {
+              $("#tagmanager").tagsManager("pushTag",$('#tagmanager1').val());
+              $('#tagmanager1').val('');
+          }
+        });
+
+        $("#tagmanager").tagsManager({
+            tagsContainer: '.tickettags',
+            tagClass: 'tm-tag-primary'
+        });
+
+
+
+
+        function saveTicketTags(data){
+            var gotTags = $("#tagmanager").tagsManager('tags');
+
+            if(gotTags.length != 0){
+                NProgress.start();
+
+                var tagValue = {
+                    tags: gotTags,
+                    id: data,
+                    type: 3,
+                    userID: #{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                console.log(tagValue);
+
+                $.ajax({
+                    url: '/api/tags',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(tagValue),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            showNotify('Tags',  'Tag was updated!','system');
+                        }else{
+                            showNotify('Tags',  'Faile to update tags. error:' + result.data,'error');
+                        }
+                        //console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+            }
+
+        }
+
+        function saveTicket(){
+
+                var ticketData = {
+                    title: $('#ticketTitle1').val(),
+                    ticketTypeID: $("#type option:selected").val(),
+                    reporterUserID:#{userData.userID},
+                    assignedToUserID:$('#assignedTo').val(),
+                    description:$('#description').val(),
+                    solution:$('#solution').val(),
+                    storeID:#{store.data.storeID},
+                    languageID:$("#language option:selected").val(),
+                    sourceID:$("#source option:selected").val(),
+                    phoneNumber:$('#contactNumber').val(),
+                    name:$('#callerName').val(),
+                    email:$('#emailAddress').val(),
+                    priorityID:$("#priority option:selected").val(),
+                    statusID:$("#status option:selected").val(),
+                    softwareID:$("#software option:selected").val(),
+                    createdAt: new Date().toISOString(),
+                    dueDate: new Date().toISOString()
+                };
+
+                console.log('ticket data ', ticketData);
+
+                if(ticketData.sourceID == "0"){
+                    bootbox.alert("Please select source.");
+                    return false;
+                }
+
+                if(ticketData.title.length == 0){
+                    bootbox.alert("Please enter ticket title.");
+                    return false;
+                }
+
+                if(ticketData.sourceID == "43"){
+                    if(ticketData.name.length == 0){
+                        bootbox.alert("source was selected phone, Please enter phone number.");
+                        return false;
+                    }
+                }
+
+                if(ticketData.sourceID == "44"){
+                    if(ticketData.email.length == 0){
+                        bootbox.alert("source was selected chat, Please enter email address.");
+                        return false;
+                    }
+                }
+                NProgress.start();
+                $.showLoading({
+                    name: 'line-scale'
+                });
+
+                $.ajax({
+                    url: '/api/tickets',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ticketData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            saveTicketTags(result.data.id);
+                            showNotify('Ticket',  'Ticket was created','system');
+                            reloadTicket(#{store.data.storeID});
+                            reloadActivity(#{store.data.storeID},1);
+                        }else{
+                            showNotify('Ticket',  'Unable to create ticket.','error');
+                        }
+                        console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                    $.hideLoading();
+                });
+        }

@@ -1,0 +1,1032 @@
+
+<link href="/plugins/css/card.css" rel="stylesheet" type="text/css">
+
+
+section(style="margin-top: -30px")
+    if organization.data
+        div.animated.bounceInDown
+            div.page-heading(style="margin: 1px;")
+                div.row
+                    div.media-body.va-m.col-md-8
+                        h1 #{organization.data.organizationName}
+                            h4 #{organization.data.ownerName} | #{organization.data.primaryPhone}
+                            h6 Login Email: #{organization.data.loginEmail}
+    
+div.row.no-margin    
+    section.animated.bounceInUp.store-info-from
+        div.tray.tray-center     
+            div.mw1000.center-block(style="padding-top:30px;")
+            
+                div.row.no-margin
+                    div.admin-form
+                        div.panel.heading-border.panel-primary
+                            div.panel-body.bg-light
+                                form#storeInformation
+                                    if !organization.data
+                                        div.section-divider.mb40
+                                            span Owner Information
+                                        div.row.no-margin
+                                            div.col-md-6
+                                                div.section
+                                                    label.field
+                                                        label.field-label First Name
+                                                            em *
+                                                        input.gui-input#orgFirstName(type='text' name='orgFirstName')
+                                                        
+                                            div.col-md-6
+                                                div.section
+                                                    label.field
+                                                        label.field-label Last Name
+                                                            em *
+                                                        input.gui-input#orgLastName(type='text' name='orgLastName')
+                                                    
+                                    div.section-divider.mb40
+                                        span Store Information
+                                    div.row.no-margin
+                                        input#isNewOrg.hidden(type='checkbox')
+                                        div.col-md-12
+                                            div.section
+                                                label.field
+                                                    label.field-label Company / Store Name
+                                                        em *
+                                                    input.gui-input#storeName(type='text' name='storeName')
+                                    div.row.no-margin
+                                        div.col-md-8
+                                            div.section
+                                                label.field
+                                                    label.field-label Street Address
+                                                        em *
+                                                    input.gui-input#streetAddress(type='text' name='streetAddress')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Suit/Room #
+                                                    input.gui-input#suit(type='text')
+                                    div.row.no-margin
+                                        div.col-md-3
+                                            div.section
+                                                label.field
+                                                    label.field-label City
+                                                        em *
+                                                    input.gui-input#city(type='text' name='city')
+                                        div.col-md-3
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="state") State
+                                                        em *
+                                                    label.field.select(for="state")
+                                                        select#state(name="state")
+                                                            option(value="") Select One
+                                                            each row in state.data
+                                                                option(value="#{row.stateID}") #{row.stateSymbol} - #{row.stateName}
+                                                            
+                                                        i.arrow
+                                        div.col-md-2
+                                            div.section
+                                                label.field
+                                                    label.field-label Zip Code
+                                                        em *
+                                                    input.gui-input#zipcode(type='text' name='zipcode')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Country
+                                                        em *
+                                                    input.gui-input#country(type='text' name='country')
+                                    div.row.no-margin
+                                        div.col-md-6
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="businessType") Business Type
+                                                        em *
+                                                    label.field.select(for="businessType")
+                                                        select#businessType(name="businessType")
+                                                            option(value="") Select One
+                                                            each comboRow in comboBox.data
+                                                                if comboRow.comboBoxTypeId == 12
+                                                                    each row in comboRow.ComboBoxDetails
+                                                                        option(value="#{row.id}") #{row.selector}
+                                                            
+                                                        i.arrow
+                                                
+                                        div.col-md-6
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="findUs") How did you find us
+                                                        em *
+                                                    label.field.select(for="findUs")
+                                                        select#findUs(name="findUs")
+                                                            option(value="") Select One
+                                                            each comboRow in comboBox.data
+                                                                if comboRow.comboBoxTypeId == 13
+                                                                    each row in comboRow.ComboBoxDetails
+                                                                        option(value="#{row.id}") #{row.selector}
+                                                            
+                                                        i.arrow
+                                                    
+                                    div.section-divider.mb40
+                                        span Contact Information
+                                    
+                                    div.row.no-margin
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Store Phone
+                                                        em *
+                                                    input.gui-input#storePhone(type='text' name='storePhone')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Email Address
+                                                        em *
+                                                    input.gui-input#emailAddress(type='email' name='emailAddress')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Invoice Email Address
+                                                        em *
+                                                    input.gui-input#invoiceEmailAddress(type='email' name='invoiceEmailAddress')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Cell Phone Number
+                                                    input.gui-input#cellPhoneNumber(type='text' name='storePhone')
+                                                
+                                    div.section-divider.mb40
+                                        span Shopping Address
+                                            
+                                    div.row.no-margin
+                                        div.col-md-12.col-md-offset-5
+                                            div.section
+                                                label.switch.block.mt15.switch-primary.section
+                                                    input#sameAsBillingAddress(type='checkbox' checked name='tools' onchange="shippingUpdate()")
+                                                    label(for='sameAsBillingAddress' data-on='YES' data-off='NO')
+                                                    span Shipping is same as billing
+                                        
+                                    div#shippingAddressDiv.row.no-margin.hidden
+                                        div.col-md-6
+                                            div.section
+                                                label.field
+                                                    label.field-label First Name
+                                                        em *
+                                                    input.gui-input#firstName(type='text' name='firstName')
+                                        div.col-md-6
+                                            div.section
+                                                label.field
+                                                    label.field-label Last Name
+                                                        em *
+                                                    input.gui-input#lastName(type='text' name='lastName')
+                                        div.col-md-12
+                                            div.section
+                                                label.field
+                                                    label.field-label Company / Store Name
+                                                        em *
+                                                    input.gui-input#shippingStoreName(type='text' name='shippingStoreName')
+                                        div.col-md-8
+                                            div.section
+                                                label.field
+                                                    label.field-label Street Address
+                                                        em *
+                                                    input.gui-input#shippingStreetAddress(type='text' name='shippingStreetAddress')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Suit/Room #
+                                                    input.gui-input#shippingSuit(type='text')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label City
+                                                        em *
+                                                    input.gui-input#shippingCity(type='text' name='shippingCity')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="shippingState") State
+                                                        em *
+                                                    label.field.select(for="shippingState")
+                                                        select#shippingState(name="shippingState")
+                                                            option(value="") Select One
+                                                            each row in state.data
+                                                                option(value="#{row.stateID}") #{row.stateSymbol} - #{row.stateName}
+                                                            
+                                                        i.arrow
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Zip Code
+                                                        em *
+                                                    input.gui-input#shippingZipcode(type='text' name='shippingZipcode')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Country
+                                                        em *
+                                                    input.gui-input#shippingCountry(type='text' name='shippingCountry')
+                                        div.col-md-4
+                                            div.section
+                                                label.field
+                                                    label.field-label Phone Number
+                                                        em *
+                                                    input.gui-input#shippingPhone(type='text' name='shippingPhone')
+
+                if !organization.data
+                    div.row.no-margin
+                        div.admin-form
+                            div.panel.heading-border.panel-primary
+                                div.panel-body.bg-light
+                                    form#loginAndPassword
+                                        div.section-divider.mb40
+                                            span Login & Password
+                                        div.row
+                                            div.col-md-4
+                                                div.section
+                                                    label.field
+                                                        label.field-label Login Email
+                                                            em *
+                                                        input.gui-input#loginEmail(type='email' name='loginEmail')
+                                            
+                                            div.col-md-4
+                                                div.section
+                                                    label.field
+                                                        label.field-label Password
+                                                            em *
+                                                        input.gui-input#loginPassword(type='password' name='loginPassword')  
+                                                
+                                            div.col-md-4
+                                                div.section
+                                                    label.field
+                                                        label.field-label Conform Password
+                                                            em *
+                                                        input.gui-input#conformPassword(type='password' name='conformPassword')                    
+                
+                div.row.no-margin
+                    div.admin-form
+                        div.panel.heading-border.panel-primary
+                            div.panel-body.bg-light
+                                            
+                                div.section-divider.mb40
+                                    span Payment Information
+                                form#addCard
+                                    div.row
+                                        div.col-md-6
+                                            div.card-wrapper(style="margin-top:30px;")
+                                        div.col-md-6
+                                            div.row
+                                                div.col-md-12
+                                                    div.section
+                                                        label.field-label Card number
+                                                        input.gui-input#cardNumber(type='text' required)
+                                                div.col-md-12
+                                                    div.section
+                                                        label.field-label Name on card
+                                                        input.gui-input#nameOnCard(type='text')
+                                                div.col-md-6
+                                                    div.section
+                                                        label.field-label Expriy Date
+                                                        input.gui-input#cardExpiry(type='text')
+                                                div.col-md-6
+                                                    div.section
+                                                        label.field-label CVV Code
+                                                        input.gui-input#cvvCode(type='text')
+                                                        
+                div.row.no-margin
+                    div.admin-form
+                        div.panel.heading-border.panel-primary
+                            div.panel-body.bg-light
+                                form#softwareAndPlan
+                                    div.section-divider.mb40
+                                        span Software & Plan
+                                    div.row
+                                        div.col-md-5
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="software") Software
+                                                        em *
+                                                    label.field.select(for="software")
+                                                        select#software(name="software" onchange="planChange()")
+                                                            option(value="") Select One
+                                                            each comboBoxType in comboBox.data
+                                                                if comboBoxType.comboBoxTypeId == 3
+                                                                    each software in comboBoxType.ComboBoxDetails
+                                                                        option(value="#{software.id}") #{software.selector}
+                                                            
+                                                        i.arrow
+                                        
+                                        div.col-md-5
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="plan") Plan
+                                                        em *
+                                                    label.field.select(for="plan")
+                                                        select#plan(name="plan" onchange="planChange()")
+                                                            option(value="") Select One
+                                                            each planl in productList.data
+                                                                option(value="#{planl.productID}" required) #{planl.productDetail}
+                                                        i.arrow    
+                                                        
+                                        div.col-md-2
+                                            div.section
+                                                label.field
+                                                    label.field-label Monthly fee
+                                                        em *
+                                                    input.gui-input.text-right#monthlyFee(type='number' onchange="changeFee()" name='monthlyFee' value="0")        
+                                                    
+                                        div.col-md-5
+                                            div.section
+                                                label.field
+                                                    label.field-label(for="promotionCode") Promotion Code
+                                                    label.field.select(for="promotionCode")
+                                                        select#promotionCode(name="promotionCode")
+                                                            option(value="") Select One
+                                                            each promoRow in promotionCode.data
+                                                                option(value="#{promoRow.id}") #{promoRow.code}
+                                                            
+                                                        i.arrow                      
+                                                    
+                div.row.no-margin
+                    div.admin-form
+                        div.panel.heading-border.panel-primary
+                            div.panel-body.bg-light
+                                            
+                                div.section-divider.mb40
+                                    span Hardware
+                                div.row
+                                    each eachProduct in product.data
+                                        div.col-md-3.mt20.pointer(onclick="addItem(#{eachProduct.productID})")
+                                            //- a(onclick="addItem(#{eachProduct.productID})" style="text-decoration: none !important;")
+                                            div.card.m20(style="width: 20rem; overflow:hidden; ")
+                                                img.card-img-top(src='#{eachProduct.imageUrl}' style='width:125px; height: 116px;')
+                                                div.card-block
+                                                    h4.card-title #{eachProduct.productDetail}
+                                                    p.card-text(data-toggle="tooltip" title="#{eachProduct.description}" style="width: 15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;") #{eachProduct.description}
+                                                    h5.currency.text-primary #{eachProduct.amount}
+                                                    //- button.btn.btn-primary(onclick="addItem(#{eachProduct.productID})" type='button') Add to card 
+                                                    
+                                    div.col-md-4
+                                        div.section
+                                            label.field
+                                                label.field-label Shipping Fee
+                                                    em *
+                                                input.gui-input.text-right#shippingFee(type='number' value='10' onClick="this.select();" onchange='updateTotal()' name='shippingFee')
+                            
+                            div.panel-footer.text-right
+                                button#placeOrder.button.btn-primary(type="button") Place Order
+                                            
+                
+
+    aside.tray.tray-right.tray290.fixed.col-md-4
+        div.admin-form
+            h4 Your order
+            hr.short
+            div.mt15
+                table.table.fs12
+                    tbody
+                        
+                        tr
+                            td.text-left 
+                            td.text-left
+                                span#softwareLabel Software
+                                span &nbsp & &nbsp
+                                span#planLabel Plan
+                            td.text-right.currency#planFee 0
+                        
+            hr.short
+            div.mt15
+                table.table.table-hover1.pointer.fs12
+                    tbody#itemRows
+                        
+            div.footer-section
+                hr.short
+                table.totalTable.pull-right
+                    tbody
+                        tr
+                            td.text-left 
+                            td.text-right Total Purchase
+                            td.text-right.currency#subTotal 0.00
+                        tr
+                            td.text-left 
+                            td.text-right Estimated Tax
+                            td.text-right.currency#taxAmount 0.00
+                            
+                        tr
+                            td.text-left 
+                            td.text-right Shippting Fee
+                            td.text-right.currency#shippingAmount 0.00
+                    tfoot
+                        tr
+                            td.text-left 
+                            td.text-right Total
+                            td.text-right.currency#grandTotal
+                                b
+                                    | 0.00
+div
+    include ./models/edit-cartItem                        
+
+
+include ../endScript.html
+
+<script src="/plugins/js/jquery.autocomplete.min.js"></script>
+<script src="/plugins/js/card.js"></script>
+
+script.
+
+    var itemInCart = [];
+    var totalSoftwareAmount = 0;
+    var defaultCount = 0;
+    var hardwareOnCart = false;
+    var orgInfo = !{JSON.stringify(organization)}
+    var productList = !{JSON.stringify(productList.data)}
+    var sameAsBillingAddress = true
+
+    $("#storeInformation").submit(function() {
+        return false;
+    });
+    
+    $("#softwareAndPlan").submit(function() {
+        return false;
+    });
+
+    if (orgInfo.data){
+        $('#isNewOrg').prop('checked', false);
+    }else{
+        $('#isNewOrg').prop('checked', true);
+    }
+    
+    function getValueFromArray(id){
+        var result = null;
+        for (var i = 0; i < itemInCart.length; i++) {
+            
+            if(itemInCart[i].id === id){
+                result = itemInCart[i]
+            }
+        }
+        
+        return result;
+    }
+    
+    function editCart(e){
+        $.magnificPopup.open({
+         items: {
+           src: '#editCartForm'
+         },
+         callbacks:{
+            beforeOpen: function(){
+                this.st.mainClass = 'mfp-rotateUp';
+                var id = $(e).attr('id');
+                
+                
+                var result = getValueFromArray(id);
+                console.log(result);
+                //- console.log('Tag Id',e.getElementsByTagName('tr'))
+                //- console.log('Tax Amount',e.getElementsByTagName('td')[1].getAttribute("taxamount"))
+                //- console.log('isTax',e.getElementsByTagName('td')[1].getAttribute("istax"))
+                //- this.st.mainClass = 'mfp-slideUp';
+                $('#cartNumber').attr('data-id',result.id);
+                $('#itemName').val(result.productDetail);
+                $('#price').val(result.rate);
+                $('#cartTaxAmount').val(result.taxAmount);
+                
+                if(result.isTax){
+                    $("#taxApply").attr("disabled", false);
+                    $('#taxApply').replaceWith(`<input id="taxApply" type="checkbox" onclick="applyTax()" checked name="taxApply">`)
+                }else{
+                    $("#taxApply").attr("disabled", true);
+                    $('#taxApply').replaceWith(`<input id="taxApply" type="checkbox" onclick="applyTax()" unchecked name="taxApply">`)
+                }
+                
+            },
+            close: function(){
+                //- setDefaultValues()
+
+            }
+         },
+         midClick: true,
+         closeOnBgClick: true
+         });
+        
+    }
+    
+    function planChange(){
+        productList.forEach(row =>{
+            var planID = $('#plan option:selected').val();
+
+            if(planID == row.productID){
+                //- console.log(planID)
+                //- console.log(row.productID)
+                $('#monthlyFee').val(row.amount);
+                defaultCount = row.defaultQuantity
+                totalSoftwareAmount = row.amount * defaultCount
+                $('#planFee').text(totalSoftwareAmount);
+                
+                $('#planLabel').text($('#plan option:selected').text());
+            }
+        });
+        updateTotal();
+    }
+    
+    function changeFee(){
+        productList.forEach(row =>{
+            var planID = $('#plan option:selected').val();
+
+            if(planID == row.productID){
+                //- console.log(planID)
+                //- console.log(row.productID)
+                var amount = $('#monthlyFee').val();
+                defaultCount = row.defaultQuantity
+                totalSoftwareAmount = amount * defaultCount
+                $('#planFee').text(totalSoftwareAmount);
+                
+                $('#planLabel').text($('#plan option:selected').text());
+            }
+        });
+        updateTotal();
+    }
+    
+    //- function monthlyFeeChange(){
+    //-     totalSoftwareAmount = $('#planFee').text()
+    //-     $('#planFee').text(totalSoftwareAmount);
+    //-     updateTotal();
+    //- }
+    
+    $('#software').change(function(){
+        $('#softwareLabel').text($('#software option:selected').text());
+    })
+    
+    var stateTaxValue = 0;
+    
+    function addItem(id){
+        var selectedStateID = $('#state').val();
+        
+        hardwareOnCart = true;
+        
+        
+        if(selectedStateID == ""){
+            showNotify('Hardware',  'before adding hardware to cart, please select state.','error');
+            $('#status').focus();
+            return false;
+        }else{
+            var state = !{JSON.stringify(state.data)}
+            state.forEach(row =>{
+                if(row.stateID == selectedStateID){
+                    stateTaxValue = row.taxCollect;
+                }
+            });
+        }
+        //- console.log('state id ', selectedStateID)
+        //- console.log('stateTaxValue ', stateTaxValue)
+        
+        $.ajax({
+            url:'/api/getProductByID/' + id,
+            success: function(product){
+            
+            
+                if(product.status == true){
+                    var rowID = "r" + moment.now()
+                    rowValues = {
+                        id: rowID,
+                        productID: product.data.productID,
+                        productDetail: product.data.productDetail,
+                        rate: product.data.amount,
+                        qty: 1,
+                        taxAmount: parseFloat(product.data.amount * stateTaxValue / 100),
+                        total: product.data.amount
+                    };
+
+                    rowValues.taxAmount = parseFloat(rowValues.taxAmount.toFixed(2));
+                    
+                                        
+                    if(stateTaxValue > 0){
+                        rowValues.isTax = true;
+                    }else{
+                        rowValues.isTax = false;
+                    }
+                    
+                    addItemRow(rowValues);
+                    
+                    itemInCart.push(rowValues);
+                    updateTotal();
+                    
+                    console.log('itemInCart ', itemInCart);
+                }else{
+                    showNotify('Product',  'Unable to get product.','error');
+                }
+                
+            },
+            error: function(err){
+                showNotify('Product',  'Unable to get product.','error');
+            }
+        })
+        
+    }
+    
+    function updateTotal(){
+        
+        if(hardwareOnCart == true){
+            $('#shippingAmount').text($('#shippingFee').val());
+        }
+        
+        var subTotal = 0;
+        var taxAmount = 0;
+        
+        itemInCart.forEach(item =>{
+            
+            subTotal = subTotal + parseFloat(item.rate);
+            taxAmount = taxAmount + parseFloat(item.taxAmount);
+        });
+        var shippingAmount = parseFloat($('#shippingFee').val())
+        
+        //- console.log(subTotal)
+        //- console.log(taxAmount)
+        //- console.log(shippingAmount)
+        subTotal = subTotal + parseFloat(totalSoftwareAmount);
+        var grandTotal = parseFloat(subTotal) + parseFloat(taxAmount)
+        
+            if(hardwareOnCart == true){
+                grandTotal = grandTotal + shippingAmount
+            }
+            
+            //- console.log(totalSoftwareAmount)
+        $('#subTotal').text(subTotal)
+        $('#taxAmount').text(taxAmount)
+        $('#grandTotal').text(grandTotal)
+        
+        $('.currency').formatCurrency();
+    }
+    
+    function addItemRow(rowValues){
+        console.log(rowValues);
+        var htmlTableRow = `<tr class='animated fadeInDown' id=` + rowValues.id + ` onclick='editCart(this)'>
+        <td class="text-left">1x</td>
+        <td class="text-left itemName" is-tax=`+ rowValues.isTax +` tax-amount=`+ rowValues.taxAmount +`><div>` + rowValues.productDetail + `</div><div class="text-muted"><span>Tax: </span><span class="currency">` + rowValues.taxAmount + `</span></div></td>
+        <td class="text-right currency price">` + rowValues.rate + `</td>
+        </tr>`
+        
+        $('#itemRows').append(htmlTableRow);
+        $('.currency').formatCurrency();
+    }
+      
+
+    function shippingUpdate(){
+        sameAsBillingAddress = $("#sameAsBillingAddress").is(':checked')
+        if(sameAsBillingAddress){
+            $('#shippingAddressDiv').addClass('hidden');
+        }else{
+            $('#shippingAddressDiv').removeClass('hidden');
+        }
+        
+    }
+
+    jQuery(document).ready(function() {
+        var card = new Card({
+        
+            form: 'form#addCard', // *required*
+        
+            container: '.card-wrapper', // *required*
+        
+            formSelectors: {
+                numberInput: 'input#cardNumber',
+                expiryInput: 'input#cardExpiry',
+                cvcInput: 'input#cvvCode',
+                nameInput: 'input#nameOnCard'
+            },
+        
+            width: 400,
+            formatting: true,
+        
+            // Strings for translation - optional
+            messages: {
+                validDate: 'valid\ndate', // optional - default 'valid\nthru'
+                monthYear: 'mm/yy',
+            },
+            placeholders: {
+                number: '•••• •••• •••• ••••',
+                name: 'Full Name',
+                expiry: '••/••',
+                cvc: '•••'
+            },
+        
+            // if true, will log helpful messages for setting up Card
+            debug: false // optional - default false
+        });
+        
+        $.validator.methods.smartCaptcha = function(value, element, param) {
+            return value == param;
+        };
+    
+    
+        $("#storeInformation").validate({
+            errorClass: "state-error",
+            validClass: "state-success",
+            errorElement: "em",
+            rules: {
+                storeName: 'required',
+                streetAddress: 'required',
+                city: 'required',
+                zipcode: 'required',
+                invoiceEmailAddress: 'required',
+                country: 'required',
+                software: 'required',
+                plan: 'required',
+                storePhone: {
+                    required: true,
+                    number: true
+                },
+                emailAddress: {
+                    required: true,
+                    email: true
+                },
+                orgFirstName:{
+                    required:"#isNewOrg:checked"
+                },
+                orgLastName:{
+                    required:"#isNewOrg:checked"
+                },
+                loginEmail:{
+                    required: "#isNewOrg:checked",
+                    email: true
+                },
+                password:{
+                    required: "#isNewOrg:checked",
+                    minlength: 5
+                },
+                conformPassword:{
+                    required: "#isNewOrg:checked",
+                    minlength: 5,
+                    equalTo: "#conformPassword"
+                },
+                state: 'required',
+                businessType: 'required',
+                findUs: 'required',
+                firstName:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                lastName:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingStoreName:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingStreetAddress:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingCity:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingState:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingZipcode:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingCountry:{
+                    required: "#sameAsBillingAddress:checked"
+                },
+                shippingPhone:{
+                    required: "#sameAsBillingAddress:checked"
+                }
+            },
+            messages: {
+                storeName: "Store name is required.",
+                streetAddress: "We need street address this is print on your receipt.",
+                state: 'Please select state',
+                storePhone: {
+                    required : 'Please provide store phone number',
+                    number: 'Phone number have to numbers'
+                }
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).closest('.field').addClass(errorClass).removeClass(validClass);
+              },
+              unhighlight: function(element, errorClass, validClass) {
+                $(element).closest('.field').removeClass(errorClass).addClass(validClass);
+              },
+              errorPlacement: function(error, element) {
+                if (element.is(":radio") || element.is(":checkbox")) {
+                  element.closest('.option-group').after(error);
+                } else {
+                  error.insertAfter(element.parent());
+                }
+              }
+
+        });
+        
+        $("#loginAndPassword").validate({
+            errorClass: "state-error",
+            validClass: "state-success",
+            errorElement: "em",
+            rules: {
+                
+                orgFirstName:{
+                    required:"#isNewOrg:checked"
+                },
+                orgLastName:{
+                    required:"#isNewOrg:checked"
+                },
+                loginEmail:{
+                    required: "#isNewOrg:checked",
+                    email: true
+                },
+                loginPassword:{
+                    required: "#isNewOrg:checked",
+                    minlength: 5
+                },
+                conformPassword:{
+                    required: "#isNewOrg:checked",
+                    minlength: 5,
+                    equalTo: "#conformPassword"
+                }
+            },
+            messages: {
+                loginPassword:{
+                    required: 'Please provide a password',
+                    minlength: 'Your password must be at least 5 characters long'
+                },
+                conformPassword:{
+                    required: 'Please provide a password',
+                    minlength: 'Your password must be at least 5 characters long',
+                    equalTo: 'Please enter the same password as above'
+                }
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).closest('.field').addClass(errorClass).removeClass(validClass);
+              },
+              unhighlight: function(element, errorClass, validClass) {
+                $(element).closest('.field').removeClass(errorClass).addClass(validClass);
+              },
+              errorPlacement: function(error, element) {
+                if (element.is(":radio") || element.is(":checkbox")) {
+                  element.closest('.option-group').after(error);
+                } else {
+                  error.insertAfter(element.parent());
+                }
+              }
+        });
+        
+        $("#softwareAndPlan").validate({
+            errorClass: "state-error",
+            validClass: "state-success",
+            errorElement: "em",
+            rules: {
+                software: 'required',
+                plan: 'required',
+                software: 'required',
+                plan: 'required',
+                monthlyFee: {
+                    required:true,
+                    number: true
+                },
+                
+            },
+            messages: {
+                
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).closest('.field').addClass(errorClass).removeClass(validClass);
+              },
+              unhighlight: function(element, errorClass, validClass) {
+                $(element).closest('.field').removeClass(errorClass).addClass(validClass);
+              },
+              errorPlacement: function(error, element) {
+                if (element.is(":radio") || element.is(":checkbox")) {
+                  element.closest('.option-group').after(error);
+                } else {
+                  error.insertAfter(element.parent());
+                }
+              }
+
+        });
+        
+    
+    });
+
+    
+    $("#placeOrder").click(function () {
+        console.log("storeInformation validate ",$("#storeInformation").valid());
+        console.log("softwareAndPlan validate ",$("#softwareAndPlan").valid());
+        //console.log("loginAndPassword validate ",$("#loginAndPassword").valid());
+        if ( hardwareOnCart ) {
+            if($('#shippingFee').val() != 0){
+                var shipping = {
+                    id: '18_shipping',
+                    productID: 18,
+                    productDetail: 'Shipping',
+                    isTax: false,
+                    qty: 1,
+                    taxAmount:0,
+                    total: parseFloat($('#shippingFee').val()),
+                    rate: parseFloat($('#shippingFee').val())
+                }
+                updateArray(shipping);
+            }
+        }
+        
+        var order = {
+            businessName: $('#storeName').val(),
+            businessPhone: $('#storePhone').val(),
+            cellPhone: $('#cellPhoneNumber').val(),
+            businessEmail: $('#emailAddress').val(),
+            address: $('#streetAddress').val(),
+            address1: $('#suit').val(),
+            city: $('#city').val(),
+            stateID: $('#state option:selected').val(),
+            zipCode: $('#zipcode').val(),
+            country: $('#country').val(),
+            softwareFee: $('#monthlyFee').val(),
+            productID: $('#plan option:selected').val(),
+            invoiceEmail: $('#invoiceEmailAddress').val(),
+            businessTypeID: $('#businessType option:selected').val(),
+            foundUsID: $('#findUs option:selected').val(),
+            sameAsBillingAddress: sameAsBillingAddress,
+            userID: #{userData.userID},
+            invoiceDetails: itemInCart,
+            promotionCodeID: $('#promotionCode option:selected').val(),
+            shippingFee: parseFloat($('#shippingFee').val()),
+            Card: {
+                cardNumber:$('#cardNumber').val(),
+                nameOnCard:$('#nameOnCard').val(),
+                expiry:$("#cardExpiry").val().split('/'),
+                cvvCode:$('#cvvCode').val(),
+            }
+        };
+        
+        
+        
+        if($("#cardExpiry").val() !=  ""){
+            order.Card['month'] = order.Card.expiry[0].split(" ").join("")
+            order.Card['year'] = order.Card.expiry[1].split(" ").join("")
+        }
+        //- console.log('sameAsBillingAddress ', sameAsBillingAddress)
+        //- console.log('sameAsBillingAddress ', orgInfo)
+
+        if(sameAsBillingAddress){
+            
+            if($('#isNewOrg').is(":checked")){
+                order['shipName'] = $('#orgFirstName').val() + $('#orgLastName').val();
+            }else{
+                order['shipName'] = orgInfo.data.ownerName + orgInfo.data.ownerLastName;
+            }
+            
+            order['shipBusinessName'] = $('#storeName').val();
+            order['shipAddress'] = $('#streetAddress').val();
+            order['shipAddress1'] = $('#suit').val();
+            order['shipCity'] = $('#city').val();
+            order['shipState'] = $('#state option:selected').val();
+            order['shipZipcode'] = $('#zipcode').val();
+            order['shipCountry'] = $('#country').val();
+            order['shipPhone'] = $('#storePhone').val();
+        }else{
+            order['shipName'] = $('#firstName').val() + $('#lastName').val();
+            order['shipBusinessName'] = $('#shippingStoreName').val();
+            order['shipAddress'] = $('#shippingStreetAddress').val();
+            order['shipAddress1'] = $('#shippingSuit').val();
+            order['shipCity'] = $('#shippingCity').val();
+            order['shipState'] = $('#shippingState option:selected').val();
+            order['shipZipcode'] = $('#shippingZipcode').val();
+            order['shipCountry'] = $('#shippingCountry').val();
+            order['shipPhone'] = $('#shippingPhone').val();
+        }
+        
+        if ( $('#isNewOrg').is(":checked") ){
+            order['ownerName'] = $('#orgFirstName').val();
+            order['ownerLastName'] = $('#orgLastName').val();
+            order['loginEmail'] = $('#loginEmail').val();
+            order['loginPassword'] = $('#loginPassword').val();
+        }
+        
+        console.log('new store ', order)
+        if ( $("#storeInformation").valid() && $("#softwareAndPlan").valid() ){
+             createStore(order);
+        }
+    });
+    
+    function createStore(data){
+        if ( $('#isNewOrg').is(":checked") ){
+            var url = "/api/org/0/store" 
+        }else{
+            var url = "/api/org/" + orgInfo.data.organizationID + "/store" 
+        }
+        
+        NProgress.start();
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function(storeResult){
+                    //- console.log('storeResult ', storeResult)
+                    $.showLoading({name: 'line-scale'});
+                    showNotify('Created', 'Store was create New CSPID is:' + storeResult.data.CSPID ,'system');
+                    
+                    window.location.href = "/stores/store/" + storeResult.data.storeID
+                    },
+                    error: function(err){
+                        //- console.log("error on renew invoice ", err)
+                        showNotify('Location', err.responseJSON.data,'error');
+                    }
+
+                    }).always(function(){
+                        NProgress.done();
+                });
+    }

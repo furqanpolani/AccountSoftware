@@ -1,0 +1,147 @@
+div.panel.panel-visible#spy3
+    div.panel-heading
+        div.row
+            div.col-md-12
+                span.panel-title Tickets
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#ticketList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th Ticket #
+                    th Date
+                    th ID
+                    th Business Name
+                    th Phone
+                    th Title
+                    th Type
+                    th Priority
+                    th Assigned to
+                    th Due Date
+                    th Status
+                    th
+            tbody
+                each ticketResult in tickets.data
+                    tr
+                        td.text-center.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.id}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{moment(ticketResult.createdAt).tz('America/New_York').format('MM/DD/YYYY h:mm A')}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.Store.CSPID}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.Store.businessName}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.Store.businessPhone}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.title}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.ticketTypeDetail.selector}
+                        td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.priorityDetail.selector}
+                        if ticketResult.assignedToUser
+                            td.pointer(onclick='openTicket(#{ticketResult.id})') #{ticketResult.assignedToUser.fullName}
+                        else
+                            td.pointer(onclick='openTicket(#{ticketResult.id})')
+
+                        if moment(ticketResult.dueDate).tz('America/New_York').format("MM/DD/YYYY") < moment().tz('America/New_York').format('MM/DD/YYY')
+                            if ticketResult.statusDetail.selector != 'Closed'
+                                td.pointer(onclick='openTicket(#{ticketResult.id})')
+                                    span.label.label-danger #{moment(ticketResult.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A')}
+                            else
+                                td.pointer(onclick='openTicket(#{ticketResult.id})') #{moment(ticketResult.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A')}
+                        else
+                            td.pointer(onclick='openTicket(#{ticketResult.id})') #{moment(ticketResult.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A')}
+
+
+                        td.pointer(onclick='openTicket(#{ticketResult.id})')
+                            case ticketResult.statusDetail.selector
+                                when 'In Progress'
+                                    span.label.label-warning #{ticketResult.statusDetail.selector}
+
+                                when 'Closed'
+                                    span.label.label-success #{ticketResult.statusDetail.selector}
+
+                                when 'Open'
+                                    span.label.label-danger #{ticketResult.statusDetail.selector}
+                                    
+                                when 'Waiting for Customer'
+                                    span.label.label-alert #{ticketResult.statusDetail.selector}
+                                    
+                                when 'Waiting for Update'
+                                    span.label.label-info #{ticketResult.statusDetail.selector}
+                                    
+                                default
+                                    span.label.label-danger #{ticketResult.statusDetail.selector}
+
+
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="/tickets/ticketPage/#{ticketResult.id}") Edit
+                                    li
+                                        a(href='#' onclick='deleteTicket(#{ticketResult.id})') Delete
+
+    script.
+
+        function openTicket(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/tickets/ticketPage/" + id
+        }
+
+        function deleteTicket(id){
+
+                bootbox.confirm({
+                        title:"Ticket",
+                        message: "Are you sure? you want delete ticket.",
+                        size: "medium",
+                        buttons:{
+                                confirm:{
+                                    label: 'Delete Ticket'
+                                },
+                                cancel:{
+                                    label:'Cancel'
+                                }
+                            },
+                    callback:function(result){
+                        if(result){
+                        NProgress.start();
+
+                                $.ajax({
+                                    url: '/api/tickets/' + id,
+                                    type: 'DELETE',
+                                    success: function(result){
+                                        //console.log(result);
+                                        if (result){
+                                            showNotify('Ticket',  'Ticket was deleted successfully','system');
+                                            location.reload();
+                                        }else{
+                                            showNotify('Ticket',  'Failed to delete ticket.','error');
+                                        }
+
+                                    }
+                                }).always(function(){
+                                    NProgress.done();
+                                });
+                                }
+                            }
+                        });
+        }
+
+        
+        jQuery(document).ready(function() {
+            
+
+            checkRights('#{userData.userID}');
+
+            $('#ticketList').dataTable({
+              "aaSorting": [[0, 'desc']],
+              "oLanguage": {
+              "oPaginate": {
+                "sPrevious": "Previous",
+                "sNext": "Next"
+              }
+            },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+              });
+        });

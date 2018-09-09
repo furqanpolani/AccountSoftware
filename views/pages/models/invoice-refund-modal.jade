@@ -1,0 +1,317 @@
+style(type='text/css').
+
+    .refundRadioButtonSelected {
+         border: 1px solid grey;
+         border-radius: 6px;
+         padding: 10px;
+         overflow:hidden;
+    }
+
+    .refundRadioButton {
+         border: 1px solid lightgrey;
+         border-radius: 6px;
+         padding: 10px;
+         overflow:hidden;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+
+    div.radioBox{
+              display: inline-block;
+          }
+
+
+    .block2{
+        position: relative;
+        left:30px;
+        bottom:10px;
+        margin-right:20px;
+        font-size:small;
+    }
+
+
+    .mainHeading {
+        margin: 0px;
+        margin-bottom:5px;
+    }
+
+    h6{
+        padding-left: 20px;
+        padding-right: 20px
+    }
+
+    #arrowDown{
+        text-align: center;
+        margin-top: 15px;
+        color: lightgray;
+    }
+    .text-muted{
+        font-size: small;
+    }
+
+
+div#invoice-refund.popup-basic.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.fa.fa-dollar
+                span Refund Invoice #
+                span#refundInvoiceID 0
+        div#editStoreSoftware
+            div.panel-body
+                div.panel-heading
+                    span.panel-title#headingTitle Stripe Refund
+
+                div.panel-body
+                    div.tab-content.pn.br-n
+                        div#stripeCollect.tab-pane
+                            form#stripe-refund.admin-form
+                                div
+                                    div.col-md-12.form-group
+                                        div#fullRefundDiv.radio-custom.radio-primary.refundRadioButtonSelected.pointer
+                                            div.block1
+                                                input#fullRefund(type='radio' name='refund')
+                                                label(for='fullRefund' style="vertical-align: bottom;display: inline-block;")
+                                            div.block2
+                                                h4#fullRefundTitle.mainHeading Full refund
+                                                span#fullRefundSubtitle.text-muted Getting data please wait...
+                                    div.col-md-12.form-group
+                                        div#partialRefundDiv.radio-custom.radio-primary.refundRadioButton.pointer
+                                            div.block1
+                                                input#partialRefund(type='radio' name='refund')
+                                                label(for='partialRefund' style="vertical-align: bottom;display: inline-block;")
+                                            div.block2
+                                                h4#partialRefundTitle.mainHeading Partial refund
+                                                span.text-muted Refund a partial amount
+
+                                    div.col-md-12.section.refundBox.hidden
+                                        div#arrowDown
+                                            i.glyphicon.glyphicon-arrow-down.pull-center
+
+                                    div.col-md-12.refundBox.hidden
+                                        div.refundRadioButton.form-group
+                                            div.section
+                                                label(style="margin-top:10px;") Refund amount
+                                                div.amountBox.pull-right(style="white-space:nowrap; margin-right:20px;" )
+                                                    label(style="font-size: 18px; margin-right:5px;") $
+                                                    input.form-control#refundAmount(type="number" min="1" style="text-align:right; display:inline" )
+
+                                    div.col-md-12
+                                        label.field-label(for="reason") Reason
+                                            em *
+                                        textarea.form-control#stripeReason(type="text" placeholder="Reason: Minimum 5 characters")
+
+                                    div.col-md-12
+                                        h6.text-center.text-muted Refunds take 5 to 10 days to appear on your customer's statement.
+                                div.row
+                                    div.clearfix.col-md-12
+                                        button.button.btn-primary.mr10.pull-right#refundStripeButton(type="button" disabled style="margin-top:20px;" onclick="refundStripe()") Refund
+                        div#manualCollect.tab-pane
+                            form#manual-collection.admin-form
+                                div.col-md-6.section
+                                    label.field-label(for="paymentAmount") Amount
+                                        em *
+                                    input.form-control.pull-right.text-right.currency#paymentAmount(type="text" name="paymentAmount" readonly)
+                                div.col-md-12
+                                    label.field-label(for="reason") Reason
+                                        em *
+                                    textarea.form-control#reason(type="text" placeholder="Minimum 5 characters")
+                                div.col-md-12
+                                    h6.text-center.text-muted This will mark invoice unpaid so you can edit invoice and mark it paid again.
+
+
+                                div.row
+                                    div.clearfix.col-md-12
+                                        button#refundManualButton.button.btn-primary.mr10.pull-right(type="button" disabled style="margin-top:20px;" onclick="refundManual()") Mark Unpaid
+
+
+            div.panel-footer.clearfix
+
+
+    script.
+
+        function refundManual(){
+
+            var refundData = {
+                invoiceID : $('#refundInvoiceID').text(),
+                refundReason: $('#reason').val(),
+                refundAmount:  $('#paymentAmount').val()
+            };
+
+            $.ajax({
+                url: '/api/invoice/unPaid/' + $('#refundInvoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(refundData),
+                dataType: 'json',
+                success:function(data){
+                    console.log('return form invoice' , data);
+                    if (data.status){
+                        $.magnificPopup.close();
+                        reloadInvoices('InvoiceList',data.invoiceInfo.storeID);
+                    }
+                }
+            });
+        }
+
+        function refundStripe(){
+
+            if($('#stripeReason').val() < 6){
+                bootbox.alert('Please enter refund reason (min 5 char)');
+                return false;
+            }
+
+            if ($("#fullRefund").prop("checked")){
+                var refundData = {
+                    invoiceID : $('#refundInvoiceID').text(),
+                    refundReason: $('#stripeReason').val(),
+                    refundAmount:  $('#balanceRefund').text()
+                };
+            }else{
+                var refundData = {
+                    invoiceID : $('#refundInvoiceID').text(),
+                    refundReason: $('#stripeReason').val(),
+                    refundAmount:  $('#refundAmount').val()
+                };
+            }
+
+
+            $.ajax({
+                url: '/api/invoice/stripeRefund/' + $('#refundInvoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(refundData),
+                dataType: 'json',
+                success:function(data){
+                    console.log('return form invoice' , data);
+                    if (data.status){
+                        $.magnificPopup.close();
+                        reloadInvoices('InvoiceList',data.invoiceInfo.storeID);
+                    }
+                }
+            });
+        }
+
+        $('#refundAmount').bind('keyup',function(){
+            var refundValue = $('#refundAmount').val();
+            if(refundValue.length > 0){
+
+                $("#refundStripeButton").prop("disabled",false);
+
+                if ($("#partialRefund").prop("checked")){
+                    if(parseFloat(refundValue) > parseFloat($('#balanceRefund').text())){
+                        $("#refundStripeButton").prop("disabled",true);
+                    }else{
+                        $("#refundStripeButton").prop("disabled",false);
+                    }
+                }
+
+                if($('#stripeReason').val().length > 5){
+                    $("#refundStripeButton").prop("disabled",false);
+                }else{
+                    $("#refundStripeButton").prop("disabled",true);
+                }
+            }else{
+                $("#refundStripeButton").prop("disabled",true);
+            }
+
+        });
+
+        $('#reason').bind('keyup',function(){
+            if($('#reason').val().length > 5){
+                $("#refundManualButton").prop("disabled",false);
+            }else{
+                $("#refundManualButton").prop("disabled",true);
+            }
+        })
+
+        $('#stripeReason').bind('keyup',function(){
+
+            if ($("#fullRefund").prop("checked")){
+                var refundValue = $('#refundAmount').val();
+                if(refundValue.length > 0){
+                    $("#refundStripeButton").prop("disabled",false);
+                    if(parseFloat(refundValue) > parseFloat($('#balanceRefund').text())){
+                        $("#refundStripeButton").prop("disabled",true);
+                    }else{
+                        $("#refundStripeButton").prop("disabled",false);
+                    }
+                }else{
+                        $("#refundStripeButton").prop("disabled",true);
+                    }
+            }
+
+                if($('#stripeReason').val().length > 5){
+                    $("#refundStripeButton").prop("disabled",false);
+                }else{
+                    $("#refundStripeButton").prop("disabled",true);
+                }
+
+        })
+
+        $('#fullRefundDiv').click(function(){
+
+            $("#fullRefund").prop("checked", true);
+            $("#partialRefund").prop("checked", false);
+            $('#fullRefundDiv').addClass('refundRadioButtonSelected');
+            $('#fullRefundDiv').removeClass('refundRadioButton');
+
+            $('#partialRefundDiv').removeClass('refundRadioButtonSelected');
+            $('#partialRefundDiv').addClass('refundRadioButton');
+
+            $('.refundBox').addClass('hidden');
+            $("#refundStripeButton").prop("disabled",false);
+        });
+
+        $('#partialRefundDiv').click(function(){
+            $("#partialRefund").prop("checked", true);
+            $("#fullRefund").prop("checked", false);
+            $('#partialRefundDiv').addClass('refundRadioButtonSelected');
+            $('#partialRefundDiv').removeClass('refundRadioButton');
+
+            $('#fullRefundDiv').removeClass('refundRadioButtonSelected');
+            $('#fullRefundDiv').addClass('refundRadioButton');
+
+            $('.refundBox').removeClass('hidden');
+            $("#refundStripeButton").prop("disabled",true);
+            $('#refundAmount').focus();
+
+        });
+
+        jQuery(document).ready(function(){
+            $("#fullRefund").prop("checked", true);
+            $("#partialRefund").prop("checked", false);
+            //$('#stripeTab').addClass('active');
+            $.ajax({
+                url:"/api/comboBoxByID/10",
+                success: function(result){
+                console.log(result);
+                    if(result.status){
+                        result.data.forEach(row =>{
+
+                            var selector = '<option value=' + row.id + '>' + row.selector + '</option>';
+
+                            $('#payment').append(selector);
+                        });
+                    }
+                }
+            });
+
+            $("#editStore").validate({
+                rules:{
+                    businessName: {
+                        required: true
+                    }
+                },
+                messages:{
+                    businessName: {
+                        required: "Please enter business name."
+                    }
+                }
+            });
+        });

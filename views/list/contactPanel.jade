@@ -1,0 +1,11 @@
+div.panel-body.panel-scroller.scroller-md.scroller-pn.pn
+        table.table.mbn.tc-med-2.tc-bold-last
+            thead
+                tr.hidden
+                    th Name
+                    th Value
+                tbody
+                    each contact in contactLink.data
+                        tr.pointer(onclick='editContact(#{contact.id},#{contact.fromID},#{contact.typeID})')
+                            td #{contact.Contact.name}
+                            td Show info

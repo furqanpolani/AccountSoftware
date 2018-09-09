@@ -1,0 +1,52 @@
+div.panel.panel-visible#spy3
+    div.panel-heading
+        div.panel-title.hidden-xs Promotions
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#promotionList(cellspacing="0" width="100%" )
+            thead
+                tr
+                    th ID #
+                    th Date
+                    th Message
+                    th Sent Count
+                    th Deliverd Count
+                    th Cost Price
+                    th Initial Holding Value
+                    th After Delivered Value
+                    th Message Type
+                    th Status
+            tbody
+                each promotion in promotions.data
+                    tr
+                        td #{promotion.promotion_Id}
+                        td #{moment(promotion.createDate).tz('America/New_York').format('MM/DD/YYYY')}
+                        td #{promotion.message}
+                        td.text-center #{promotion.sentCount}
+                        td.text-center #{promotion.deliveredCount}
+                        td.text-right.currency #{promotion.costPrice}
+                        td.text-right.currency #{promotion.initialHoldValue}
+                        td.text-right.currency #{promotion.afterDeliveredValue}
+                        td #{promotion.messageType}
+                        td #{promotion.status}
+
+    script.
+
+        jQuery(document).ready(function() {
+
+            $('#promotionList').dataTable({
+              "aaSorting": [[0, 'desc']],
+              "oLanguage": {
+              "oPaginate": {
+                "sPrevious": "Previous",
+                "sNext": "Next"
+              }
+            },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+              });
+        });

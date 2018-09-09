@@ -1,0 +1,125 @@
+<link href="/plugins/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+
+div#task-form.popup-basic.popup-md.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#ticketTitle
+                    | New Task
+        form#ticketSystem.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Status
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="priority" style="margin-bottom: 5px;margin-top: 5px;") Priority
+                                            select.pull-right.form-control#priority(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 14
+                                                        each row in comboList.ComboBoxDetails
+                                                            option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="assignedTo" style="margin-bottom: 5px;margin-top: 5px;") Assigned To
+                                            select#assignedTo.pull-right.form-control(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each user in allUser.data
+                                                    if user.userID == userData.userID
+                                                        option(value="#{user.userID}" selected="selected") #{user.fullName}
+                                                    else
+                                                        option(value="#{user.userID}") #{user.fullName}
+                                            i.arrow
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="dueDate" style="margin-bottom: 5px;margin-top: 5px;") Due Date
+                                            div.input-group.pull-right
+                                                span.input-group-addon
+                                                    input#dueDateCheckbox(type='checkbox' aria-label="...")
+                                                input.form-control#dueDate(type="text" style='width:198px;' name="dueDate" aria-label="..." )
+
+                div.panel
+                    div.panel-heading(style="padding:0px;")
+                        span.panel-icon
+                            i.imoon.imoon-location(style="padding-left:5px;")
+                        span.panel-title(style="padding-left:5px;font-size:14px;")
+                        | Task Detail
+                    div.panel-body
+                        div.row.form-inline
+                            div.col-md-12.form-group
+                                input.form-control.typeahead#taskTitle1(type="text" placeHolder="Task title" style="width:100%;")
+                        div.row(style="padding-top:20px;")
+                            div.col-md-12
+                                div.panel
+                                    div
+                                        span(style="padding-left:10px;") Description
+                                    div.panel-body.pn
+                                        textarea#description.form-control(rows="5")
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#invoiceSaveButton(type="button" data-style="zoom-in" data-size="l" onclick='saveTask()' ) Create Task
+
+    script.
+
+        $('#dueDate').datetimepicker({
+            defaultDate: new Date
+        });
+        $("#dueDate").prop('disabled', true);
+
+        $('#dueDateCheckbox').click(function(){
+            var dueDateStatus = $('#dueDateCheckbox').prop('checked');
+            if(dueDateStatus){
+                $("#dueDate").prop('disabled', false);
+            }else{
+                $("#dueDate").prop('disabled', true);
+
+            }
+
+        });
+
+
+
+        function saveTask(){
+
+                var taskData = {
+                    title: $('#taskTitle1').val(),
+                    assignedToUserID:$('#assignedTo').val(),
+                    description:$('#description').val(),
+                    taskPriorityID:$("#priority option:selected").val(),
+                    isDueDate:$('#dueDateCheckbox').prop('checked'),
+                    createdAt: new Date().toISOString(),
+                    dueDate: new Date($('#dueDate').val()).toISOString(),
+                    reporterUserID: #{userData.userID},
+                    statusID: 92
+                };
+
+
+                $.ajax({
+                    url: '/api/task',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(taskData),
+                    dataType: 'json',
+                    success: function(result){
+                        if (result){
+                            $.magnificPopup.close();
+
+                            showNotify('Task',  'Task was created','system');
+                            location.reload();
+                        }else{
+                            showNotify('Task',  'Unable to create task.','error');
+                        }
+                        console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+
+                });
+        }

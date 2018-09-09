@@ -1,0 +1,53 @@
+div
+    div.col-md-12
+        div.panel.panel-visible#spy2
+            div.panel-heading
+                div.row
+                    div.col-md-10
+                        span.panel-title.hidden-xs #{tableName}
+                    div.col-md-2.right46.hidden
+                        div.pull-right
+                            a.btn.btn-primary.btn-sm.light.fw600.ml10(href="/organizations/#{organization.data.organizationID}/newStore")
+                                span.fa.fa-plus.pr5
+                                | Store
+            div.panel-body.pn.table-responsive
+                table.table.table-striped.table-hover#storeList(cellspacing="0" width="100%")
+                    thead
+                        tr
+                            th CSP ID
+                            th Store Name
+                            th Phone Number
+                            th Address
+                            th Due Date
+                            th Due In Days
+                            //th Last Uesd
+                    tbody
+                        each store in stores.data
+                            tr.pointer(onclick='openStore(#{store.storeID})')
+                                td #{store.CSPID}
+                                    if store.isLocked
+                                        if store.lockReason == null
+                                            span.imoon.imoon-lock(data-toggle="tooltip" title="No Reason" style="padding-left: 5px;")
+                                        else
+                                            span.imoon.imoon-lock(data-toggle="tooltip" title="#{store.lockReason}" style="padding-left: 5px;")
+
+                                    if store.isCanceled
+                                        if store.cancelReason == null
+                                            span.imoon.imoon-blocked(data-toggle="tooltip" title="No Reason" style="padding-left: 5px;color:red;")
+                                        else
+                                            span.imoon.imoon-blocked(data-toggle="tooltip" title="#{store.cancelReason}" style="padding-left: 5px;color:red;")
+                                td #{store.businessName}
+                                td #{store.businessPhone}
+                                td #{store.address}
+                                td #{moment.utc(store.dueDate).tz('America/New_York').format('MM/DD/YYYY')}
+                                td.text-center
+                                    if moment.utc(store.dueDate).diff(moment(), "days") < 5
+                                        span.label.label-danger #{moment.utc(store.dueDate).diff(moment(), "days")}
+                                    else
+                                        span #{moment.utc(store.dueDate).diff(moment(), "days")}
+    script.
+        //span.label.label-danger
+        function openStore(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/stores/store/" + id
+        }

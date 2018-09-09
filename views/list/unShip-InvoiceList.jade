@@ -1,0 +1,159 @@
+style(type='text/css').
+    .customMenuButton {
+        background:none;
+        border:none;
+        box-shadow:none;
+    }
+div.panel.panel-visible#spy3
+    include ../pages/models/invoice-modal
+    include ../pages/models/invoice-collect-modal
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-title Unship Hardware
+
+
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#invoiceList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th Invoice #
+                    th Invoice Date
+                    th ID
+                    th Business Name
+                    th Paid Date
+                    th Charge Date
+                    th Charge Count
+                    th Invoice Amount
+                    th
+            tbody
+                each invoice in invoices.data
+                    tr(id='#{invoice.invoiceID}')
+                        td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.invoiceID}
+                            if invoice.paidDateTime
+                                span.glyphicon.glyphicon-usd(data-toggle="tooltip" title="Paid" style="padding-left: 5px;color:green;")
+                        td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{moment.utc(invoice.createDateTime).format('MM/DD/YYYY')}
+                        td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.Store.CSPID}
+                        td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.Store.businessName}
+                        td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})')
+                            if invoice.paidDateTime
+                                span #{moment.utc(invoice.paidDateTime).format('MM/DD/YYYY')}
+                            else
+                                span.label.label-danger Not Paid
+                        td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{moment.utc(invoice.chargeDateTime).format('MM/DD/YYYY')}
+                        td.text-center.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})')
+                            if invoice.collectCounter < 1
+                                span #{invoice.collectCounter}
+                            else
+                                span.label.label-warning #{invoice.collectCounter}
+                        td.text-right.currency.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.invoiceAmount + invoice.taxAmount}
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="/stores/store/#{invoice.storeID}") Open Store Page
+                                    li
+                                        a(href="/invoice/#{invoice.invoiceID}" onclick="window.open(this.href, 'newwindow', 'width=800, height=950'); return false;") View
+
+                                    if !invoice.paidDateTime
+                                        li.right20.hidden
+                                            a(href='#' onclick="createInvoice(#{invoice.invoiceID},#{invoice.storeID},'editInvoice')") Edit
+                                        li.right18.hidden
+                                            a(href='#' onclick="deleteInvoice(#{invoice.invoiceID})") Delete
+                                        li
+                                            a(href='#' onclick="collectInvoice(#{invoice.invoiceID},#{invoice.storeID},#{invoice.invoiceAmount})") Make Payment
+                                    else
+                                        li
+                                            a(href='#' onclick="createInvoice(#{invoice.invoiceID},#{invoice.storeID},'markShip')") Mark Ship
+                                    li.divider
+                                    li
+                                        a(href="#" onclick="emailInvoice(#{invoice.invoiceID})") Email Invoice
+
+    script.
+
+        function saveManualPayment(){
+            var chargeData = {
+                paidDateTime: $('#paidDate').val(),
+                stripePaymentID: "",
+                paymentTypeID:$('#paymentID').val(),
+                collectStripe:0
+            };
+            console.log(chargeData);
+            $.ajax({
+                url: '/api/invoice/chargemanual/' + $('#invoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chargeData),
+                dataType: 'json',
+                success: function(result){
+                    console.log('return result ', result)
+                    if (result.status){
+                        $.magnificPopup.close();
+                        showNotify('Invoice',  'Invoice was created','system');
+                        reloadInvoices('invoiceList',result.invoiceInfo.storeID);
+                        reloadActivity(result.invoiceInfo.storeID,1);
+                    }else{
+                        showNotify('Invoice',  'Unable to create invoice.','error');
+                    }
+                    //console.log("return values ", result)
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+        function savePayment(){
+            var chargeData = {
+                cardId: $('#stripe-payment').val()
+            };
+            console.log(chargeData);
+            $.ajax({
+                url: '/api/invoice/charge/' + $('#invoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chargeData),
+                dataType: 'json',
+                success: function(result){
+                console.log("invoice result ",result);
+                    if (result){
+                        $.magnificPopup.close();
+                        showNotify('Collect Invoice',  result.data,'system');
+                        //location.reload();
+                        reloadInvoices();
+                    }else{
+                        showNotify('Collect Invoice', result.data,'error');
+                    }
+                    //console.log("return values ", result)
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+        jQuery(document).ready(function() {
+
+            checkRights('#{userData.userID}');
+
+                $('#invoiceList').dataTable({
+                  "aaSorting": [[0, 'desc']],
+                  "aoColumnDefs": [{
+                    'bSortable': false
+                  }],
+                  "oLanguage": {
+                    "oPaginate": {
+                      "sPrevious": "",
+                      "sNext": ""
+                    }
+                  },
+                  "iDisplayLength": 15,
+                  "aLengthMenu": [
+                    [15, 25, 35, 50, -1],
+                    [15, 25, 35, 50, "All"]
+                  ],
+                  "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+                });
+
+
+            });

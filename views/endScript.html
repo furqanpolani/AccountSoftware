@@ -1,0 +1,165 @@
+
+
+
+<script src="/jquery/jquery_ui/jquery-ui.min.js"></script>
+<!-- Datatables -->
+ <script src="/plugins/js/jquery.dataTables.js"></script>
+<!-- Datatables Tabletools addon -->
+<script src="/plugins/js/dataTables.tableTools.min.js"></script>
+<script src="/plugins/js/canvasbg.js"></script>
+<!-- Datatables ColReorder addon -->
+<script src="/plugins/js/dataTables.colReorder.min.js"></script>
+
+<!-- Datatables Bootstrap Modifications  -->
+<script src="/plugins/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/plugins/js/dataTables.bootstrap.js"></script>
+<script src="/plugins/js/jquery.magnific-popup.min.js"></script>
+<script src="/plugins/js/pnotify.js"></script>
+<script src="/javascripts/utility.js"></script>
+<script src="/javascripts/main.js"></script>
+<script src="/javascripts/createContacts.js"></script>
+<script src="/javascripts/globalFunction.js"></script>
+<script src="/javascripts/invoiceFunction.js"></script>
+<script type="text/javascript">
+
+    jQuery(document).ready(function() {
+        "use strict";
+        // Init Theme Core
+        Core.init();
+        $('.currency').formatCurrency();
+
+    });
+
+    function sendNotification(data){
+
+        if(data.user.userID != data.forUserID){
+            /*
+            var newNotifi = {
+                heading: data.heading,
+                body: data.body,
+                comment: data.comment,
+                forUserID: data.assignedToUserID,
+                forUserName: data.forUserName,
+                fromUserID: data.user.userID,
+                fromUserName: data.user.fullName,
+                link: data.link,
+                fromID: data.fromID,
+                typeID: data.typeID,
+                from: data.from,
+                user: data.user,
+                emailAddress: data.emailAddress
+            };
+            */
+
+            $.ajax({
+                url: '/api/addNotification/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function(result){
+
+                }
+            });
+        }
+    }
+
+
+    function collectInvoice(invoiceID,storeID,invoiceAmount){
+        $.magnificPopup.open({
+         removalDelay: 500,
+         items: {
+           src: '#invoice-collect'
+         },
+         callbacks:{
+            beforeOpen: function(e){
+                this.st.mainClass = 'mfp-slideDown';
+                $('.paymentAmount').val(invoiceAmount);
+                $('#invoiceID').text(invoiceID);
+                $('#stripe-payment').empty();
+                loadCreditCard(storeID)
+                $('#paidDate').datetimepicker({
+                    defaultDate: new Date()
+                });
+                },
+            close: function(){
+                $('#paymentID').val('')
+            }
+         },
+         midClick: true,
+         closeOnBgClick: false
+         });
+         $('#invoice-collect').draggable();
+    }
+
+    function loadCreditCard(storeID){
+        NProgress.start();
+            $.ajax({
+                url:'/api/stripe/cards/' + storeID,
+                success: function(result){
+                    console.log("result ", result);
+                    if(result.status){
+                        result.data.sources.data.forEach(card =>{
+                            console.log(result);
+                            if(card.id == result.data.active_card.id){
+                                $("#stripe-payment").append($("<option />").val(card.id).text(card.last4 + ' Default'));
+                            }else{
+                                $("#stripe-payment").append($("<option />").val(card.id).text(card.last4));
+                            }
+
+                        $("#saveStripePayment").prop("disabled",false);
+                        //var x = document.getElementById("stripe-payment").length;
+
+                    });
+                    }
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+    }
+
+    function reloadComment(id,type){
+        NProgress.start();
+            $.ajax({
+                url:"/comment/"+ id + "/" + type,
+                success: function(result){
+
+                 $('#commentDiv').html(result);
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+    }
+
+
+
+    function reloadActivity(id,type){
+        NProgress.start();
+
+            $.ajax({
+                url:"/activity/"+ id + "/" + type,
+                success: function(result){
+                 $('.activityDiv').html(result);
+                }
+            }).always(function(){
+                NProgress.done();
+
+            });
+    }
+
+    function showNotify(title,text,type){
+
+        new PNotify({
+             title: title,
+             text: text,
+             shadow: true,
+             addclass: 'stack_top_right',
+             type: type,
+             width: '300px',
+             delay: 2000
+          });
+    }
+
+
+
+</script>

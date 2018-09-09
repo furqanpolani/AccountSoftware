@@ -1,0 +1,82 @@
+extends ../layout
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.panel.panel-visible#spy3
+            div.panel-heading
+                div.row
+                    div.col-md-12
+                        span.panel-title Invoice ready to be made
+            div.panel-body.pn.table-responsive
+                table.table.table-striped.table-hover#invoicesReadyToBeMade(cellspacing="0" width="100%")
+                    thead
+                        tr
+                            th Due Date
+                            th CSP ID
+                            th Business Name
+                            th Phone Number
+                            th Plan
+                            th Amount
+                            th Last Used
+                            th
+                    tbody
+                        each store in stores
+                            tr(id='#{store.CSPID}')
+                                td.pointer(onclick='openStore(#{store.storeID})') #{moment(store.dueDate).tz('America/New_York').format('MM/DD/YYYY')}
+                                td.pointer(onclick='openStore(#{store.storeID})') #{store.CSPID}
+                                td.pointer(onclick='openStore(#{store.storeID})') #{store.businessName}
+                                td.pointer(onclick='openStore(#{store.storeID})') #{store.businessPhone}
+                                td.pointer(onclick='openStore(#{store.storeID})') #{store.Product.productDetail}
+                                td.currency.text-right.pointer(onclick='openStore(#{store.storeID})') #{store.invoiceAmount + store.invoiceTaxAmount}
+                                td.pointer(onclick='openStore(#{store.storeID})') #{moment(store.attandanceDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                                td(style="width:25px;padding:0px;")
+                                    div.btn-group
+                                        button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                            i.fa.fa-ellipsis-v
+                                        ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                            li
+                                                a(href="#" onclick='openStorePage(#{store.storeID})') Open Store Page
+                                            li
+                                                a(href="#" onclick='createReadyInvoice(#{store.storeID})') Create Invoice
+
+
+    include ../endScript.html
+
+    script.
+
+        function openStorePage(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/stores/store/" + id
+        }
+
+
+        function openStore(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/stores/store/" + id
+        }
+
+        $('.currency').formatCurrency();
+
+        $(document).ready(function() {
+
+            $('#invoicesReadyToBeMade').dataTable({
+              "aaSorting": [[0, 'asc']],
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+
+        });

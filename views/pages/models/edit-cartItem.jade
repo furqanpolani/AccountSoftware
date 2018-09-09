@@ -1,0 +1,47 @@
+div#editCartForm.popup-basic.mfp-with-anim.mfp-hide
+	div.panel
+		div.panel-heading
+			span.panel-title#cartNumber(data-id="0")
+				i.imoon.imoon-pencil2
+				| Edit Cart
+		form#editStoreSoftware.admin-form
+			div.panel-body.p25
+				div.row
+					div.col-md-12
+						div.section
+							label.field
+								label.field-label Item Name
+									em *
+								input.gui-input#itemName(type='text' name='itemName')
+
+					div.col-md-4
+					div.col-md-8
+						div.section
+							label.field
+								label.field-label Price
+								input.gui-input#price.text-right(type='text' onchange="applyTax()" name='price')
+
+
+					div.col-md-4
+						div.section
+							label.field Apply Tax
+								label.switch.block.mt15.switch-primary.section
+									input#taxApply(type='checkbox' onclick="applyTax()" checked name='taxApply')
+									label(for='taxApply' data-on='YES' data-off='NO')
+
+
+					
+					div.col-md-8
+						div.section
+							label.field
+								label.field-label Tax Amount
+								input.gui-input.text-right#cartTaxAmount(type='text' readonly name='taxAmount')
+
+
+
+			div.panel-footer.clearfix
+				button.button.btn-danger.ml10(type="button" onclick="deleteRow()") Delete
+
+				button.button.btn-primary.mr10.pull-right(type="button" onclick="saveCartChange()") Save Change
+
+	<script src="/javascripts/cartJS.js"></script>

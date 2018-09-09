@@ -1,0 +1,72 @@
+div.panel.panel-visible#spy3
+    include ../pages/models/lead-modal
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-title #{tableName}
+            div.col-md-2.right45.hidden
+                div.pull-right
+                    a.btn.btn-primary.btn-sm.light.fw600.ml10(onclick="createLead()")
+                        span.fa.fa-plus.pr5
+                        | Lead
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#leadsList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th Lead #
+                    th Name
+                    th Business Name
+                    th Phone Number
+                    th Email Address
+                    th Address
+                    th Assigned to
+                    th Follow On
+                    th Status
+                    th
+            tbody
+                each lead in leads.data
+                    tr
+                        td.text-center
+                            a(href='/leads/leadPage/#{lead.id}') #{lead.id}
+                        td.pointer(onclick='openLead(#{lead.id})') #{lead.firstName} #{lead.lastName}
+                        td.pointer(onclick='openLead(#{lead.id})') #{lead.businessName}
+                        td.pointer(onclick='openLead(#{lead.id})') #{lead.phoneNumber}
+                        td.pointer(onclick='openLead(#{lead.id})') #{lead.email}
+                        td.pointer(onclick='openLead(#{lead.id})') #{lead.address} #{lead.city}, #{lead.state} #{lead.zipcode}
+                        if lead.assignedToUser
+                            td.pointer(onclick='openLead(#{lead.id})') #{lead.assignedToUser.fullName}
+                        else
+                            td.pointer(onclick='openLead(#{lead.id})')
+                        td.pointer(onclick='openLead(#{lead.id})') #{moment(lead.dueDate).tz('America/New_York').format('MM/DD/YYYY h:mm A')}
+                        td.pointer(onclick='openLead(#{lead.id})')
+                            case lead.statusID
+                                when 27
+                                    span.label.label-danger #{lead.statusDetail.selector}
+                                when 94
+                                    span.label.label-warning #{lead.statusDetail.selector}
+
+                                default
+                                    span.label.label-danger #{lead.statusDetail.selector}
+
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="/leads/leadPage/#{lead.id}") Edit
+                                    li
+                                        a(href='#' onclick='deleteLead(#{lead.id})') Delete
+
+    script.
+
+        function openLead(id){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/leads/leadPage/" + id
+        }
+        
+        
+
+        jQuery(document).ready(function() {
+            checkRights('#{userData.userID}');
+        });

@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+    section#contact.animated.bounceInUp(style="padding: 0px 20px;")
+        include ../list/orgList
+        include ../endScript.html
+
+    script.
+        jQuery(document).ready(function() {
+
+            $('#orgList').dataTable({
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+            $(".nav li").removeClass('active');
+            $('#org').addClass('active');
+
+
+            });

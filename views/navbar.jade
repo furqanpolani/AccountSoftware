@@ -1,0 +1,119 @@
+header.navbar.navbar-fixed-top
+    div.navbar-branding
+        a.navbar-brand(href="/")
+            img(src="https://www.cellsmartpos.com/assets/img/v1/logo.png" alt="CellSmart POS" width="140" style="padding-top:10px;")
+    div.form-group
+        ul.nav.nav-list.nav-list-topbar.pull-left
+            li
+                a(href='/rentals') Rentals
+            li
+                a(href='/movies') Movies
+            li
+                a(href='/customers') Customers
+            li
+                a(href='/purchases') Purchases
+            li
+                a(href='/employees') Employees
+    ul.nav.navbar-nav.navbar-right
+        li.dropdown.menu-merge.hidden#mainNotification
+            div.navbar-btn.btn-group
+                button.btn.btn-sm.dropdown-toggle(data-toggle='dropdown')
+                    span.fa.fa-bell-o.fs14.va-m
+                    span.badge.badge-danger.notificationCount 0
+                
+                ul.dropdown-menu.media-list.w350.animated.animated-shorter.fadeIn#notificationDiv(role="menu")
+                    li.dropdown-header
+                        span.dropdown-title Notifications
+                        span.label.label-warning.notificationCount 0
+
+
+
+        //- li.dropdown
+        //-     a.dropdown-toggle.fw600.p15( href="#" data-toggle="dropdown")
+        //-         if userData.imageUrl
+        //-             img.mw30.br64.mr15(src="#{userData.imageUrl}" alt="avatar")
+        //-         else
+        //-             img.mw30.br64.mr15(src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png" alt="avatar")
+        //-         span #{userData.fullName}
+        //-         span.caret.caret-tp.hidden-xs
+
+        //-     ul.dropdown-menu.list-group.dropdown-persist.w250(role="menu")
+        //-         li.list-group-item
+        //-             a.animated.animated-short.fadeInUp(href="/users/profile?user=#{userData.userID}")
+        //-                 span.fa.fa-user
+        //-                 | Profile
+        //-         li.list-group-item
+        //-             a.animated.animated-short.fadeInUp(href="/logout")
+        //-                 span.fa.fa-power-off
+        //-                 | Logout
+
+    script.
+    
+        jQuery(document).ready(function() {
+            checkRights('#{result.userData.userID}');
+            $('#softwareVersion').text('#{result.userData.version}')
+            getNotification();
+        });
+
+        function getNotification(){
+            //- $.ajax({
+            //-     url:'/api/getNotificationsByUser',
+            //-     success: function(data){
+            //-         console.log('notification ', data);
+            //-         if(data.data.length > 0){
+
+            //-             data.data.forEach(row =>{
+            //-                 if(row.fromUser.imageUrl){
+            //-                     var newHtml = `<li class="media animated animated-short fadeInUp pointer" onclick="openNotification('` + row.link + `')"><span class="media-left"><img src="` + row.fromUser.imageUrl + `" alt="avatar" class="mw40"></span><div class="media-body"><h5 class="media-heading">` + row.heading + `<small class="text-muted pull-right">` + moment(row.createdAt).fromNow(true) + `</small></h5><span>` + row.body + `</span><span href="#" class="text-system">&nbsp;` + row.fromUserName + `</span></div></li>`
+            //-                 }else{
+            //-                     var newHtml = `<li class="media animated animated-short fadeInUp pointer" onclick="openNotification('` + row.link + `')"><span class="media-left"><img src="https://posuserdata-production.s3.amazonaws.com/billing-1494578251855.png" alt="avatar" class="mw40"></span><div class="media-body"><h5 class="media-heading">` + row.heading + `<small class="text-muted pull-right">` + moment(row.createdAt).fromNow(true) + `</small></h5><span>` + row.body + `</span><span href="#" class="text-system">&nbsp;` + row.fromUserName + `</span></div></li>`
+            //-                 }
+
+            //-                 $('#notificationDiv').append(newHtml);
+            //-             });
+
+
+            //-         $('.notificationCount').text(data.data.length);
+            //-         $('#mainNotification').removeClass('hidden');
+            //-         }
+
+
+            //-     }
+            //- });
+        }
+
+        function openNotification(webLink){
+            $.showLoading({name: 'line-scale'});
+            //var newURL = 'http://localhost:3000' + webLink
+            //var newURL = 'http://csgbilling.cellsmartpos.com' + webLink
+            //console.log('url ', newURL);
+            window.location = '/' + webLink
+
+        }
+
+
+        $("#searchForm").submit(function(e){
+
+            var selectedValue = $('#selectedSearch option:selected').val();
+            
+            if(selectedValue == "store"){
+                if($('#searchBox').val().substring(0, 3).toLowerCase() === 'csp') {
+                    e.preventDefault();
+                    $.showLoading({name: 'line-scale'});
+                    window.location = "/stores/store/" + $('#searchBox').val()
+                }else {
+                    $('#searchForm').attr('action', "/stores").submit();
+                }
+               
+            }else if(selectedValue == "invoice"){
+                $('#searchForm').attr('action', "/invoice").submit();
+            } else if(selectedValue == "organization"){
+                $('#searchForm').attr('action', "/organizations").submit();
+            } else if(selectedValue == "contact"){
+                $('#searchForm').attr('action', "/contacts").submit();
+            } else if(selectedValue == "lead"){
+                $('#searchForm').attr('action', "/leads").submit();
+            } else if(selectedValue == "tickets"){
+                $('#searchForm').attr('action', "/tickets").submit();
+            }
+        });

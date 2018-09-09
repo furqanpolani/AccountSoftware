@@ -1,0 +1,48 @@
+div.panel-heading
+    div.col-md-12
+        span.panel-icon
+            i.imoon.imoon-settings
+        span.panel-title Filter
+
+        div.pull-right
+            a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="defaultHeader()")
+                span.fa.fa-retweet(style="padding-right:2px;")
+                | Default
+            a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="reloadTaskList()")
+                span.fa.fa-search(style="padding-right:2px;")
+                | Fetch Data
+
+div.panel-body
+    div.row.admin-form
+        div.col-md-6
+            label.field-label(for="assignedTo") Assigned To
+            select#assignedTo.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each user in allUser.data
+                    if user.userID == userData.userID
+                        option(value="#{user.userID}" selected) #{user.fullName}
+                    else
+                        option(value="#{user.userID}") #{user.fullName}
+            i.arrow
+
+
+
+        div.col-md-3
+            label.field-label(for="status") Status
+            select#status.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each comboBoxList in comboBox.data
+                    if comboBoxList.comboBoxTypeId == 20
+                        each row in comboBoxList.ComboBoxDetails
+                            if row.id == 92
+                                option(value="#{row.id}" selected) #{row.selector}
+                            else
+                                option(value="#{row.id}") #{row.selector}
+            i.arrow
+
+        div.col-md-3
+            label.field-label(for="priority") Priority
+            select#priority.basic-tags.form-control.w200(multiple="multiple" style="width:100%")
+                each comboBoxList in comboBox.data
+                    if comboBoxList.comboBoxTypeId == 14
+                        each row in comboBoxList.ComboBoxDetails
+                            option(value="#{row.id}") #{row.selector}
+            i.arrow

@@ -1,0 +1,39 @@
+table.table.admin-form.theme-warning.tc-checkbox-1.fs13#contactList
+ 
+    thead
+        tr.bg-light
+        th Customer Name
+        th Title
+        th Rented By
+        th Amount
+        th Movie Status 
+        th Payment Status
+        th Due Date
+        th Action
+    tbody#dataBody
+        each b,index in result.completeData.data   
+            tr
+                td #{b.Customer.name}
+                td #{b.Movie.title}
+                //- td #{b.Employee.name} commented for testing
+                td #{'testing'}
+                td #{b.rentAmount}
+                td #{b.returnStatus}
+                td #{b.rentStatus}
+                td #{b.dueDate}
+                td.text-right#menu
+                    .btn-group.text-right
+                        button.btn.btn-success.br2.btn-xs.fs12.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                            | menu
+                            span.caret.ml5
+                        ul.dropdown-menu(role='menu')
+                            li
+                                a( onClick = 'edit(\'' + index + '\')') Edit
+                            li
+                                a( onclick='del(\'' + index + '\')' ) Delete
+                            if b.returnStatus == 'notReturned'
+                                li#returnButton
+                                    a(onClick = 'movieReturned(\'' + index + '\')') Return
+                            if b.rentStatus == 'unpaid'
+                                li#payButton
+                                    a(onClick = 'payment(\'' + index + '\')') Pay

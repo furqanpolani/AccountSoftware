@@ -1,0 +1,129 @@
+doctype html
+html.no-js(lang="en")
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
+        title #{data.Store.businessName} - Invoice #: #{data.invoiceID}
+        meta(name="description" content="")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="/stylesheets/main.css">
+        <link rel="stylesheet" href="/stylesheets/orange.css">
+        <link rel="shortcut icon" href="/img/cellSmartIcon.ico">
+        <script src="/jquery/jquery-1.11.1.min.js"></script>
+        <script src="/jquery/jquery.formatCurrency-1.4.0.min.js"></script>
+    body
+        if data.paidDateTime
+            div.customLogo
+                img(src="/img/paidImg.png")
+        if data.deleteDateTime
+            div.customLogo
+                img(src="/img/deleteImg.png")
+        div.header-container
+            header.wrapper.clearfix
+                h1.text-primary.pull-left INVOICE
+                div.pull-right
+                    div.contact
+                        p 31 South St Suite 3S6 Mount Vernon, NY 10550
+                        p Tel: 347-391-2600
+                        p Email: info@cellsmartpos.com
+                    div.logo
+                        img(src="/img/cspLogo-2.png")
+        div.main-container
+            div.top.wrapper.clearfix
+                div.invoice-top.clearfix
+                    div.pull-left
+                        small Bill to
+
+                        h2.client-name #{data.Store.businessName}
+                        hr.separator
+                        div.address
+                            p #{data.Store.address}
+                            p #{data.Store.businessPhone}
+                            p #{data.Store.invoiceEmail}
+                        if data.shipAddress
+                            br
+                            small Ship to
+                            h3 #{data.shipBusinessName}
+                            hr.separator
+                            div.address
+                                p #{data.shipAddress}
+                                p #{data.shipCity}, #{data.shipState} #{data.shipZipcode}
+                    div.pull-right
+                        p
+                            span.label.bg-primary Invoice #
+                            b  #{data.invoiceID}
+                        p
+                            span.label.bg-gray CSP ID
+                            b  #{data.Store.CSPID}
+                        p
+                            span.label.bg-gray Invoice Date
+                            b  #{moment(data.createDateTime).tz('America/New_York').format('ddd, DD MMM YYYY')}
+                        p
+                            span.label.bg-primary Charge Date
+                            b  #{moment(data.chargeDateTime).tz('America/New_York').format('ddd, DD MMM YYYY')}
+
+                        if data.paidDateTime
+                            p
+                                span.label.bg-primary Paid Date
+                                b  #{moment(data.paidDateTime).tz('America/New_York').format('ddd, DD MMM YYYY')}
+                        hr.separator
+                        p
+                            span.label.bg-primary(style="background-color:limegreen") Software Expire On
+                            b  #{moment(data.Store.dueDate).tz('America/New_York').format('MM/DD/YYYY')}
+                        hr.separator
+                        h2.amount TOTAL AMOUNT
+                        p.price.currency #{data.invoiceAmount + data.taxAmount}
+
+            div.main.wrapper.clearfix
+                div.table-responsive
+                    table.price-table
+                        thead
+                            tr
+                                th.nowrap.aling-left ITEM DESCRIPTION
+                                th.nowrap UNIT PRICE
+                                th QUANTITY
+                                th TOTAL
+                        tbody
+                            each detail in data.InvoiceDetails
+                                tr
+                                    td.description-column
+                                        h4 #{detail.productDetail}
+                                        span #{detail.Product.description}
+                                        if detail.Product.productType == "RENEW"
+                                            if detail.givenDay
+                                                p
+                                                    b #{detail.givenDay} Days Given
+                                        else if detail.Product.productType == "HARDWARE"
+                                            if detail.hardwareSerial
+                                                p Serial # :
+                                                    b  #{detail.hardwareSerial}
+
+                                    td.price-column
+                                        span.price.currency.pull-right #{detail.rate}
+                                    td.quantity-column
+                                        span.price #{detail.qty}
+                                    td.total-column
+                                        span.price.currency.pull-right #{detail.total}
+                        tfoot
+                            tr
+                                td(colspan=2) &nbsp;
+                                td SUBTOTAL
+                                td.nowrap.currency #{data.invoiceAmount}
+                            tr
+                                td(colspan=2) &nbsp;
+                                td.nowrap TAX (#{data.taxRate}%)
+                                td.nowrap.currency #{data.taxAmount}
+                            tr
+                                td(colspan=2) &nbsp;
+                                td.nowrap AMOUNT DUE
+                                td.nowrap.currency #{data.invoiceAmount + data.taxAmount}
+            div.footer-container
+                footer.wrapper
+                    div.clearfix
+                    hr
+                    p Please know that we are 100% committed to providing you with the best customer service possible. Should you need anything, whether it's understanding the software or installing your hardware - we would be delighted to hear from you. If you have any questions or need any assistance, please feel free to call us at 347-391-2600.
+
+
+    script.
+        $('.currency').formatCurrency();

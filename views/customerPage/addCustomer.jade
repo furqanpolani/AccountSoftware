@@ -1,0 +1,138 @@
+extends ../layout
+
+block content
+    section#contact
+        div.animated.zoomIn.p10                               
+            .panel
+                .panel-heading
+                    span.panel-title Customer Registration Form 
+                .panel-body
+                    form.form-horizontal(role='form')
+                        .form-group
+                            label.col-lg-3.control-label(for='customerName') Customer Name
+                            .col-lg-8
+                                .bs-component
+                                    input#customerName.form-control(type='text' required placeholder='Customer Name')
+                        .form-group
+                            label.col-lg-3.control-label(for='address') Address
+                            .col-lg-8
+                                .bs-component
+                                    textarea#address.form-control(rows='3' required placeholder='Customer Address')
+                        .form-group
+                            label.col-lg-3.control-label(for='city') City
+                            .col-lg-8
+                                .bs-component
+                                    select#city.form-control
+                                        option Newyork
+                                        option Chicago
+                                        option Karachi
+                        .form-group
+                            label.col-lg-3.control-label(for='province') State
+                            .col-lg-8
+                                .bs-component
+                                    select#province.form-control
+                                        option Sindh
+                                        option Punjab
+                        .form-group
+                            label.col-lg-3.control-label(for='postalCode') Postal Code
+                            .col-lg-8
+                                .bs-component
+                                    input#postalCode.form-control(type='text', placeholder='Poatal Code')
+                        .form-group
+                            label.col-lg-3.control-label(for='deposit') Deposit Ammount
+                            .col-lg-8
+                                .bs-component
+                                    input#deposit.form-control(type='number' value='0' min="0" placeholder='$')
+                        .form-group
+                            label.col-lg-3.control-label(for='email') Email Address
+                            .col-lg-8
+                                .bs-component
+                                    input#email.form-control(type='email' required placeholder='Enter Your Email here')
+                        .form-group
+                            label.col-lg-3.control-label(for='phone') Phone Number
+                            .col-lg-8
+                                .bs-component
+                                    input#phone.form-control(type='tel' required placeholder='Phone Number')
+                        .form-group
+                            label.col-lg-3.control-label(for='dob') Date of Birth
+                            .col-lg-8
+                                .bs-component
+                                    input#dob.form-control(type='date' required placeholder='Enter Date of Birth Here')
+                        .form-group
+                            label.col-lg-3.control-label(for='referenceName') Reference Name
+                            .col-lg-8
+                                .bs-component
+                                    input#referenceName.form-control(type='text', placeholder='Enter Reference Name Here')
+                        .pull-right
+                            button.btn.ladda-button.btn-primary.progress-button.progress-button(type='button' onclick='saveCustomer()' data-style='expand-right')
+                                span.ladda-label Save
+                                span.ladda-spinner
+                                span.ladda-spinner
+                                .ladda-progress
+
+                            button.btn.ml10.ladda-button.btn-danger.progress-button.progress-button(type='button', data-style='expand-right')
+                                span.ladda-label Cancel
+                                span.ladda-spinner
+                                span.ladda-spinner
+                                .ladda-progress                                                                                                                                 
+        include ../endScript.html
+
+    script.
+        function saveCustomer(){
+            var userEntry = {
+                name: $('#customerName').val(),
+                address: $('#address').val(),
+                emailAddress: $('#email').val(),
+                phoneNumber: $('#phone').val(), 
+                city: $('#city').val(),
+                state: $('#province').val(),
+                postalCode: $('#postalCode').val(),
+                dob: $('#dob').val(),
+                referenceId: $('#referenceName').val(),
+                depositAmount: $('#deposit').val()
+                
+            };
+           console.log(userEntry);
+            $.ajax({
+                type: "POST",
+                url: '/api/customer',
+                data: userEntry,
+                dataType: "json",
+                success: function(result){
+                    if (result.status){
+                        showNotify('Customer', 'Customer was created', 'success');
+                    }
+                    else{
+                        showNotify('Cutomer', 'customer wasnt Created', 'success')
+                    }
+                },
+                error: function(err){
+                    showNotify('Customer', 'Customer Not Created', 'error');
+                    console.log(err)
+                }
+            });
+            
+        }
+
+
+
+        jQuery(document).ready(function()
+         {
+            $('#contactList').dataTable({
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+            });

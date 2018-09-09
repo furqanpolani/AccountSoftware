@@ -1,0 +1,23 @@
+div.animated.fadeIn
+    div.col-md-12
+        div.panel.panel-visible#spy2
+            div.panel-heading
+                div.panel-title.hidden-xs #{tableName}
+            div.panel-body.pn.table-responsive
+                table.table.table-striped.table-hover#orgList(cellspacing="0" width="100%")
+                    thead
+                        tr
+                            th Name
+                            th Owner Name
+                            th Primary #
+                            th Second #
+                            th Email
+                    tbody
+                        each org in orgs.data
+                            tr
+                                td.text-info.pr10
+                                    a(href="/organizations/organization/#{org.organizationID}") #{org.organizationName}
+                                td #{org.ownerName}
+                                td #{org.primaryPhone}
+                                td #{org.secondaryPhone}
+                                td #{org.primaryEmail}

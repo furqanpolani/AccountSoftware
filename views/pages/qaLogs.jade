@@ -1,0 +1,39 @@
+extends ../layout
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.panel.animated.bounceInDown
+            div
+                include ../list/sub-pages/qaLog-filter
+
+
+        div#task-List.animated.bounceInUp
+            include ../list/qaLog-List
+        include ../endScript.html
+
+    <link href="/plugins/css/core.css" rel="stylesheet" type="text/css">
+    <script src="/plugins/js/select2.full.min.js"></script>
+
+    script.
+
+        function reloadQaLogList(){
+            var assignedTo = $("#assignedTo option:selected").map(function(){return this.value}).get().join(",");
+
+            var priority = $("#priority option:selected").map(function(){return this.value}).get().join(",");
+
+            var url = "/tasks/listOnly?assignedTo=" + assignedTo + "&priority=" + priority
+            //console.log(url);
+            NProgress.start();
+                $.ajax({
+                    url: url,
+                    success: function(result){
+                     $('#task-List').html(result);
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }
+
+        $("#datefromTo").select2({
+            placeholder:"Select One"
+        });

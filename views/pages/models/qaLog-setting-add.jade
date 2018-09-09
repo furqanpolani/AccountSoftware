@@ -1,0 +1,77 @@
+div#qalog-form.popup-basic.popup-lg.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#questionTitle(data-selectedId="0")
+                    | Add Question
+        form#addQaQuestion.admin-form
+            div.panel-heading
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-office(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Question
+                                em *
+                            div.panel-body.p10
+                                div.row.form-inline
+                                    div.col-xs-12.form-group
+                                        input.form-control#question(type="text" placeHolder="Question that you want QA rep to answer." required style="width:100%;")
+
+                div.row
+                    div.col-md-12
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.fa.fa-pencil-square-o(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Question Type
+                                em *
+                            div.panel-body.p10
+                                 select.form-control#questionType(style=" width:100%; display:inline-block; padding-left:5px; height:39px;")
+                                    option(value="0") Select One
+                                    option(value="Rate") Rate
+                                    option(value="Yes/No") Yes/No
+                                i.arrow
+                    
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#saveLogButton(type="button" data-style="zoom-in" data-size="l" onclick='saveQuestion()') Save
+
+    script.
+    
+        function saveQuestion(){
+            if($('#questionType').val() == "0"){
+                showNotify('Question', 'Select question type' ,'error');
+                return false;
+            }
+
+            var submitData = {
+                comboBoxTypeId: $('#questionTitle').data().selectedid,
+                selector: $('#question').val(),
+                identifier: $('#questionType').val()
+            };
+                
+            $.ajax({
+                    url: '/api/qaLog/addQuestion',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(submitData),
+                    dataType: 'json',
+                    success: function(result){
+                        if(result){
+                            showNotify('Question', 'New Question is added to list.' ,'system');
+                            location.reload();
+                        }
+                    },
+                    error: function(result){
+                        //console.log(result)
+                        $.magnificPopup.close();
+                        showNotify('Question', result.responseJSON.data ,'error');
+                    }
+            });
+          
+        }

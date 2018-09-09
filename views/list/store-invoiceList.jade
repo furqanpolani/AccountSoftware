@@ -1,0 +1,323 @@
+style(type='text/css').
+    .customMenuButton {
+        background:none;
+        border:none;
+        box-shadow:none;
+    }
+div
+    include ../pages/models/invoice-collect-modal
+    div.panel.panel-visible#spy3
+        div.panel-heading
+            div.row
+                div.col-md-4
+                    span.panel-title Invoice
+                div.col-md-8.right6.hidden
+                    div.pull-right
+                        a.btn.btn-default.btn-sm.light.fw600.ml10.hidden#backToReadyInvoice(onclick="backToReadyInvoice()") Back to ready invoice
+                        a.btn.btn-success.btn-sm.light.fw600.ml10.hidden#createRenewInvoice(onclick="createReadyInvoice(#{store.data.storeID})")
+                            span.fa.fa-plus.pr5
+                            | Create Renew Invoice
+                        a.btn.btn-primary.btn-sm.light.fw600.ml10(onclick="createInvoice(0,#{store.data.storeID},'invoiceList')")
+                            span.fa.fa-plus.pr5
+                            | Invoice
+
+        div.panel-body.pn.table-responsive
+            table.table.table-striped.table-hover#invoiceList(cellspacing="0" width="100%" data-invoiceEmail='#{store.data.invoiceEmail}')
+                thead
+                    tr
+                        th Invoice #
+                        th
+                        th Invoice Date
+                        th Paid Date
+                        th Charge Date
+                        th Charge Count
+                        th Invoice Amount
+                        th
+                tbody
+                    each invoice in invoices.data
+                        tr(id='#{invoice.invoiceID}')
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.invoiceID}
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})')
+                                if invoice.refunded
+                                    span.label.label-dark(style="margin-right:5px;") Refunded
+                                else if invoice.refundAmount > 0
+                                    if invoice.invoiceAmount != invoice.refundAmount
+                                        span.label.label-default(style="margin-right:5px;")
+                                            span.currency #{invoice.refundAmount}
+                                            span  Refunded
+
+                                if invoice.hasHardware
+                                    span.label.label-info.dark(data-toggle="tooltip" title="Hardware")
+                                        i.fa.fa-keyboard-o
+
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{moment(invoice.createDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})')
+                                if invoice.paidDateTime
+                                    span #{moment(invoice.paidDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                                else
+                                    span.label.label-danger Not Paid
+
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{moment(invoice.chargeDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                            td.text-center.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})')
+                                if invoice.collectCounter < 1
+                                    span #{invoice.collectCounter}
+                                else
+                                    span.label.label-warning #{invoice.collectCounter}
+                            td.text-right.currency.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.invoiceAmount + invoice.taxAmount}
+                            td(style="width:25px;padding:0px;")
+                                div.btn-group
+                                    button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                        i.fa.fa-ellipsis-v
+                                    ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                        li
+                                            a(href="/invoice/#{invoice.invoiceID}" onclick="window.open(this.href, 'newwindow', 'width=800, height=950'); return false;") View
+                                        if !invoice.paidDateTime
+                                            li.right20.hidden
+                                                a(href='#' onclick="createInvoice(#{invoice.invoiceID},#{store.data.storeID},'invoiceList')") Edit
+                                            li.right18.hidden
+                                                a(href='#' onclick="deleteInvoice(#{invoice.invoiceID},#{store.data.storeID})") Delete
+                                            li
+                                                a(href='#' onclick='collectInvoice(#{invoice.invoiceID},#{store.data.storeID},#{invoice.invoiceAmount + invoice.taxAmount})') Make Payment
+                                        else
+                                            li.right51.hidden
+                                                a(href='#' onclick="createInvoice(#{invoice.invoiceID},#{store.data.storeID},'invoiceList')") Edit Paid Invoice
+                                        if invoice.paidDateTime
+                                            if !invoice.refunded
+                                                if invoice.stripePaymentID == "" || invoice.stripePaymentID
+                                                    if invoice.stripePaymentID.substring(0, 3) == "ch_"
+                                                        li.right19.hidden
+                                                            a(href='#' onclick='refundInvoice(#{invoice.invoiceID})') Refund
+                                                    else
+                                                        li.right19.hidden
+                                                            a(href='#' onclick='refundInvoice(#{invoice.invoiceID})') Mark unpaid
+
+                                        li.divider
+                                        li
+                                            a(href="#" onclick="emailInvoice(#{invoice.invoiceID})") Email Invoice
+
+    script.
+
+        function saveManualPayment(){
+            var chargeData = {
+                paidDateTime: $('#paidDate').val(),
+                stripePaymentID: $('#paymentID').val(),
+                paymentTypeID: $('#payment').val(),
+                collectStripe: 0
+            };
+            console.log('chargeData ', chargeData);
+            $.ajax({
+                url: '/api/invoice/chargemanual/' + $('#invoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chargeData),
+                dataType: 'json',
+                success: function(result){
+                    console.log('return result ', result)
+                    if (result.status){
+                        $.magnificPopup.close();
+                        showNotify('Invoice',  'Invoice was created','system');
+                        reloadInvoices('invoiceList',result.invoiceInfo.storeID);
+                        reloadActivity(result.invoiceInfo.storeID,1);
+                    }else{
+                        showNotify('Invoice',  'Unable to create invoice.','error');
+                    }
+                    //console.log("return values ", result)
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+        function refundInvoice(invoiceID){
+            $.magnificPopup.open({
+             removalDelay: 500,
+             items: {
+               src: '#invoice-refund'
+             },
+             callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    $('#refundInvoiceID').text(invoiceID);
+                        $.ajax({
+                            url: '/api/invoice/' + invoiceID,
+                            success: function(invoice){
+                                if(invoice.status){
+                                    console.log('found Invoice ', invoice);
+                                    var checkIfStringPayment = invoice.data.stripePaymentID.substring(0, 3);
+                                    if(checkIfStringPayment == 'ch_'){
+                                        $('#stripeCollect').addClass('active');
+                                        $('#manualCollect').removeClass('active');
+                                        $('#headingTitle').text('Stripe Refund');
+                                        $.ajax({
+                                            url:'/api/stripe/charge/' + invoice.data.stripePaymentID,
+                                            success: function(returnData){
+                                                if(returnData.status){
+                                                    var data = returnData.data;
+                                                        console.log("stripe info ", data);
+                                                        if(data.refunds.length){
+                                                            var refundedAmount = data.amount_refunded / 100;
+                                                            refundedAmount = refundedAmount
+                                                            var balanceRefund = (data.amount / 100) - refundedAmount
+                                                            var newSubtitle = `<span id="fullRefundSubtitle"  class="radioLabel text-muted">Refund the remaning <span class='currency'>` + balanceRefund + `</span> (<span class='currency'>` + refundedAmount + `</span> has already been refunded)</span>`
+
+                                                            $('#fullRefundTitle').replaceWith(`<h4 id="fullRefundTitle" class="mainHeading">Remaining amount<span id="balanceRefund" class="hidden">` +  balanceRefund + `</span></h4>`);
+
+                                                            $('#fullRefundSubtitle').replaceWith(newSubtitle);
+
+
+                                                        }else{
+
+
+                                                            var newSubtitle = `<span id="fullRefundSubtitle"  class="radioLabel text-muted">Refund the full amount (<span class='currency'>` + (data.amount / 100) + `</span>)</span>`
+
+                                                            $('#fullRefundSubtitle').replaceWith(newSubtitle);
+
+                                                            $('#fullRefundTitle').replaceWith(`<h4 id="fullRefundTitle" class="mainHeading">Full refund<span id="balanceRefund" class="hidden">` +  data.amount / 100 + `</span></h4>`);
+                                                        }
+                                                         $('.currency').formatCurrency();
+                                                         $("#refundStripeButton").prop("disabled",false);
+                                                     }
+                                                     $('.currency').formatCurrency();
+                                                },
+                                            error: function(err){
+                                                $.magnificPopup.close();
+                                                bootbox.alert(err.responseJSON.data.message);
+                                                console.log(err);
+                                            }
+
+                                            });
+                                    }else{
+                                        $('#headingTitle').text('Unpaid Invioce');
+
+                                        $('#manualCollect').addClass('active');
+                                        $('#stripeCollect').removeClass('active');
+
+                                        $('#paymentAmount').val(invoice.data.invoiceAmount + invoice.data.taxAmount);
+
+
+                                    }
+                                }
+                            }
+                    });
+
+
+                    },
+                close: function(){
+                    $('#stripeTab').removeClass('active');
+                    $('#manualCollect').removeClass('active');
+
+                    $('#fullRefundDiv').click();
+                    $('#refundAmount').val('');
+                    $('#fullRefundSubtitle').text('Getting data please wait...');
+                    $('#stripeReason').val('');
+
+
+                }
+             },
+             midClick: true,
+             closeOnBgClick: false
+             });
+             $('#invoice-refund').draggable();
+        }
+
+        function savePayment(){
+            var chargeData = {
+                cardId: $('#stripe-payment').val()
+            };
+            console.log(chargeData);
+            $.ajax({
+                url: '/api/invoice/charge/' + $('#invoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chargeData),
+                dataType: 'json',
+                success: function(result){
+
+                console.log("invoice result ",result);
+
+                    if (result.status){
+                        $.magnificPopup.close();
+                        showNotify('Collect Invoice',  result.data,'system');
+                        reloadInvoices('invoiceList', result.invoiceInfo.storeID);
+                        reloadActivity(result.invoiceInfo.storeID,1);
+                    }else{
+                        showNotify('Collect Invoice', result.data,'error');
+                    }
+                    //console.log("return values ", result)
+                },
+                error: function (err){
+                    console.log("Error Return ", err)
+                    bootbox.alert(err.responseJSON.data);
+                    reloadInvoices('invoiceList', err.responseJSON.invoiceInfo.storeID);
+                    reloadActivity(err.responseJSON.invoiceInfo.storeID,1);
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+        function reloadDeletedInvoices(){
+            NProgress.start();
+                $.ajax({
+                    url:"/invoice/deletedInvoice/#{store.data.storeID}",
+                    success: function(result){
+
+                     $('#tab2_2').html(result);
+                    }
+                }).always(function(){
+                    NProgress.done();
+                    $('.currency').formatCurrency();
+                });
+        }
+
+        function backToReadyInvoice(){
+            $.showLoading({name: 'line-scale'});
+            window.location = "/invoice/readytobemade"
+        }
+
+        jQuery(document).ready(function() {
+
+            var storeInfo = !{JSON.stringify(store.data)}
+            console.log('storeinfo ', storeInfo);
+            
+            var newDate = moment().add(3, "d").format("YYYY-MM-DD")
+            var lastInvoice = storeInfo.lastinvoicedateTime;
+
+            if(!storeInfo.isCanceled){
+                if(!storeInfo.isTrial){
+                    if(lastInvoice == null){
+                        if(moment(storeInfo.dueDate).format("YYYY-MM-DD") <= newDate){
+                            $('#createRenewInvoice').removeClass('hidden');
+                        }
+                    }
+                }
+            }
+
+
+            var userData = !{JSON.stringify(userData)}
+            if(userData.accountTypeID !=7 ){
+                checkRights('#{userData.userID}');
+            }
+            
+            
+                $('#invoiceList').dataTable({
+                  "aaSorting": [[0, 'desc']],
+                  "aoColumnDefs": [{
+                    'bSortable': false
+                  }],
+                  "oLanguage": {
+                    "oPaginate": {
+                      "sPrevious": "",
+                      "sNext": ""
+                    }
+                  },
+                  "iDisplayLength": 15,
+                  "aLengthMenu": [
+                    [15, 25, 35, 50, -1],
+                    [15, 25, 35, 50, "All"]
+                  ],
+                  "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+                });
+
+
+            });

@@ -1,0 +1,24 @@
+section#content.table-layout
+    div.col-md-12
+        div.panel.mb25
+            div.panel-heading
+                span.panel-title.hidden-xs Prepaid Balance:
+                    span.currency #{store.data.prepaidBalance}
+                ul.nav.panel-tabs-border.panel-tabs
+                    li.active
+                        a(href="#tab1_1" data-toggle="tab") Prepaid
+                    li
+                        a(href="#tab1_2" data-toggle="tab") Promotion
+                    li
+                        a(href="#tab1_3" data-toggle="tab") Unlock
+            div.panel-body.p25.pb5
+                div.tab-content.pn.br-n
+                    div#tab1_1.tab-pane.active
+                        include ../../list/purchaseCreditList
+                    div#tab1_2.tab-pane
+                        include ../../list/promotionList
+                    div#tab1_3.tab-pane
+                        include ../../list/unlockList
+
+    aside.col-md-2.tray.tray-right.tray290.pn.hidden.panel-scroller.scroller-md.scroller-pn.activityDiv
+        include ../../list/activity

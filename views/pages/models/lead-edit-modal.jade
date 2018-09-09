@@ -1,0 +1,176 @@
+
+div#editLead-form.popup-basic.popup-xl.mfp-with-anim.mfp-hide
+    div.panel
+        div.panel-heading
+            span.panel-title
+                i.imoon.imoon-pencil2
+                span#ticketTitle
+                    | Edit Lead
+        form#ticketSystem.admin-form
+
+
+            div.panel-heading
+                div.row
+                    div.col-md-7
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.imoon.imoon-office(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Lead Detail
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-xs-6.form-group
+                                        input.form-control#firstName(type="text" placeHolder="First Name *" value=leads.data.firstName style="width:100%;")
+                                    div.col-xs-6.form-group
+                                        input.form-control#lastName(type="text" placeHolder="Last Name" value=leads.data.lastName style="width:100%;")
+                                    div.col-xs-12.form-group(style="padding-top:10px;")
+                                        input.form-control#businessName(type="text" placeHolder="Business Name" value=leads.data.businessName  style="width:100%;")
+                                    div.col-xs-6.form-group(style="padding-top:10px;")
+                                        input.form-control#phoneNumber(type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' placeHolder="Phone Number" value=leads.data.phoneNumber style="width:100%;")
+                                    div.col-xs-6.form-group(style="padding-top:10px;")
+                                        input.form-control#email(type="text" placeHolder="Email Address" value=leads.data.email style="width:100%;")
+                                    div.col-xs-6.form-group(style="padding-top:10px;")
+                                        input.form-control#locationCount(type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' placeHolder="Location count"  value=leads.data.locationCount style="width:100%;")
+                                    div.col-xs-6.form-group(style="padding-top:10px;")
+                                        input.form-control#refer(type="text" value=leads.data.refer placeHolder="Refer from" style="width:100%;")
+
+
+                    div.col-md-5
+                        div.panel
+                            div.panel-heading.pn
+                                span.panel-icon
+                                    i.fa.fa-list-alt(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Source
+                            div.panel-body(style="padding:10px;")
+
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="source" style="margin-bottom: 5px;") Source
+                                            select.pull-right.form-control#source(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 5
+                                                            each row in comboList.ComboBoxDetails
+                                                                if row.id == leads.data.sourceID
+                                                                    option(value="#{row.id}" selected="selected") #{row.selector}
+                                                                else
+                                                                    option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="foundUsID" style="margin-bottom: 5px; ") Found Us
+                                            select.pull-right.form-control#foundUsID( required style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                option(value="0") Select One
+                                                    each comboList in comboBox.data
+                                                        if comboList.comboBoxTypeId == 8
+                                                            each row in comboList.ComboBoxDetails
+                                                                if row.id == leads.data.foundUsID
+                                                                    option(value="#{row.id}" selected="selected") #{row.selector}
+                                                                else
+                                                                    option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+
+                                    div.col-xs-12.form-group
+                                        label.field.select(for="software" style="margin-bottom: 5px;") Software
+                                            select#software.pull-right.form-control(style=" width:62%; display:inline-block; padding-left:5px; height:39px;")
+                                                each comboList in comboBox.data
+                                                    if comboList.comboBoxTypeId == 3
+                                                        each row in comboList.ComboBoxDetails
+                                                            if row.id == leads.sourceID
+                                                                option(value="#{row.id}" selected="selected") #{row.selector}
+                                                            else
+                                                                option(value="#{row.id}") #{row.selector}
+                                            i.arrow
+
+                div.row
+
+                    div.col-md-5
+                        div.panel
+                            div.panel-heading(style="padding:0px;")
+                                span.panel-icon
+                                    i.imoon.imoon-location(style="padding-left:5px;")
+                                span.panel-title(style="padding-left:5px;font-size:14px;")
+                                | Address
+                            div.panel-body(style="padding:10px;")
+                                div.row.form-inline
+                                    div.col-md-12.form-group
+                                        input.form-control#address(type="text" placeHolder="Street Address" value=leads.data.address style="width:100%;")
+                                    div.col-md-8.form-group(style="padding-top:10px;")
+                                        input.form-control#city(type="text" value=leads.data.city placeHolder="City" style="width:100%;")
+                                    div.col-md-4.form-group(style="padding-top:10px;")
+                                        input.form-control#state(type="text" value=leads.data.state placeHolder="State" style="width:100%;")
+                                    div.col-md-5.form-group(style="padding-top:10px;")
+                                        input.form-control#zipcode(type="text" value=leads.data.zipcode placeHolder="Zipcode" style="width:100%;")
+
+
+
+            div.panel-footer.clearfix
+                button.btn.btn-primary.mr10.pull-right.ladda-button.progress-button#invoiceSaveButton(type="button" data-style="zoom-in" data-size="l" onclick='updateLead()' ) Save Change
+    script.
+
+        function updateLead(){
+
+                var leadData = {
+                    firstName: $('#firstName').val(),
+                    lastName: $('#lastName').val(),
+                    phoneNumber: $('#phoneNumber').val(),
+                    email:$('#email').val(),
+                    businessName: $('#businessName').val(),
+                    address:$('#address').val(),
+                    city:$('#city').val(),
+                    state:$('#state').val(),
+                    zipcode:$('#zipcode').val(),
+                    sourceID:$("#source option:selected").val(),
+                    locationCount: $('#locationCount').val(),
+                    foundUsID: $("#foundUsID option:selected").val(),
+                    refer: $('#refer').val(),
+                    softwareID:$("#software option:selected").val(),
+                    userID:#{userData.userID},
+                    userName: '#{userData.fullName}'
+                };
+
+                console.log('printing lead Data ',leadData);
+
+                if(leadData.source == '0'){
+                    bootbox.alert("Please select source.");
+                    return false;
+                }
+
+                if(leadData.foundUs == '0'){
+                    bootbox.alert("Please select found us.");
+                    return false;
+                }
+
+                if(leadData.firstName.length == 0){
+                    bootbox.alert("Please enter first name.");
+                    return false;
+                }
+
+                if(leadData.phoneNumber.length == 0){
+                    bootbox.alert("Please enter phone number.");
+                    return false;
+                }
+
+                NProgress.start();
+
+                $.ajax({
+                    url: '/api/leads/#{leads.data.id}',
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(leadData),
+                    dataType: 'json',
+                    success: function(result){
+
+                        if (result){
+                            $.magnificPopup.close();
+                            showNotify('Lead',  'Lead was updated','system');
+                            location.reload();
+                        }else{
+                            showNotify('Lead',  'Unable to updated lead.','error');
+                        }
+                        console.log("return values ", result)
+                    }
+                }).always(function(){
+                    NProgress.done();
+                });
+        }

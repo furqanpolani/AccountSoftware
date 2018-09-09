@@ -1,0 +1,184 @@
+div.panel.panel-visible#spy3
+    include ../pages/models/qaLog-Modal
+    div.panel-heading
+        div.row
+            div.col-md-10
+                span.panel-title Log
+            div.col-md-2
+                div.pull-right
+                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="createLog()")
+                        span.fa.fa-plus.pr5
+                        | QA Log
+    div.panel-body.pn.table-responsive
+        table.table.table-striped.table-hover#taskList(cellspacing="0" width="100%")
+            thead
+                tr
+                    th ID #
+                    th Create Date
+                    th Query Date
+                    th Subject
+                    th Assigned To
+                    th
+            tbody
+                each log in qaLog.data
+                    tr
+                        td.text-center
+                            a(href="#") #{log.qaLogId}
+                        td #{moment.utc(log.createdAt).tz('America/New_York').format('MM/DD/YYYY h:mm:ss A')}
+                        td #{moment(log.reportDateTime).format('MM/DD/YYYY h:mm:ss A')}
+                        td #{log.subject}
+                        td #{log.assignedToUser.fullName}
+
+                        td(style="width:25px;padding:0px;")
+                            div.btn-group
+                                button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                    i.fa.fa-ellipsis-v
+                                ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                    li
+                                        a(href="#" onclick='updateQaLog(#{log.qaLogId})') Edit
+                                    li
+                                        a(href='#' onclick='deleteQaLog(#{log.qaLogId})') Delete
+
+
+    script.
+
+        jQuery(document).ready(function() {
+
+
+            $('#taskList').dataTable({
+              "aaSorting": [[1, 'desc']],
+              "oLanguage": {
+              "oPaginate": {
+                "sPrevious": "Previous",
+                "sNext": "Next"
+              }
+            },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+
+              });
+        });
+
+        function deleteQaLog(id){
+            bootbox.confirm({
+                    message: "Are you sure? you want to delete this Log.",
+                    buttons:{
+                            confirm:{
+                                label:'YES'
+                            },
+                            cancel:{
+                                label:'NO'
+                            }
+                        },
+                callback:function(result){
+                    
+                    if(result){
+                        
+                        $.ajax({
+                            url: '/api/qaLog/delete/' + id,
+                            type: 'DELETE',
+                            success: function(result){
+                                console.log(result);
+                                if(result.code == 200){
+                                    location.reload();
+                                }else{
+                                     
+                                    showNotify('Delete',  'Failed to delelte the log.','error');
+                                }
+
+                            }
+                        });
+                        }else{
+                            showNotify('Delete',  'Failed to delelte the log.','error');
+                        }
+                    }
+
+            });
+        }
+
+        function createLog(){
+
+            $.magnificPopup.open({
+                removalDelay: 500,
+                items: {
+                src: '#qalog-form'
+                },
+                callbacks:{
+                    beforeOpen: function(e){
+                        this.st.mainClass = 'mfp-slideDown';
+                        $('#saveLogButton').removeClass('hidden');
+                        $('#updateLogButton').addClass('hidden');
+                    },
+                    open: function(){
+
+                    },
+                    close: function(){
+                        //emptyTicket();
+                    }
+
+                },
+                midClick: true,
+                closeOnBgClick: false
+            });
+        }
+
+        function updateQaLog(id){
+
+            $.magnificPopup.open({
+                removalDelay: 500,
+                items: {
+                src: '#qalog-form'
+                },
+                callbacks:{
+                    beforeOpen: function(e){
+                        this.st.mainClass = 'mfp-slideDown';
+                        $.ajax({
+                            url: '/api/qaLog/getById/' + id,
+                            type: 'GET',
+                            contentType: 'application/json',
+                            success: function(result){
+                                console.log(result);
+                                $('#callerName').val(result.data.callerName);
+                                $('#phoneNumber').val(result.data.phoneNumber);
+                                $('#emailAddress').val(result.data.emailAddress);
+                                $('#subject').val(result.data.subject);
+                                $('#note').val(result.data.notes);
+                                $('#ticketId').val(result.data.ticketID);
+                                $('#cspId').val(result.data.CSPID);
+
+                                $("#repName").val(result.data.assignedToUserID);
+                                $("#software").val(result.data.contactTypeID);
+                                $("#contactDate").val(moment(result.data.reportDateTime).format("MM/DD/YYYY h:mm A"));
+
+                                $('#saveLogButton').addClass('hidden');
+                                $('#updateLogButton').removeClass('hidden');
+
+                                $('#qaTitle').data('id',result.data.qaLogId);
+                                
+                                $('#ticketId').blur();
+                                $('#cspId').blur();
+
+                                fillQuestion()
+
+                            },
+                            error: function(result){
+                                console.log(result);
+                            }
+                        });
+                    },
+                    open: function(){
+
+                    },
+                    close: function(){
+                        //emptyTicket();
+                    }
+
+                },
+                midClick: true,
+                closeOnBgClick: false
+            });
+        }

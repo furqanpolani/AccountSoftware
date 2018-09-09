@@ -1,0 +1,310 @@
+extends ../layout
+
+block content
+        section
+            div.animated.bounceInUp
+                section#content
+                    section#employeeForm.hidden
+                        .panel.mt5.admin-form
+                            .panel-body
+                                section.row
+                                    section.row.mb15
+                                        .col-xs-6
+                                            label.field.prepend-icon(for='employeeName')
+                                                input#employeeName.event-name.gui-input.br-light.light(type='text' name='email' placeholder='Enter Name here')
+                                                label.field-icon(for='employeeName')
+                                                    i.fa.fa-user
+                                        .col-xs-6
+                                            label.field.prepend-icon(for='email')
+                                                input#email.event-name.gui-input.br-light.bg-light(type='text', name='email', placeholder='Employee Email Address')
+                                                label.field-icon(for='email')
+                                                        i.fa.fa-envelope-o
+                                    section.row.mb15
+                                        .col-xs-6
+                                            label.field.prepend-icon(for='phoneNumber')
+                                                input#phoneNumber.event-name.gui-input.bg-light.br-light(type='text', name='phoneNumber', placeholder='Enter Phone Number...')
+                                                label.field-icon(for='phoneNumber')
+                                                    i.fa.fa-phone
+                                        .col-xs-6
+                                            label.field.prepend-icon(for='password')
+                                                input#password.form-control(type='password' placeholder='Password')
+                                                label.field-icon(for='password')
+                                                    i.fa.fa-calendar
+                                    section.row.mb15
+                                        label.field.prepend-icon(for='address')
+                                            input#address.gui-input(type='text', name='address', placeholder='Street address')
+                                            label.field-icon(for='address')
+                                                i.fa.fa-map-marker
+                                    section.row.mb15
+                                    
+                                        .col-md-3
+                                            label.field.prepend-icon(for='postalCode')
+                                                input#postalCode.gui-input(type='text', name='postalCode', placeholder='Zip')
+                                                label.field-icon(for='postalCode')
+                                                    i.fa.fa-certificate
+                                        .col-md-4
+                                            label.field.prepend-icon(for='city')
+                                                input#city.gui-input(type='text', name='city', placeholder='City')
+                                                label.field-icon(for='city')
+                                                    i.fa.fa-building-o
+                                        .col-md-5
+                                            label.field.select(for='state')
+                                                select#state(name='state')
+                                                    option(value='') Choose state
+                                                    
+                                                i.arrow.double
+                                    section.row.mb15
+                                        .col-xs-6
+                                            label.field.prepend-icon(for='position')
+                                                input#position.event-name.gui-input.br-light.light(type='text', name='position', placeholder='Position')
+                                                label.field-icon(for='position')
+                                                    i.fa.fa-user
+                                        .col-xs-6
+                                            label.field.prepend-icon(for='salary')
+                                                input#salary.form-control(type='number'  min="0" placeholder='salary')
+                                                label.field-icon(for='salary')
+                                                    i.fa.fa-money
+
+            
+                                                
+                                        .pull-right.m15
+                                            button.btn.ladda-button.btn-dark.progress-button.progress-button(type='button' onclick="addEmployer()" data-style='expand-right')
+                                                span.ladda-label Save
+                                                span.ladda-spinner
+                                                span.ladda-spinner
+                                                .ladda-progress
+
+                                            button#cancel.btn.ml10.ladda-button.btn-danger.progress-button.progress-button(type='button', data-style='expand-right')
+                                                span.ladda-label Cancel
+                                                span.ladda-spinner
+                                                span.ladda-spinner
+                                                .ladda-progress
+
+
+                    .panel
+                        header#topbar.ph10
+                            .topbar-right.hidden-xs.hidden-sm
+                                a.btn.btn-default.btn-sm.light.fw600.ml10#addingEmployees
+                                    span.fa.fa-user.pr5
+                                    |  Add Employees
+                            .row
+
+                                .col-md-4
+                                    label.field.select
+                                        
+                        .panel-body.pn
+                            div.panel-body.pn.table-responsive
+                                table.table.table-striped.table-hover#contactList(cellspacing="0" width="100%")
+                                    thead
+                                        tr
+                                            th Name
+                                            th Email Address
+                                            th Phone Number
+                                            th Action 
+                                        
+                                    tbody
+                                        each r,index in result.employeeResult.data
+                                            tr
+                                                td #{r.name}
+                                                td #{r.emailAddress}
+                                                td #{r.phoneNumber}
+
+                                                td.text-right
+                                                        .btn-group.text-right
+                                                            button.btn.btn-success.br2.btn-xs.fs12.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                                                                | menu
+                                                                span.caret.ml5
+                                                            ul.dropdown-menu(role='menu')
+                                                                li
+                                                                    a.edit(href='#' onclick='edit(\'' + index + '\')' ) Edit
+                                                                li
+                                                                    a(href='#' onclick='del(\'' + index + '\')' ) Delete
+                                                    
+
+                                        
+
+        include ../endScript.html
+        script.
+            var data = !{JSON.stringify(result.employeeResult.data)}
+            $('#addingEmployees').click(function(){
+                $('#employeeForm').removeClass('hidden')
+            })
+            $('#cancel').click(function(){
+                $('#employeeForm').addClass('hidden')
+            })
+            //edit data 
+            var editedData ; 
+            var editFlag = false;
+            function edit(id) {
+                console.log("result is ", id)
+                editedData = data[id]
+                editFlag = true
+                console.log('edit is clicked')
+                $('#employeeName').val(editedData.name)
+                $('#email').val(editedData.emailAddress)
+                $('#phoneNumber').val(editedData.phoneNumber)
+                $('#postalCode').val(editedData.postalCode)
+                $('#city').val(editedData.city) 
+                $('#state').val(editedData.state) 
+                $('#position').val(editedData.position)  
+                $('#salary').val(editedData.salary)
+                console.log(editedData)
+                $('#employeeForm').removeClass('hidden')
+            }
+
+                //save Button functioning
+            function addEmployer(){
+                console.log('add employeer Started')
+                //getting data from user
+                var userEntry = {
+                        name: $('#employeeName').val(),
+                        emailAddress: $('#email').val(),
+                        phoneNumber: $('#phoneNumber').val(),
+                        postalCode: $('#postalCode').val(),
+                        city: $('#city').val(),
+                        state: $('#state').val(),
+                        position: $('#postion').val(),
+                        salary: $('#salary').val(),
+                        password: $('#password').val()
+                }
+                //  editing existing employeer 
+                if(editFlag == true){
+        
+                    console.log('user Entry is ', userEntry)
+                    console.log('id is : ', editedData.id)
+                    editFlag = false
+                    $.ajax({
+                        type: "PUT",
+                        url: '/api/employeeUpdate/'+editedData.id,
+                        data: userEntry,
+                        dataType: "json",
+                        success: function(result){
+                        if(result.status){
+                            return new Promise ((resolve, reject) =>{
+                                showNotify('Employee', 'Employee updated', 'success')
+                                resolve()
+                            }).then(()=>{
+                                window.location.href = "/employees"
+                            })
+                            
+                        }
+                    
+                    },
+                        error: function(err){
+                            return new Promise ((resolve, reject) =>{
+                                showNotify('Employee', 'Employee not Updated', 'error')
+                                resolve()
+                            }).then(()=>{
+                                //- window.location.href = "/employees"
+                            })
+                        }
+                    });
+                
+                }
+                //  Creating new employeer
+                else{
+                    
+                console.log(userEntry);
+                    $.ajax({
+                        type: "POST",
+                        url: '/api/employee',
+                        data: userEntry,
+                        dataType: "json",
+                        success: function(result){
+                        if(result.status){
+                            return new Promise ((resolve, reject) =>{
+                                showNotify('Employee', 'Employee registered', 'success')
+                                resolve()
+                            }).then(()=>{
+                                window.location.href = "/employees"
+                            })
+                            
+                        }
+                    
+                    },
+                        error: function(err){
+                            return new Promise ((resolve, reject) =>{
+                                console.log('error is :', err)
+                                showNotify('Employer', 'Employer not Registered', 'error')
+                                resolve()
+                            }).then(()=>{
+                                //- window.location.href = "/employees"
+                            })
+                        }
+                    }); 
+                } 
+            }
+
+
+
+            //deleting employeer
+            function del(index){
+                console.log(index)
+                let emp = data[index]
+                let id = emp.id
+                swal({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) =>{
+                    if(result.value){
+                        $.ajax({
+                    type: "DELETE",
+                    url: '/api/employee/'+id,
+                    data: "employee",
+                    dataType: "json",
+                    success: function(res){ 
+                                if(res.status){
+                                    swal(
+                                        'Deleted!',
+                                        'Your file has been deleted.',
+                                        'success'
+                                    ).then(() =>{
+                                        window.location.href = '/employees'
+                                    })
+                                    
+                                }
+                    },
+                    error: function(err){
+                        return new Promise ((resolve, reject) =>{
+                                showNotify('Employee', 'Employee not deleted', 'error')
+                                resolve()
+                            }).then(()=>{
+                                //- window.location.href = "/employees"
+                            })
+                    }
+                })       
+                    }
+                })
+                
+            }
+
+
+            jQuery(document).ready(function() {
+
+                $('#contactList').dataTable({
+                "aoColumnDefs": [{
+                    'bSortable': false
+                }],
+                "oLanguage": {
+                    "oPaginate": {
+                    "sPrevious": "",
+                    "sNext": ""
+                    }
+                },
+                "iDisplayLength": 15,
+                "aLengthMenu": [
+                    [15, 25, 35, 50, -1],
+                    [15, 25, 35, 50, "All"]
+                ],
+                "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+                });
+
+                
+
+
+            });

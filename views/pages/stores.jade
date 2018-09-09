@@ -1,0 +1,35 @@
+extends ../layout
+
+block content
+    section#contact(style="padding: 0px 20px;")
+        div.animated.bounceInUp
+            include ../list/storeList
+        include ../endScript.html
+
+    script.
+
+        jQuery(document).ready(function() {
+
+            $('#storeList').dataTable({
+                "aaSorting": [[0, 'desc']],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "Previous",
+                  "sNext": "Next"
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+            $(".nav li").removeClass('active');
+            $(".nav a").removeClass('menu-open');
+            $('#stores').addClass('active');
+            $('#storesAtag').addClass('menu-open');
+
+
+            });

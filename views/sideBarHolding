@@ -1,0 +1,98 @@
+aside#sidebar_left.nano.nano-primary
+    div.sidebar-left-content.nano-content
+        ul.nav.sidebar-menu
+            li.sidebar-label.pt20 Menu
+            li#dashboard
+                a(href='/')
+                    span.glyphicon.glyphicon-home
+                    span.sidebar-title Home
+            li#tickets
+                a(href='/tickets')
+                    span.fa.fa-tags
+                    span.sidebar-title Tickets
+            li
+                a(href='/leads')
+                    span.fa.fa-sitemap
+                    span.sidebar-title Leads
+            li
+                a(href='/tasks')
+                    span.fa.fa-check-square-o
+                    span.sidebar-title Tasks
+            li
+                a(href='/invoice/unshippedHardware')
+                    span.fa.fa-truck
+                    span.sidebar-title Hardware
+            li
+                a(href='/qaLog')
+                    span.imoon.imoon-meter
+                    span.sidebar-title QA Log
+            li
+                a(href='#').accordion-toggle
+                    span.imoon.imoon-stats
+                    span.sidebar-title List
+                    span.caret
+                ul.nav.sub-nav
+                    li#org
+                        a(href='/contacts')
+                            span.imoon.imoon-office Contacts
+                    li
+                        a(href='/organizations')
+                            span.imoon.imoon-office Organization
+                    li#stores
+                        a#storeAtag(href='#').accordion-toggle
+                            span.imoon.imoon-stats
+                            span.sidebar-title Stores
+                            span.caret
+                        ul.nav.sub-nav
+                            li#allStore
+                                a(href='/stores?list=all')
+                                    span.fa.fa-sitemap
+                                    span.sidebar-title All Stores
+                            li#activeStore
+                                a(href='/stores?list=active')
+                                    span.fa.fa-check-square-o
+                                    span.sidebar-title Active
+                            li#locakedStore
+                                a(href='/stores?list=lock')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Locked
+                            li#cancelStore
+                                a(href='stores?list=cancel')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Cancelled
+                    li#invoices
+                        a#invoicesAtag(href='#').accordion-toggle
+                            span.imoon.imoon-books
+                            span.sidebar-title invoice
+                            span.caret
+                        ul.nav.sub-nav
+                            li#openInvoice
+                                a(href='/invoice?list=open')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Open Invoices
+                            li#deletedInvoice
+                                a(href='/invoice?list=deleted')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Deleted Invoices
+                            li#readyMadeInvoice
+                                a(href='/invoice/readytobemade')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Ready to be made
+                    li
+                        a#invoicesAtag(href='#').accordion-toggle
+                            span.imoon.imoon-books
+                            span.sidebar-title Prepaid Balance
+                            span.caret
+                        ul.nav.sub-nav
+                            li
+                                a(href='/invoice?list=open')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Purchase Credit
+                            li#deletedInvoice
+                                a(href='/invoice?list=deleted')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Promotions
+                            li#readyMadeInvoice
+                                a(href='/invoice/readytobemade')
+                                    span.fa.fa-truck
+                                    span.sidebar-title Unlocked

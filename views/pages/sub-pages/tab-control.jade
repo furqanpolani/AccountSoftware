@@ -1,0 +1,142 @@
+header#topbar.ph10
+    div.topbar-left
+        ul.nav.nav-list.nav-list-topbar.pull-left
+            li.active#dashboard-li
+                a(href="#" onclick="showDashboard()") Dashboard
+            li#invoice-li
+                a(href="#" onclick="showBilling()") Billing
+            li#tickets-li
+                a(href="#" onclick="showTickets()") Tickets
+            li#promotion-li
+                a(href="#" onclick="showPromotion()") Wallet Account
+            li#otherLocation-li
+                a(href="#" onclick="showOtherLocation()") Other Location
+    div.topbar-right.hidden-xs.hidden-sm
+        a.btn.btn-default.btn-sm.light.fw600.ml10.right49.hidden(onclick="giveUpdate(#{store.data.organizationID})")
+            span.fa.fa-plus.pr5
+            | Software Update
+        a.btn.btn-default.btn-sm.light.fw600.ml10(href='/organizations/#{store.data.organizationID}/newStore')
+            span.fa.fa-plus.pr5
+            | Add Location
+        a.btn.btn-default.btn-sm.light.fw600.ml10.right13.hidden(onclick="editStore()")
+            span.imoon.imoon-pencil.pr5
+            | Edit Store
+        div.ml15.ib.va-m#toggle_activity
+            a(href="#").pl5
+                i.fa.fa-sign-in.fs22.text-primary
+                span#activityCount.badge.badge-hero.badge-danger 0
+
+
+script.
+
+    $('#toggle_activity').click(function(){
+        if( $('.activityDiv').hasClass('hidden') ){
+            $('.activityDiv').removeClass('hidden');
+            $('#toggle_activity i').removeClass('fa-sign-in');
+            $('#toggle_activity i').addClass('fa-sign-out');
+
+        }else{
+            $('.activityDiv').addClass('hidden');
+            $('#toggle_activity i').removeClass('fa-sign-out');
+            $('#toggle_activity i').addClass('fa-sign-in');
+        }
+    });
+
+
+
+    function editStore(){
+        $.magnificPopup.open({
+         removalDelay: 500,
+         items: {
+           src: '#modal-form'
+         },
+         callbacks:{
+            beforeOpen: function(e){
+                this.st.mainClass = 'mfp-slideDown';
+            }
+         },
+         midClick: true,
+         closeOnBgClick: false
+         });
+         $('#modal-form').draggable();
+    }
+
+    function showBilling(){
+        // remove active class
+        $('#dashboard-li').removeClass('active');
+        $('#otherLocation-li').removeClass('active');
+        $('#promotion-li').removeClass('active');
+        $('#tickets-li').removeClass('active');
+        $('#invoice-li').addClass('active');
+
+
+        $('#invoiceDiv').removeClass('hidden');
+        $('#dashboardDiv').addClass('hidden');
+        $('#otherLocationDiv').addClass('hidden');
+        $('#promotionDiv').addClass('hidden');
+        $('#ticketsDiv').addClass('hidden');
+
+    }
+
+    function showTickets(){
+        // remove active class
+        $('#dashboard-li').removeClass('active');
+        $('#otherLocation-li').removeClass('active');
+        $('#promotion-li').removeClass('active');
+        $('#invoice-li').removeClass('active');
+        $('#tickets-li').addClass('active');
+
+        // unhide invoice panel
+        $('#invoiceDiv').addClass('hidden');
+        $('#dashboardDiv').addClass('hidden');
+        $('#otherLocationDiv').addClass('hidden');
+        $('#promotionDiv').addClass('hidden');
+        $('#ticketsDiv').removeClass('hidden');
+
+    }
+
+    function showPromotion(){
+        // remove active class
+        $('#dashboard-li').removeClass('active');
+        $('#otherLocation-li').removeClass('active');
+        $('#promotion-li').addClass('active');
+        $('#tickets-li').removeClass('active');
+        $('#invoice-li').removeClass('active');
+
+        // unhide invoice panel
+        $('#invoiceDiv').addClass('hidden');
+        $('#dashboardDiv').addClass('hidden');
+        $('#otherLocationDiv').addClass('hidden');
+        $('#promotionDiv').removeClass('hidden');
+        $('#ticketsDiv').addClass('hidden');
+    }
+
+    function showDashboard(){
+        $('#dashboard-li').addClass('active');
+        $('#promotion-li').removeClass('active');
+        $('#otherLocation-li').removeClass('active');
+        $('#invoice-li').removeClass('active');
+        $('#tickets-li').removeClass('active');
+
+        $('#dashboardDiv').removeClass('hidden');
+        $('#otherLocationDiv').addClass('hidden');
+        $('#promotionDiv').addClass('hidden');
+        $('#invoiceDiv').addClass('hidden');
+        $('#ticketsDiv').addClass('hidden');
+    }
+
+    function showOtherLocation(){
+
+        $('#dashboard-li').removeClass('active');
+        $('#invoice-li').removeClass('active');
+        $('#otherLocation-li').addClass('active');
+        $('#promotion-li').removeClass('active');
+        $('#tickets-li').removeClass('active');
+
+
+        $('#dashboardDiv').addClass('hidden');
+        $('#otherLocationDiv').removeClass('hidden');
+        $('#promotionDiv').addClass('hidden');
+        $('#invoiceDiv').addClass('hidden');
+        $('#ticketsDiv').addClass('hidden');
+    }

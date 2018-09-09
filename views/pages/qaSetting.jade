@@ -1,0 +1,183 @@
+extends ../layout
+
+block content
+    include ../pages/models/qaLog-setting-add
+    section#contact
+        div#qaSetting-List.animated.bounceInUp
+            div.col-md-4
+                div.panel.panel-visible#spy3
+                    div.panel-heading
+                        div.row
+                            div.col-md-12
+                                span.panel-title Log Category
+                            
+                    div.panel-body.pn.table-responsive
+                        table.table.table-striped.table-hover#categoryList(cellspacing="0" width="100%")
+                            thead
+                                tr
+                                    th(width="20") ID#
+                                    th Label
+                            tbody
+                                each log in data
+                                    tr.pointer(onclick="getSubList('#{log.comboBoxTypeId}','#{log.labelName}')")
+                                        td #{log.comboBoxTypeId}
+                                        td #{log.labelName}
+                                        
+            div.col-md-8
+                div.panel.panel-visible#spy4
+                    //- include ../pages/models/qaLog-Modal
+                    div.panel-heading
+                        div.row
+                            div.col-md-10
+                                span.panel-title#selectedId #{data[0].comboBoxTypeId}
+                                span.panel-title#selectedName #{data[0].labelName}
+                            div.col-md-2 
+                                div.pull-right
+                                    a.btn.btn-default.btn-sm.light.fw600.ml10(onclick="addSetting()")
+                                        span.fa.fa-plus.pr5
+                                        | New Question
+                    div.panel-body.pn.table-responsive
+                        div.p20.hidden#noData
+                                span You have not enterd any question in 
+                                    strong#category Name #{data[0].labelName}
+                        table.table.table-striped.table-hover#questionList(cellspacing="0" width="100%")
+                            thead
+                                tr
+                                    th(width="35") ID#
+                                    th Question
+                                    th Anwser Type
+                                    th
+                            tbody
+                                each log in data
+                                    if log.comboBoxTypeId == data[0].comboBoxTypeId
+                                        each row in log.ComboBoxDetails
+                                            tr
+                                                td #{row.id}
+                                                td #{row.selector}
+                                                td #{row.identifier}
+                                                td(style="width:25px;padding:0px;")
+                                                    div.btn-group
+                                                        button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                                            i.fa.fa-ellipsis-v
+                                                        ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                                            li
+                                                                a(href="#") Edit
+                                                            li
+                                                                a(href='#' onclick='deleteQuestion(#{row.id})') Delete
+
+
+
+        include ../endScript.html
+
+
+    script.
+
+        function deleteQuestion(id){
+            bootbox.confirm({
+                title:"QA Question",
+                message: "Are you sure? you want delete question.",
+                size: "medium",
+                buttons:{
+                        confirm:{
+                            label: 'Yes'
+                        },
+                        cancel:{
+                            label:'No'
+                        }
+                    },
+                callback:function(result){
+                    if(result){
+                    NProgress.start();
+                        $.ajax({
+                            url: '/api/qaLog/deleteQuestion/' + id,
+                            type: 'DELETE',
+                            success: function(result){
+                                //console.log(result);
+                                if (result){
+                                    showNotify('Delete',  'Question was deleted successfully','system');
+                                    location.reload();
+                                }else{
+                                    showNotify('Delete',  'Failed to delete question.','error');
+                                }
+
+                            }
+                        }).always(function(){
+                            NProgress.done();
+                        });
+                        }
+                    }
+            });
+        }
+        
+       
+        function addSetting(){
+            $.magnificPopup.open({
+            removalDelay: 500,
+            items: {
+            src: '#qalog-form'
+            },
+            callbacks:{
+                beforeOpen: function(e){
+                    this.st.mainClass = 'mfp-slideDown';
+                    $('#questionTitle').text('Add question to ' + $('#selectedName').text());
+                    $('#questionTitle').data('selectedid',$('#selectedId').text());
+
+                },
+                open: function(){
+
+                },
+                close: function(){
+                    //emptyTicket();
+                }
+
+            },
+            midClick: true,
+            closeOnBgClick: false
+            });
+
+            $('#qalog-form').draggable();
+        }
+       
+        function getSubList(id,label){
+            var data = !{JSON.stringify(data)}
+            var noData = false;
+
+            $('#selectedId').text(id);
+            $('#selectedName').text(label);
+            
+            $("#questionList").find("tr:gt(0)").remove();
+            
+            //- console.log(data);
+            data.forEach(item => {
+                if(item.comboBoxTypeId == id){
+                    $('#category').text(item.labelName);
+                    console.debug('out side ', item.ComboBoxDetails.length)
+                    if(item.ComboBoxDetails.length > 0){
+                        console.debug(item)
+                        item.ComboBoxDetails.forEach(row => {
+                            var html = `<tr><td>` + row.id + `</td><td>` + row.selector + `</td><td>` + row.identifier + `</td><td style="width:25px;padding:0px;"><div class="btn-group"><button type="button" data-toggle="dropdown" aria-expanded="false" class="btn btn-default customMenuButton"><i class="fa fa-ellipsis-v"></i></button><ul role="menu" class="dropdown-menu dropdown-menu-right"><li><a href="#">Edit</a></li><li><a href="#" onclick="deleteQuestion(80)">Delete</a></li></ul></div></td></tr>`
+                           
+                            $('#questionList tr:last').after(html);
+                            //- console.log(html);
+                        });
+                        noData = false
+                    }else {
+                        console.log('false in here')
+                    noData = true
+                    }
+                    if(noData){
+                        console.info('in here')
+                        $('#questionList').addClass('hidden');
+                        $('#noData').removeClass('hidden');
+                    }else{
+                         $('#questionList').removeClass('hidden');
+                        $('#noData').addClass('hidden');
+                    }
+                }
+            });
+            
+            
+        }
+        
+        
+                

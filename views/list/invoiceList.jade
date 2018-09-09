@@ -1,0 +1,176 @@
+style(type='text/css').
+    .customMenuButton {
+        background:none;
+        border:none;
+        box-shadow:none;
+    }
+div
+    include ../pages/models/invoice-collect-modal
+    div.panel.panel-visible#spy3
+        div.panel-heading
+            div.row
+                div.col-md-12
+                    span.panel-title #{tableName}
+        div.panel-body.pn.table-responsive
+            table.table.table-striped.table-hover#invoiceList1(cellspacing="0" width="100%")
+                thead
+                    tr
+                        th Invoice #
+                        th Invoice Date
+                        th CSPID
+                        th Store Name
+                        th Charge Date
+                        th Charge Count
+                        th Invoice Amount
+                        th
+                tbody
+                    each invoice in invoices.data
+                        tr(id='#{invoice.invoiceID}')
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.invoiceID}
+                                if invoice.Store
+                                    if invoice.Store.isLocked
+                                        if invoice.Store.lockReason == null
+                                            span.imoon.imoon-lock(data-toggle="tooltip" title="No Reason" style="padding-left: 5px;")
+                                        else
+                                            span.imoon.imoon-lock(data-toggle="tooltip" title="#{invoice.Store.lockReason}" style="padding-left: 5px;")
+                                    
+                                    if invoice.Store.isCanceled
+                                        if invoice.Store.cancelReason == null
+                                            span.imoon.imoon-blocked(data-toggle="tooltip" title="No Reason" style="padding-left: 5px;color:red;")
+                                        else
+                                            span.imoon.imoon-blocked(data-toggle="tooltip" title="#{invoice.Store.cancelReason}" style="padding-left: 5px;color:red;")
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{moment.utc(invoice.createDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                            if invoice.Store
+                                td.pointer(onclick='openStore(#{invoice.Store.storeID})') #{invoice.Store.CSPID}
+                                td.pointer(onclick='openStore(#{invoice.Store.storeID})') #{invoice.Store.businessName}
+                            else
+                                td
+                                td
+                            td.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{moment.utc(invoice.chargeDateTime).tz('America/New_York').format('MM/DD/YYYY')}
+                            td.text-center.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})')
+                                if invoice.collectCounter < 1
+                                    span #{invoice.collectCounter}
+                                else
+                                    span.label.label-warning #{invoice.collectCounter}
+                            td.text-right.currency.pointer(onclick='viewInvoice(#{invoice.invoiceID}, #{invoice.storeID})') #{invoice.invoiceAmount}
+                            td(style="width:25px;padding:0px;")
+                                div.btn-group
+                                    button.btn.btn-default.customMenuButton(type='button' data-toggle='dropdown'  aria-expanded='false')
+                                        i.fa.fa-ellipsis-v
+                                    ul.dropdown-menu.dropdown-menu-right(role='menu')
+                                        if !invoice.paidDateTime    
+                                            li
+                                                a(href='#' onclick='collectInvoice(#{invoice.invoiceID},#{invoice.storeID},#{invoice.invoiceAmount + invoice.taxAmount})') Make Payment
+                                        li
+                                            a(href="#" onclick='openStore(#{invoice.storeID})') Open Store Page
+                                        li
+                                            a(href="/invoice/#{invoice.invoiceID}" onclick="window.open(this.href, 'newwindow', 'width=800, height=950'); return false;") View
+                                        li.divider
+                                        li
+                                            a(href="#" onclick="emailInvoice(#{invoice.invoiceID})") Email Invoice
+
+    script.
+    
+        var returnData = !{JSON.stringify(invoices)}
+        
+        function openStore(id){
+            $.showLoading({name: 'line-scale'});
+            var href = "/stores/store/" + id
+            window.location = href
+        }
+        
+        function saveManualPayment(){
+            var chargeData = {
+                paidDateTime: $('#paidDate').val(),
+                stripePaymentID: "",
+                paymentTypeID:$('#paymentID').val(),
+                collectStripe:0
+            };
+            console.log(chargeData);
+            $.ajax({
+                url: '/api/invoice/chargemanual/' + $('#invoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chargeData),
+                dataType: 'json',
+                success: function(result){
+                    console.log('return result ', result)
+                    if (result.status){
+                        $.magnificPopup.close();
+                        showNotify('Invoice',  'Invoice was created','system');
+                        location.reload();
+                        //- reloadInvoices('invoiceList',result.invoiceInfo.storeID);
+                        //- reloadActivity(result.invoiceInfo.storeID,1);
+                    }else{
+                        showNotify('Invoice',  'Unable to create invoice.','error');
+                    }
+                    //console.log("return values ", result)
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+        
+        function savePayment(){
+            var chargeData = {
+                cardId: $('#stripe-payment').val()
+            };
+            console.log('getting Payment ',chargeData);
+            $.ajax({
+                url: '/api/invoice/charge/' + $('#invoiceID').text(),
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chargeData),
+                dataType: 'json',
+                success: function(result){
+
+                console.log("invoice result ",result);
+
+                    if (result.status){
+                        $.magnificPopup.close();
+                        showNotify('Collect Invoice',  result.data,'system');
+                        location.reload();
+                        //- reloadInvoices('invoiceList', result.invoiceInfo.storeID);
+                        //- reloadActivity(result.invoiceInfo.storeID,1);
+                    }else{
+                        showNotify('Collect Invoice', result.data,'error');
+                    }
+                    //console.log("return values ", result)
+                }, error: function (err){
+                    console.log("Error Return ", err)
+                    bootbox.alert(err.responseJSON.data);
+                    reloadInvoices('invoiceList', err.responseJSON.invoiceInfo.storeID);
+                    reloadActivity(err.responseJSON.invoiceInfo.storeID,1);
+                }
+            }).always(function(){
+                NProgress.done();
+            });
+        }
+
+        $('.currency').formatCurrency();
+
+        $(document).ready(function() {
+
+            checkRights('#{userData.userID}');
+
+            $('#invoiceList1').dataTable({
+              "aaSorting": [[0, 'desc']],
+              "aoColumnDefs": [{
+                'bSortable': false
+              }],
+              "oLanguage": {
+                "oPaginate": {
+                  "sPrevious": "",
+                  "sNext": ""
+                }
+              },
+              "iDisplayLength": 15,
+              "aLengthMenu": [
+                [15, 25, 35, 50, -1],
+                [15, 25, 35, 50, "All"]
+              ],
+              "sDom": '<"dt-panelmenu clearfix"lfr>t<"dt-panelfooter clearfix"ip>'
+            });
+
+
+        });
